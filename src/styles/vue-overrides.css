@@ -1,0 +1,138 @@
+.gh-offer__card {
+  background: #071415;
+  color: #ffffff;
+  border: 0;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+}
+
+.gh-offer__shade {
+  border: 0;
+}
+
+.gh-offer__kicker {
+  color: #77cdfa;
+}
+
+.gh-offer__title,
+.gh-offer__subtitle,
+.gh-offer__secondary {
+  color: #ffffff;
+}
+
+.gh-offer__primary {
+  background: #77cdfa;
+  color: #102829;
+}
+
+.gh-offer__close {
+  background: #071415;
+  border-color: #77cdfa;
+}
+
+.gh-offer__close span,
+.gh-offer__close span::after {
+  background: #ffffff;
+}
+
+.mellorise-contact .section-contact-form-padding {
+  padding-top: 92px;
+  padding-bottom: 72px;
+}
+
+.mellorise-contact .field__input:not(.text-area) {
+  height: 48px;
+  min-height: 48px;
+}
+
+.gg-post-cart-trust {
+  gap: 8px;
+}
+
+.gg-trust-pills {
+  gap: 6px;
+  margin-top: -1px;
+}
+
+.gg-trust-pills span {
+  min-height: 25px;
+  padding: 0 11px;
+}
+
+.gg-trust-cards {
+  gap: 8px;
+}
+
+.gg-trust-cards article {
+  min-height: 78px;
+  padding: 10px 8px 9px;
+}
+
+.gg-trust-cards svg {
+  height: 23px;
+  margin-bottom: 7px;
+  width: 23px;
+}
+
+.gg-trust-cards strong {
+  line-height: 1.08;
+}
+
+.gg-delivery-steps {
+  margin-top: 0;
+}
+
+.gg-delivery-step > span {
+  height: 31px;
+  width: 31px;
+}
+
+.gg-delivery-step strong {
+  margin-top: 7px;
+}
+
+.gg-delivery-step small {
+  margin-top: 2px;
+}
+
+.gg-dynamic-checkout {
+  margin-top: 7px;
+}
+
+.gg-purchase-note {
+  margin-top: 5px;
+  padding-top: 0;
+}
+
+.gg-safe-note {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media screen and (max-width: 749px) {
+  .gg-post-cart-trust {
+    gap: 8px;
+  }
+
+  .gg-trust-pills {
+    gap: 6px;
+  }
+
+  .gg-trust-pills span {
+    min-height: 26px;
+    padding: 0 10px;
+  }
+
+  .gg-trust-cards {
+    gap: 7px;
+  }
+
+  .gg-trust-cards article {
+    min-height: 80px;
+    padding: 10px 7px 9px;
+  }
+
+  .gg-delivery-step > span {
+    height: 30px;
+    width: 30px;
+  }
+}

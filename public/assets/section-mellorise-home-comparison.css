@@ -1,0 +1,392 @@
+.mello-compare {
+  --mello-teal: #5a9091;
+  --mello-teal-deep: #416f70;
+  --mello-ink: #173132;
+  --mello-sky: #77cdfa;
+  --mello-soft: #f7f5f1;
+  --mello-cream: #fff8ea;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 42%, rgba(119, 205, 250, 0.09), transparent 24%),
+    radial-gradient(circle at 86% 50%, rgba(90, 144, 145, 0.08), transparent 28%),
+    #ffffff;
+  color: var(--mello-ink);
+  padding: clamp(72px, 7.5vw, 118px) 18px clamp(72px, 7vw, 112px);
+}
+
+.mello-compare__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.mello-compare__header {
+  max-width: 820px;
+  margin: 0 auto clamp(34px, 4.6vw, 54px);
+  text-align: center;
+}
+
+.mello-compare__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 5px 13px;
+  border: 1px solid rgba(119, 205, 250, 0.72);
+  border-radius: 999px;
+  background: rgba(119, 205, 250, 0.1);
+  color: #348ebd;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.mello-compare__badge svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mello-compare__title {
+  max-width: 780px;
+  margin: 18px auto 12px;
+  color: #101819;
+  font-size: clamp(35px, 4vw, 58px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.mello-compare__title span {
+  display: block;
+  color: var(--mello-teal);
+  font-weight: 900;
+}
+
+.mello-compare__text {
+  max-width: 760px;
+  margin: 0 auto;
+  color: #203537;
+  font-size: clamp(15px, 1.12vw, 19px);
+  font-weight: 550;
+  line-height: 1.52;
+}
+
+.mello-compare__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(340px, 0.94fr);
+  align-items: stretch;
+  gap: clamp(18px, 2.6vw, 32px);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.mello-compare__card {
+  min-height: 386px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.mello-compare__card--mellorise {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.95fr) minmax(210px, 0.8fr);
+  gap: clamp(18px, 2.2vw, 30px);
+  align-items: center;
+  padding: clamp(28px, 3.4vw, 46px);
+  background: linear-gradient(135deg, var(--mello-teal) 0%, var(--mello-teal-deep) 100%);
+  color: #ffffff;
+  box-shadow: 0 24px 50px rgba(23, 49, 50, 0.13);
+}
+
+.mello-compare__card--others {
+  display: grid;
+  grid-template-columns: minmax(200px, 0.92fr) minmax(168px, 0.72fr);
+  gap: clamp(18px, 2vw, 28px);
+  align-items: center;
+  padding: clamp(28px, 3.1vw, 42px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0)),
+    #eeeeee;
+  color: var(--mello-ink);
+  box-shadow: inset 0 0 0 1px rgba(23, 49, 50, 0.04);
+}
+
+.mello-compare__card h3 {
+  max-width: 14ch;
+  margin: 0 0 24px;
+  color: inherit;
+  font-size: clamp(20px, 1.65vw, 26px);
+  font-weight: 950;
+  line-height: 1.16;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.mello-compare__list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mello-compare__list li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  color: inherit;
+  font-size: clamp(14px, 1vw, 16px);
+  font-weight: 850;
+  line-height: 1.28;
+}
+
+.mello-compare__list svg {
+  width: 22px;
+  height: 22px;
+  margin-top: -1px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mello-compare__list--positive svg {
+  color: #ffffff;
+}
+
+.mello-compare__list--negative li {
+  color: #263839;
+  font-weight: 750;
+}
+
+.mello-compare__list--negative svg {
+  color: #5b6667;
+}
+
+.mello-compare__product-wrap {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  border-radius: 8px;
+}
+
+.mello-compare__product {
+  width: min(290px, 100%);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 24px rgba(14, 41, 42, 0.2));
+}
+
+.mello-compare__bottles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.mello-compare__bottles-image {
+  display: block;
+  width: min(210px, 100%);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 22px rgba(23, 49, 50, 0.08));
+}
+
+.mello-compare__cta-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(30px, 4vw, 46px);
+}
+
+.mello-compare__cta {
+  min-height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: var(--mello-teal);
+  color: #ffffff;
+  padding: 16px 34px;
+  font-size: clamp(14px, 1vw, 17px);
+  font-weight: 950;
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 18px 34px rgba(90, 144, 145, 0.18);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.mello-compare__cta:hover {
+  background: var(--mello-teal-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 22px 42px rgba(90, 144, 145, 0.22);
+}
+
+.mello-compare__cta:focus-visible {
+  outline: 3px solid rgba(119, 205, 250, 0.62);
+  outline-offset: 3px;
+}
+
+.mello-compare__bear {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  top: 56%;
+  width: clamp(190px, 21vw, 390px);
+  height: auto;
+  transform: translate(44%, -50%) rotate(-6deg);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media screen and (max-width: 1180px) {
+  .mello-compare__grid {
+    max-width: 980px;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.86fr);
+  }
+
+  .mello-compare__card--mellorise,
+  .mello-compare__card--others {
+    grid-template-columns: 1fr;
+  }
+
+  .mello-compare__product-wrap {
+    min-height: 220px;
+    align-self: auto;
+  }
+
+  .mello-compare__product {
+    width: min(250px, 72%);
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .mello-compare {
+    padding: 62px 16px 72px;
+  }
+
+  .mello-compare__header {
+    margin-bottom: 30px;
+  }
+
+  .mello-compare__title {
+    font-size: clamp(31px, 8vw, 44px);
+  }
+
+  .mello-compare__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 640px;
+  }
+
+  .mello-compare__card {
+    min-height: auto;
+  }
+
+  .mello-compare__card--mellorise,
+  .mello-compare__card--others {
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 0.74fr);
+    padding: 26px 22px;
+  }
+
+  .mello-compare__product-wrap {
+    min-height: 210px;
+  }
+
+  .mello-compare__product {
+    width: min(230px, 100%);
+  }
+
+  .mello-compare__bottles {
+    justify-content: center;
+  }
+
+  .mello-compare__bottles-image {
+    width: min(220px, 100%);
+  }
+
+  .mello-compare__bear {
+    right: 0;
+    top: auto;
+    bottom: 16px;
+    width: 190px;
+    opacity: 0.34;
+    transform: translateX(46%) rotate(-8deg);
+  }
+
+  .mello-compare__cta {
+    width: min(100%, 390px);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .mello-compare {
+    padding: 50px 14px 58px;
+  }
+
+  .mello-compare__badge {
+    font-size: 12px;
+  }
+
+  .mello-compare__text {
+    max-width: 34ch;
+  }
+
+  .mello-compare__card--mellorise,
+  .mello-compare__card--others {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 18px;
+  }
+
+  .mello-compare__card h3 {
+    max-width: 15ch;
+    margin-bottom: 18px;
+    font-size: 20px;
+  }
+
+  .mello-compare__list {
+    gap: 12px;
+  }
+
+  .mello-compare__list li {
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .mello-compare__product-wrap {
+    min-height: 190px;
+  }
+
+  .mello-compare__product {
+    width: min(240px, 80vw);
+  }
+
+  .mello-compare__bottles {
+    max-width: 310px;
+    margin: 4px auto 0;
+  }
+
+  .mello-compare__bottles-image {
+    width: min(250px, 86vw);
+  }
+
+  .mello-compare__bear {
+    width: 150px;
+    bottom: 22px;
+    opacity: 0.24;
+  }
+}

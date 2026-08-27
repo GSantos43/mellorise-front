@@ -1,0 +1,184 @@
+.mellorise-faq-page {
+  background: #fff;
+  color: #173132;
+}
+
+.mellorise-faq-page__inner {
+  width: min(100% - 32px, 694px);
+  margin: 0 auto;
+}
+
+.mellorise-faq-page__header {
+  text-align: center;
+  margin: 0 auto 20px;
+}
+
+.mellorise-faq-page__title {
+  max-width: 720px;
+  margin: 0 auto;
+  color: #111818;
+  font-size: clamp(36px, 3.45vw, 46px);
+  font-weight: 950;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.mellorise-faq-page__intro {
+  max-width: 690px;
+  margin: 32px auto 18px;
+  color: rgba(23, 49, 50, 0.82);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.62;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.mellorise-faq-page__intro p {
+  margin: 0;
+}
+
+.mellorise-faq-page__intro strong {
+  color: #222;
+  font-weight: 850;
+}
+
+.mellorise-faq-page__list {
+  border-top: 1px solid rgba(23, 49, 50, 0.12);
+}
+
+.mellorise-faq-page__item {
+  border-bottom: 1px solid rgba(23, 49, 50, 0.12);
+}
+
+.mellorise-faq-page__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 10px;
+  cursor: pointer;
+  list-style: none;
+  color: #222;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.mellorise-faq-page__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mellorise-faq-page__summary:hover {
+  background: rgba(119, 205, 250, 0.08);
+}
+
+.mellorise-faq-page__summary:focus-visible {
+  outline: 3px solid rgba(119, 205, 250, 0.55);
+  outline-offset: -3px;
+}
+
+.mellorise-faq-page__icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  display: inline-flex;
+  color: #5a9091;
+}
+
+.mellorise-faq-page__icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+}
+
+.mellorise-faq-page__question {
+  flex: 1;
+  margin: 0;
+  color: #222;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.mellorise-faq-page__caret {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  color: #222;
+  transition: transform 180ms ease;
+}
+
+.mellorise-faq-page__item[open] .mellorise-faq-page__caret {
+  transform: rotate(180deg);
+}
+
+.mellorise-faq-page__answer {
+  padding: 0 6px 19px;
+  color: rgba(34, 34, 34, 0.86);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.62;
+  letter-spacing: 0.03em;
+}
+
+.mellorise-faq-page__answer p {
+  margin: 0 0 20px;
+}
+
+.mellorise-faq-page__answer p:last-child {
+  margin-bottom: 0;
+}
+
+.mellorise-faq-page__answer strong {
+  color: #303030;
+  font-weight: 900;
+}
+
+.mellorise-faq-page__answer a,
+.mellorise-faq-page__answer u {
+  color: #8b62b0;
+  font-weight: 850;
+  text-underline-offset: 3px;
+}
+
+.mellorise-faq-page__answer u {
+  color: #303030;
+}
+
+@media screen and (max-width: 749px) {
+  .mellorise-faq-page__inner {
+    width: min(100% - 28px, 640px);
+  }
+
+  .mellorise-faq-page__header {
+    margin-bottom: 18px;
+  }
+
+  .mellorise-faq-page__title {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .mellorise-faq-page__intro {
+    margin-top: 22px;
+    font-size: 16px;
+    line-height: 1.55;
+    letter-spacing: 0;
+  }
+
+  .mellorise-faq-page__summary {
+    min-height: 54px;
+    padding: 13px 4px;
+  }
+
+  .mellorise-faq-page__question {
+    font-size: 16px;
+  }
+
+  .mellorise-faq-page__answer {
+    padding: 0 2px 18px;
+    font-size: 16px;
+    line-height: 1.58;
+    letter-spacing: 0.01em;
+  }
+}

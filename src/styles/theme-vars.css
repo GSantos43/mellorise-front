@@ -1,0 +1,97 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  --font-body-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --font-body-style: normal;
+  --font-body-weight: 400;
+  --font-body-weight-bold: 700;
+  --font-heading-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --font-heading-style: normal;
+  --font-heading-weight: 700;
+  --font-body-scale: 1;
+  --font-heading-scale: 1;
+  --page-width: 120rem;
+  --page-width-margin: 0rem;
+  --color-background: 255,255,255;
+  --color-foreground: 23,49,50;
+  --color-button: 90,144,145;
+  --color-button-text: 255,255,255;
+  --color-secondary-button: 255,255,255;
+  --color-secondary-button-text: 23,49,50;
+  --color-link: 23,49,50;
+  --color-badge-foreground: 23,49,50;
+  --color-badge-background: 255,248,234;
+  --color-badge-border: 23,49,50;
+  --gradient-background: #ffffff;
+  --media-padding: 0px;
+  --media-border-opacity: 0.05;
+  --media-border-width: 0px;
+  --media-radius: 0px;
+  --media-shadow-opacity: 0;
+  --media-shadow-horizontal-offset: 0px;
+  --media-shadow-vertical-offset: 0px;
+  --media-shadow-blur-radius: 0px;
+  --media-shadow-visible: 0;
+  --product-card-image-padding: 0rem;
+  --product-card-corner-radius: 0.8rem;
+  --product-card-text-alignment: left;
+  --product-card-border-width: 0.1rem;
+  --product-card-border-opacity: 0.08;
+  --product-card-shadow-opacity: 0.08;
+  --product-card-shadow-visible: 1;
+  --product-card-shadow-horizontal-offset: 0rem;
+  --product-card-shadow-vertical-offset: 0.4rem;
+  --product-card-shadow-blur-radius: 1.6rem;
+  --badge-corner-radius: 4rem;
+  --buttons-radius: 8px;
+  --buttons-radius-outset: 9px;
+  --buttons-border-width: 1px;
+  --buttons-border-opacity: 1;
+  --buttons-shadow-opacity: 0;
+  --buttons-shadow-visible: 0;
+  --buttons-shadow-horizontal-offset: 0px;
+  --buttons-shadow-vertical-offset: 0px;
+  --buttons-shadow-blur-radius: 0px;
+  --inputs-radius: 8px;
+  --inputs-border-width: 1px;
+  --inputs-border-opacity: 0.2;
+  --inputs-shadow-opacity: 0;
+  --inputs-shadow-horizontal-offset: 0px;
+  --inputs-margin-offset: 0px;
+  --variant-pills-radius: 40px;
+  --variant-pills-border-width: 1px;
+  --variant-pills-border-opacity: 0.2;
+  --variant-pills-shadow-opacity: 0;
+  --variant-pills-shadow-horizontal-offset: 0px;
+  --variant-pills-shadow-vertical-offset: 0px;
+  --variant-pills-shadow-blur-radius: 0px;
+  --spacing-sections-desktop: 0px;
+  --spacing-sections-mobile: 0px;
+  --grid-desktop-vertical-spacing: 32px;
+  --grid-desktop-horizontal-spacing: 32px;
+  --grid-mobile-vertical-spacing: 16px;
+  --grid-mobile-horizontal-spacing: 16px;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  color: rgba(var(--color-foreground), 0.75);
+  background-color: rgb(var(--color-background));
+  font-family: var(--font-body-family);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body-family);
+}
