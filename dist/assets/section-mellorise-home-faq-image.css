@@ -5,6 +5,7 @@
   --mello-cream: #fff8ea;
   --mello-panel: #f5f5f4;
   --mello-line: rgba(90, 144, 145, 0.18);
+  box-sizing: border-box;
   width: min(100% - 36px, 1300px);
   margin: clamp(42px, 5vw, 72px) auto clamp(54px, 6vw, 88px);
   display: grid;
@@ -53,11 +54,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
 }
 
 .mello-home-faq__header {
   max-width: 660px;
   margin-bottom: clamp(26px, 3.2vw, 38px);
+  min-width: 0;
 }
 
 .mello-home-faq__eyebrow {
@@ -108,19 +111,25 @@
   font-size: clamp(15px, 1.2vw, 18px);
   font-weight: 500;
   line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .mello-home-faq__list {
   display: grid;
   gap: 13px;
   max-width: 640px;
+  min-width: 0;
+  width: 100%;
 }
 
 .mello-home-faq__item {
+  box-sizing: border-box;
   overflow: hidden;
   border-radius: 24px;
   background: #ffffff;
   box-shadow: 0 22px 42px rgba(23, 49, 50, 0.06);
+  max-width: 100%;
+  min-width: 0;
 }
 
 .mello-home-faq__item[open] {
@@ -136,6 +145,7 @@
   padding: 16px 20px;
   cursor: pointer;
   list-style: none;
+  min-width: 0;
 }
 
 .mello-home-faq__summary::-webkit-details-marker {
@@ -166,6 +176,8 @@
   font-size: clamp(16px, 1.2vw, 20px);
   font-weight: 900;
   line-height: 1.2;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .mello-home-faq__toggle {
@@ -204,10 +216,16 @@
   font-size: clamp(15px, 1.1vw, 18px);
   font-weight: 500;
   line-height: 1.52;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .mello-home-faq__answer p {
   margin: 0 0 15px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .mello-home-faq__answer p:last-child {
@@ -299,8 +317,9 @@
   }
 
   .mello-home-faq__media-inner {
-    width: min(460px, 102vw);
-    transform: scale(1.02);
+    max-width: 100%;
+    width: min(460px, 100%);
+    transform: none;
   }
 
   .mello-home-faq__content {

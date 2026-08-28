@@ -152,6 +152,7 @@ onUnmounted(() => {
 <style>
 .mello-cart-lock,
 .mello-cart-lock body {
+  overscroll-behavior: none;
   overflow: hidden;
 }
 
@@ -189,6 +190,7 @@ onUnmounted(() => {
   margin: 0;
   padding: 0;
   position: absolute;
+  touch-action: none;
 }
 
 .mello-cart-drawer__panel {
@@ -198,9 +200,13 @@ onUnmounted(() => {
   grid-template-rows: auto auto 1fr auto;
   height: 100%;
   max-width: 100%;
+  overscroll-behavior: contain;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: absolute;
   right: 0;
   top: 0;
+  touch-action: pan-y;
   transform: translateX(100%);
   transition: transform 220ms cubic-bezier(.22, 1, .36, 1);
   width: 400px;
@@ -271,9 +277,12 @@ onUnmounted(() => {
 }
 
 .mello-cart-drawer__body {
+  -webkit-overflow-scrolling: touch;
   min-height: 0;
+  overscroll-behavior: contain;
   overflow: auto;
   padding: 16px 15px;
+  touch-action: pan-y;
 }
 
 .mello-cart-item {
@@ -422,7 +431,9 @@ onUnmounted(() => {
 .mello-cart-drawer__footer {
   background: #ffffff;
   border-top: 1px solid var(--mcart-line);
+  overscroll-behavior: contain;
   padding: 0 15px 18px;
+  touch-action: pan-y;
 }
 
 .mello-cart-note {
@@ -635,8 +646,10 @@ onUnmounted(() => {
     bottom: 0;
     box-shadow: 0 -18px 56px rgba(7, 20, 21, 0.2);
     grid-template-rows: auto auto minmax(0, 1fr) auto;
-    height: min(58svh, 520px);
-    min-height: 462px;
+    height: min(84vh, 720px);
+    height: min(84dvh, 720px);
+    max-height: calc(100dvh - 10px);
+    min-height: min(620px, calc(100dvh - 10px));
     right: 0;
     top: auto;
     transform: translateY(105%);

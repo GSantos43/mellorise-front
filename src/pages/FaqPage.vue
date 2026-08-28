@@ -20,14 +20,15 @@ const faqSections = [
       '<em>Note: Shipping times may be affected by customs, weather conditions, high demand, or global events. We appreciate your patience and understanding.</em>'
     ]
   },
-  {
-    icon: '🔍',
-    title: 'Order Tracking',
-    body: [
-      'As soon as your order ships, you’ll receive an email with tracking details.',
-      'You can also check your status anytime on our <a href="/apps/track123">Track Your Order</a> page.'
-    ]
-  },
+  // Tracking is hidden until MelloRise has a real order tracking flow.
+  // {
+  //   icon: '🔍',
+  //   title: 'Order Tracking',
+  //   body: [
+  //     'As soon as your order ships, you’ll receive an email with tracking details.',
+  //     'You can also check your status anytime on our <a href="/apps/track123">Track Your Order</a> page.'
+  //   ]
+  // },
   {
     icon: '❌',
     title: 'Cancellations & Address Updates',

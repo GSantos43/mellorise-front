@@ -95,43 +95,59 @@ export const messages = {
       accordions: {
         details: {
           title: 'Detalles del producto',
-          intro: 'Una gummy diaria pensada para acompañar rutinas familiares durante etapas de crecimiento. Cada porcion destaca nutrientes presentes en la formula, incluyendo:',
-          note: 'Su formato gummy ayuda a mantener una rutina simple junto con alimentacion equilibrada, hidratacion y descanso.'
+          intro: 'Un suplemento diario de apoyo al desarrollo del crecimiento, respaldado por ciencia y diseñado para niños y adolescentes**. Cada porcion aporta vitaminas, minerales y nutrientes esenciales de apoyo al crecimiento, incluyendo:',
+          items: {
+            d3: 'Vitamina D3',
+            k2: 'Vitamina K2 como MK-7',
+            minerals: 'Calcio, magnesio y zinc',
+            amino: '3 aminoacidos clave que apoyan las señales naturales de crecimiento: L-arginina, L-ornitina y L-glutamina.'
+          },
+          note: 'Ayuda a apoyar el desarrollo natural de la estatura, huesos fuertes, una mejor calidad de sueño y el bienestar general.'
         },
         ingredients: {
           title: 'Lista de ingredientes',
-          intro: 'MelloRise Heightener Gummies es una opcion practica para familias que buscan una rutina nutricional sencilla.',
-          label: 'Segun la etiqueta del producto, tambien destaca:',
+          intro: 'MelloRise Heightener Gummies es ideal para:',
+          label: 'MelloRise Heightener Gummies tambien es:',
           items: {
-            school: 'Niños en etapa escolar y adolescentes',
-            gummy: 'Familias que prefieren un formato gummy facil de recordar',
-            daily: 'Rutinas donde se busca complementar la alimentacion diaria',
-            label: 'Padres que quieren revisar ingredientes visibles en la etiqueta'
+            school: 'Niños desde 5 años y adolescentes que todavia estan en fase de crecimiento',
+            bones: 'Padres que buscan apoyar el desarrollo saludable de huesos',
+            picky: 'Niños selectivos para comer que tal vez no obtienen suficientes nutrientes solo con la dieta',
+            active: 'Niños activos que necesitan apoyo nutricional adicional',
+            routine: 'Familias que buscan una rutina diaria facil y sabrosa de apoyo al crecimiento'
+          },
+          claims: {
+            vegan: 'Vegano',
+            nonGmo: 'Non-GMO',
+            glutenFree: 'Sin gluten',
+            gelatinFree: 'Sin gelatina',
+            halal: 'Halal'
           }
         },
         benefits: {
           title: 'Beneficios clave',
-          intro: 'Apoyo diario para una rutina enfocada en:',
+          intro: 'Apoyo diario para:',
           items: {
-            nutrients: 'Complementar nutrientes importantes en la alimentacion',
-            bones: 'Acompañar el cuidado diario de huesos',
-            routine: 'Mantener una rutina constante y facil para niños',
-            parents: 'Hacer mas simple el seguimiento por parte de los padres'
+            height: 'Desarrollo natural de la estatura',
+            bones: 'Fuerza saludable de huesos y articulaciones',
+            sleep: 'Mejor calidad de sueño y recuperacion para niños y adolescentes',
+            confidence: 'Mas confianza',
+            skeletal: 'Salud esqueletica general'
           }
         },
         usage: {
           title: 'Como usar',
           items: {
-            dose: 'Revisa la dosis indicada en la etiqueta real del producto.',
-            chew: 'Mastica las gummies antes de tragar.',
-            routine: 'Incluyelas en una rutina diaria facil de recordar.'
+            dose: 'Toma 2 gummies una vez al dia',
+            chew: 'Mastica bien antes de tragar',
+            flavor: 'Disfruta el delicioso sabor a fresa'
           },
-          note: 'Sin mezclar, sin preparacion y facil de incorporar al dia.'
+          note: 'Sin mezclas. Sin agua. Sin complicaciones.'
         },
         shipping: {
           title: 'Envio y devoluciones',
-          intro: 'La compra queda lista para finalizar en Shopify. Los plazos, costos de envio y condiciones de devolucion deben seguir las politicas reales de la tienda.',
-          note: 'Antes de publicar, revisa que cualquier garantia, promocion o beneficio refleje la configuracion real del checkout.'
+          intro: 'MelloRise Heightener Gummies esta hecho con ingredientes cuidadosamente seleccionados y de alta calidad, diseñados para la seguridad y efectividad en cuerpos en crecimiento.',
+          claims: 'Nuestras gummies son: ✓ Veganas ✓ Non-GMO ✓ Sin gluten ✓ Libres de colorantes y tintes artificiales ✓ Sin hormonas ✓ Probadas por terceros',
+          note: 'Cada lote se produce bajo estrictos estandares de calidad para asegurar pureza, seguridad y consistencia.'
         }
       }
     },
@@ -153,7 +169,8 @@ export const messages = {
       contact: 'Contacto',
       faq: 'Preguntas frecuentes',
       shipping: 'Envios y devoluciones',
-      tracking: 'Seguir pedido',
+      // Tracking is hidden until MelloRise has a real order tracking flow.
+      // tracking: 'Seguir pedido',
       privacy: 'Privacidad',
       payments: 'Metodos de pago',
       rights: 'Todos los derechos reservados.',
@@ -171,14 +188,15 @@ export const messages = {
           ['Devoluciones', 'Las condiciones de devolucion deben seguir la politica oficial publicada por la tienda y las reglas aplicables al producto.']
         ]
       },
-      tracking: {
-        title: 'Seguir pedido',
-        intro: 'Usa esta pagina como destino temporal para rastreo hasta conectar la herramienta final de seguimiento.',
-        sections: [
-          ['Codigo de seguimiento', 'Cuando el pedido sea enviado, el cliente debera recibir un codigo o enlace de rastreo por email.'],
-          ['Estado del pedido', 'La integracion final puede conectarse a una app de tracking o al backend para mostrar el estado en tiempo real.']
-        ]
-      },
+      // Tracking is hidden until MelloRise has a real order tracking flow.
+      // tracking: {
+      //   title: 'Seguir pedido',
+      //   intro: 'Usa esta pagina como destino temporal para rastreo hasta conectar la herramienta final de seguimiento.',
+      //   sections: [
+      //     ['Codigo de seguimiento', 'Cuando el pedido sea enviado, el cliente debera recibir un codigo o enlace de rastreo por email.'],
+      //     ['Estado del pedido', 'La integracion final puede conectarse a una app de tracking o al backend para mostrar el estado en tiempo real.']
+      //   ]
+      // },
       privacy: {
         title: 'Politica de privacidad',
         intro: 'Texto base para privacidad. Reemplaza por la politica legal final antes de publicar la tienda.',
@@ -334,43 +352,59 @@ export const messages = {
       accordions: {
         details: {
           title: 'Product details',
-          intro: 'A daily gummy designed to support family routines during growth stages. Each serving highlights nutrients present in the formula, including:',
-          note: 'Its gummy format helps maintain a simple routine alongside balanced nutrition, hydration, and rest.'
+          intro: 'A science-backed daily growth development supplement designed for kids and teens**. Each serving provides essential vitamins, minerals, and growth-supporting nutrients including:',
+          items: {
+            d3: 'Vitamin D3',
+            k2: 'Vitamin K2 as MK-7',
+            minerals: 'Calcium, magnesium and zinc',
+            amino: "3 key amino acids that support your child's natural growth signals: L-arginine, L-ornithine and L-glutamine."
+          },
+          note: 'It helps to support natural height development, strong bones, improved sleep quality and overall wellness.'
         },
         ingredients: {
           title: 'Ingredient list',
-          intro: 'MelloRise Heightener Gummies is a practical option for families looking for a simple nutrition routine.',
-          label: 'According to the product label, it also highlights:',
+          intro: 'MelloRise Heightener Gummies are ideal for:',
+          label: 'MelloRise Heightener Gummies are also:',
           items: {
-            school: 'School-age children and teens',
-            gummy: 'Families who prefer an easy-to-remember gummy format',
-            daily: 'Routines where daily nutrition is being complemented',
-            label: 'Parents who want to review visible ingredients on the label'
+            school: 'Kids 5+ and teenagers, still in their growth phase',
+            bones: 'Parents looking to support healthy bone development',
+            picky: 'Picky eaters who may not get enough nutrients from diet alone',
+            active: 'Active children who need extra nutritional support',
+            routine: 'Families looking for an easy and tasty daily growth-support routine'
+          },
+          claims: {
+            vegan: 'Vegan',
+            nonGmo: 'Non-GMO',
+            glutenFree: 'Gluten-free',
+            gelatinFree: 'Gelatin free',
+            halal: 'Halal'
           }
         },
         benefits: {
           title: 'Key benefits',
-          intro: 'Daily support for a routine focused on:',
+          intro: 'Daily support for:',
           items: {
-            nutrients: 'Complementing important nutrients in the diet',
-            bones: 'Supporting daily bone care',
-            routine: 'Keeping a consistent, easy routine for kids',
-            parents: 'Making follow-through simpler for parents'
+            height: 'Natural height development',
+            bones: 'Healthy bone and joint strength',
+            sleep: 'Better sleep quality and recovery for kids and teens',
+            confidence: 'Boosted confidence',
+            skeletal: 'Overall skeletal health'
           }
         },
         usage: {
           title: 'How to use',
           items: {
-            dose: 'Review the dosage listed on the real product label.',
-            chew: 'Chew the gummies before swallowing.',
-            routine: 'Include them in an easy-to-remember daily routine.'
+            dose: 'Take 2 gummies once per day',
+            chew: 'Chew thoroughly before swallowing',
+            flavor: 'Enjoy the delicious strawberry flavor'
           },
-          note: 'No mixing, no preparation, and easy to add to the day.'
+          note: 'No mixing. No water. No hassle.'
         },
         shipping: {
           title: 'Shipping and returns',
-          intro: 'The purchase is ready to be completed in Shopify. Shipping times, costs, and return conditions should follow the store real policies.',
-          note: 'Before publishing, review that any guarantee, promotion, or benefit reflects the real checkout configuration.'
+          intro: 'MelloRise Heightener Gummies are made with carefully selected, high-quality ingredients designed for safety and effectiveness for growing bodies.',
+          claims: 'Our gummies are: ✓ Vegan ✓ Non-GMO ✓ Gluten-free ✓ Free of artificial colors and dyes ✓ Hormone-free ✓ Third-party tested',
+          note: 'Every batch is produced under strict quality standards to ensure purity, safety and consistency.'
         }
       }
     },
@@ -392,7 +426,8 @@ export const messages = {
       contact: 'Contact',
       faq: 'FAQs',
       shipping: 'Shipping and returns',
-      tracking: 'Track order',
+      // Tracking is hidden until MelloRise has a real order tracking flow.
+      // tracking: 'Track order',
       privacy: 'Privacy',
       payments: 'Payment methods',
       rights: 'All rights reserved.',
@@ -410,14 +445,15 @@ export const messages = {
           ['Returns', 'Return conditions should follow the official store policy and any rules that apply to the product.']
         ]
       },
-      tracking: {
-        title: 'Track order',
-        intro: 'Use this page as a temporary tracking destination until the final tracking tool is connected.',
-        sections: [
-          ['Tracking code', 'When the order ships, the customer should receive a tracking code or link by email.'],
-          ['Order status', 'The final integration can connect to a tracking app or backend to show real-time status.']
-        ]
-      },
+      // Tracking is hidden until MelloRise has a real order tracking flow.
+      // tracking: {
+      //   title: 'Track order',
+      //   intro: 'Use this page as a temporary tracking destination until the final tracking tool is connected.',
+      //   sections: [
+      //     ['Tracking code', 'When the order ships, the customer should receive a tracking code or link by email.'],
+      //     ['Order status', 'The final integration can connect to a tracking app or backend to show real-time status.']
+      //   ]
+      // },
       privacy: {
         title: 'Privacy policy',
         intro: 'Base privacy copy. Replace it with the final legal policy before publishing the store.',

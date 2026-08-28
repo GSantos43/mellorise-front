@@ -14,7 +14,8 @@ const { tm, rt } = useI18n({ useScope: 'global' })
 const pageKey = computed(() => {
   const routeMap = {
     '/policies/shipping-policy': 'shipping',
-    '/apps/track123': 'tracking',
+    // Tracking is hidden until MelloRise has a real order tracking flow.
+    // '/apps/track123': 'tracking',
     '/policies/privacy-policy': 'privacy',
     '/policies/terms-of-service': 'terms',
     '/policies/refund-policy': 'refunds'

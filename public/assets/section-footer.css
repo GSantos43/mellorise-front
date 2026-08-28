@@ -741,6 +741,7 @@
 .mellow-footer__card {
   background: #fffaf2;
   border-radius: 12px;
+  box-sizing: border-box;
   box-shadow: 0 22px 60px rgba(11, 41, 42, 0.16);
   display: grid;
   gap: 42px 72px;
@@ -789,14 +790,20 @@
 }
 
 .mellow-footer__form {
+  box-sizing: border-box;
   margin-top: 24px;
   max-width: 560px;
+  min-width: 0;
+  width: 100%;
 }
 
 .mellow-footer__field {
+  box-sizing: border-box;
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 1fr) 150px;
+  min-width: 0;
+  width: 100%;
 }
 
 .mellow-footer__field input {
@@ -804,10 +811,12 @@
   background: #fffaf2;
   border: 1px solid rgba(91, 194, 245, 0.62);
   border-radius: 11px;
+  box-sizing: border-box;
   color: #123335;
   font: inherit;
   font-size: 15px;
   min-height: 52px;
+  min-width: 0;
   outline: none;
   padding: 0 20px;
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
@@ -829,6 +838,7 @@
   background: #66c8f6;
   border: 0;
   border-radius: 11px;
+  box-sizing: border-box;
   color: #ffffff;
   cursor: pointer;
   font: inherit;
@@ -1017,6 +1027,11 @@
 
   .mellow-footer__field {
     grid-template-columns: 1fr;
+  }
+
+  .mellow-footer__field input,
+  .mellow-footer__field button {
+    max-width: 100%;
   }
 
   .mellow-footer__links {

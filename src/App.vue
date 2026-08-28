@@ -37,7 +37,8 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/products/')) return 'product'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
   if (route.value === '/pages/faq' || route.value === '/pages/faqs') return 'faq'
-  if (route.value.startsWith('/policies/') || route.value === '/apps/track123') return 'institutional'
+  // Tracking is hidden until MelloRise has a real order tracking flow.
+  if (route.value.startsWith('/policies/')) return 'institutional'
   if (route.value.startsWith('/collections') || route.value === '/products') return 'collection'
   return 'home'
 })

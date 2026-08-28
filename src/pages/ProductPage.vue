@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
 
@@ -30,6 +30,10 @@ const selectedImageIndex = ref(0)
 const selectedBundle = ref(1)
 const quantity = ref(1)
 const isPastHero = ref(false)
+const productPanelRef = ref(null)
+const productPanelHeight = ref(null)
+const openAccordionIndexes = ref([])
+let productPanelObserver = null
 const packConfig = [
   { match: 'buy 1', title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
   { match: 'buy 2 get 1 free', title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
@@ -84,12 +88,12 @@ const productAccordions = computed(() => [
     title: t('product.accordions.details.title'),
     icon: 'M4 3h16v18H4z|M8 7h8|M8 11h8|M8 15h5',
     content: `
-      <p>${activeProduct.value.description || t('product.accordions.details.intro')}</p>
+      <p>${t('product.accordions.details.intro')}</p>
       <ul>
-        <li>Vitamina D3</li>
-        <li>Vitamina K2</li>
-        <li>Calcio, magnesio y zinc</li>
-        <li>Aminoacidos seleccionados como L-arginina, L-ornitina y L-glutamina</li>
+        <li>${t('product.accordions.details.items.d3')}</li>
+        <li>${t('product.accordions.details.items.k2')}</li>
+        <li>${t('product.accordions.details.items.minerals')}</li>
+        <li>${t('product.accordions.details.items.amino')}</li>
       </ul>
       <p>${t('product.accordions.details.note')}</p>
     `
@@ -101,15 +105,18 @@ const productAccordions = computed(() => [
       <p>${t('product.accordions.ingredients.intro')}</p>
       <ul>
         <li>${t('product.accordions.ingredients.items.school')}</li>
-        <li>${t('product.accordions.ingredients.items.gummy')}</li>
-        <li>${t('product.accordions.ingredients.items.daily')}</li>
-        <li>${t('product.accordions.ingredients.items.label')}</li>
+        <li>${t('product.accordions.ingredients.items.bones')}</li>
+        <li>${t('product.accordions.ingredients.items.picky')}</li>
+        <li>${t('product.accordions.ingredients.items.active')}</li>
+        <li>${t('product.accordions.ingredients.items.routine')}</li>
       </ul>
       <p>${t('product.accordions.ingredients.label')}</p>
       <ul>
-        <li>Vegan</li>
-        <li>Gluten free</li>
-        <li>Sin colorantes artificiales</li>
+        <li>${t('product.accordions.ingredients.claims.vegan')}</li>
+        <li>${t('product.accordions.ingredients.claims.nonGmo')}</li>
+        <li>${t('product.accordions.ingredients.claims.glutenFree')}</li>
+        <li>${t('product.accordions.ingredients.claims.gelatinFree')}</li>
+        <li>${t('product.accordions.ingredients.claims.halal')}</li>
       </ul>
     `
   },
@@ -119,10 +126,11 @@ const productAccordions = computed(() => [
     content: `
       <p>${t('product.accordions.benefits.intro')}</p>
       <ul>
-        <li>${t('product.accordions.benefits.items.nutrients')}</li>
+        <li>${t('product.accordions.benefits.items.height')}</li>
         <li>${t('product.accordions.benefits.items.bones')}</li>
-        <li>${t('product.accordions.benefits.items.routine')}</li>
-        <li>${t('product.accordions.benefits.items.parents')}</li>
+        <li>${t('product.accordions.benefits.items.sleep')}</li>
+        <li>${t('product.accordions.benefits.items.confidence')}</li>
+        <li>${t('product.accordions.benefits.items.skeletal')}</li>
       </ul>
     `
   },
@@ -133,7 +141,7 @@ const productAccordions = computed(() => [
       <ol>
         <li>${t('product.accordions.usage.items.dose')}</li>
         <li>${t('product.accordions.usage.items.chew')}</li>
-        <li>${t('product.accordions.usage.items.routine')}</li>
+        <li>${t('product.accordions.usage.items.flavor')}</li>
       </ol>
       <p>${t('product.accordions.usage.note')}</p>
     `
@@ -143,10 +151,21 @@ const productAccordions = computed(() => [
     icon: 'm21 8-9-5-9 5 9 5 9-5Z|m3 8 9 5 9-5|M3 8v8l9 5 9-5V8|M12 13v8',
     content: `
       <p>${t('product.accordions.shipping.intro')}</p>
-      <p>${t('product.accordions.shipping.note')}</p>
+      <p>${t('product.accordions.shipping.claims')}</p>
+      <p><strong>${t('product.accordions.shipping.note')}</strong></p>
     `
   }
 ])
+
+function isAccordionOpen(index) {
+  return openAccordionIndexes.value.includes(index)
+}
+
+function toggleAccordion(index) {
+  openAccordionIndexes.value = isAccordionOpen(index)
+    ? openAccordionIndexes.value.filter((item) => item !== index)
+    : [...openAccordionIndexes.value, index]
+}
 
 function selectPreviousImage() {
   selectedImageIndex.value = selectedImageIndex.value === 0 ? productImages.value.length - 1 : selectedImageIndex.value - 1
@@ -158,6 +177,12 @@ function selectNextImage() {
 
 function updateStickyState() {
   isPastHero.value = window.scrollY > 640
+}
+
+function syncProductPanelHeight() {
+  const panel = productPanelRef.value
+  const isDesktop = window.matchMedia('(min-width: 921px)').matches
+  productPanelHeight.value = panel && isDesktop ? `${Math.round(panel.getBoundingClientRect().height)}px` : null
 }
 
 function submitCart() {
@@ -177,15 +202,28 @@ function submitCart() {
 
 onMounted(() => {
   updateStickyState()
+  syncProductPanelHeight()
+  nextTick(syncProductPanelHeight)
   window.addEventListener('scroll', updateStickyState, { passive: true })
+  window.addEventListener('resize', syncProductPanelHeight)
+
+  if ('ResizeObserver' in window) {
+    productPanelObserver = new ResizeObserver(syncProductPanelHeight)
+    if (productPanelRef.value) {
+      productPanelObserver.observe(productPanelRef.value)
+    }
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateStickyState)
+  window.removeEventListener('resize', syncProductPanelHeight)
+  productPanelObserver?.disconnect()
 })
 
 watch(activeProduct, () => {
   selectedImageIndex.value = 0
+  nextTick(syncProductPanelHeight)
 })
 </script>
 
@@ -205,7 +243,7 @@ watch(activeProduct, () => {
     <div class="gg-hero" id="comprar">
       <div class="gg-shell gg-hero__grid">
         <div class="gg-gallery" aria-label="Imagenes del producto">
-          <div class="gg-gallery__main">
+          <div class="gg-gallery__main" :style="{ '--gg-panel-height': productPanelHeight }">
             <img data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager">
             <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" aria-label="Imagen anterior" @click="selectPreviousImage">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
@@ -246,8 +284,19 @@ watch(activeProduct, () => {
           </div>
 
           <div class="gg-product-accordions" aria-label="Informacion del producto">
-            <details v-for="accordion in productAccordions" :key="accordion.title" class="gg-product-accordion">
-              <summary>
+            <section
+              v-for="(accordion, index) in productAccordions"
+              :key="accordion.title"
+              class="gg-product-accordion"
+              :data-expanded="isAccordionOpen(index)"
+            >
+              <button
+                class="gg-product-accordion__summary"
+                type="button"
+                :aria-expanded="isAccordionOpen(index)"
+                :aria-controls="`gg-product-accordion-${index}`"
+                @click="toggleAccordion(index)"
+              >
                 <span class="gg-product-accordion__title">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path v-for="path in accordion.icon.split('|')" :key="path" :d="path"/>
@@ -255,15 +304,19 @@ watch(activeProduct, () => {
                   {{ accordion.title }}
                 </span>
                 <svg class="gg-product-accordion__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
-              </summary>
-              <div class="gg-product-accordion__content">
+              </button>
+              <div
+                :id="`gg-product-accordion-${index}`"
+                class="gg-product-accordion__content"
+                :aria-hidden="!isAccordionOpen(index)"
+              >
                 <div class="gg-product-accordion__content-inner" v-html="accordion.content"></div>
               </div>
-            </details>
+            </section>
           </div>
         </div>
 
-        <div class="gg-product-panel">
+        <div ref="productPanelRef" class="gg-product-panel">
           <div class="gg-rating">
             <span class="gg-stars" aria-hidden="true">
               <svg v-for="star in 5" :key="star" viewBox="0 0 24 24"><path d="m12 2.8 2.75 5.58 6.16.9-4.45 4.34 1.05 6.13L12 16.85l-5.51 2.9 1.05-6.13-4.45-4.34 6.16-.9L12 2.8Z"/></svg>
@@ -386,12 +439,6 @@ watch(activeProduct, () => {
           </div>
 
           <p class="gg-purchase-note">{{ t('product.purchaseNote') }}</p>
-
-          <div class="gg-safe-note">
-            <span>No artificial hormones</span>
-            <span>No stimulants</span>
-            <span>Clear label formula</span>
-          </div>
         </div>
       </div>
     </div>
