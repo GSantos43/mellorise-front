@@ -68,6 +68,13 @@ export const messages = {
         title: 'Oferta familiar',
         text: 'Elige el pack que mejor encaja con tu rutina.'
       },
+      bundles: {
+        shipping: {
+          standard: 'Envío estándar disponible',
+          free: 'Envío gratis incluido',
+          freePriority: 'Envío gratis con prioridad'
+        }
+      },
       quantity: {
         label: 'Cantidad',
         decrease: 'Reducir cantidad',
@@ -294,6 +301,13 @@ export const messages = {
       offer: {
         title: 'Family offer',
         text: 'Choose the pack that best fits your routine.'
+      },
+      bundles: {
+        shipping: {
+          standard: 'Ships with standard delivery',
+          free: 'Free shipping included',
+          freePriority: 'Free priority-style shipping'
+        }
       },
       quantity: {
         label: 'Quantity',

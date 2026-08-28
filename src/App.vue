@@ -80,11 +80,12 @@ function addToCart(payload = {}) {
   const quantity = Number(payload.quantity || 1)
   cartItem.value = {
     id: product.id,
+    variationId: payload.variationId,
     handle: product.handle,
     title: product.title,
     image: payload.image || product.image || product.images?.[0] || '/assets/frasco.png',
     price: Number(payload.price ?? product.price ?? 0),
-    unitPrice: Number(product.price ?? payload.unitPrice ?? payload.price ?? 0),
+    unitPrice: Number(payload.unitPrice ?? payload.price ?? product.price ?? 0),
     quantity,
     bundleLabel: payload.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`
   }

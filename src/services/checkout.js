@@ -19,6 +19,7 @@ export async function createCheckoutSession(item, options = {}) {
       cart: [
         {
           productId: Number(item.id),
+          variationId: item.variationId ? Number(item.variationId) : undefined,
           quantity: Number(item.quantity || 1)
         }
       ],

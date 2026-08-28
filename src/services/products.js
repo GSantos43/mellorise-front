@@ -78,6 +78,20 @@ function normalizeProduct(product) {
     compareAtPrice: product.compareAtPrice ?? product.compare_at_price ?? product.variants?.[0]?.compareAtPrice,
     image,
     images: product.images?.length ? product.images : [image],
-    description: product.description ?? product.text ?? ''
+    description: product.description ?? product.text ?? '',
+    variants: Array.isArray(product.variants) ? product.variants.map(normalizeVariant) : []
+  }
+}
+
+function normalizeVariant(variant) {
+  return {
+    id: variant.id,
+    title: variant.title ?? variant.name ?? variant.option ?? '',
+    price: variant.price ?? variant.salePrice ?? variant.regularPrice ?? 0,
+    regularPrice: variant.regularPrice ?? variant.regular_price ?? null,
+    salePrice: variant.salePrice ?? variant.sale_price ?? null,
+    compareAtPrice: variant.compareAtPrice ?? variant.compare_at_price ?? null,
+    purchasable: variant.purchasable ?? true,
+    stockStatus: variant.stockStatus ?? variant.stock_status ?? 'instock'
   }
 }

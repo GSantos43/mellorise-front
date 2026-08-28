@@ -30,20 +30,54 @@ const selectedImageIndex = ref(0)
 const selectedBundle = ref(1)
 const quantity = ref(1)
 const isPastHero = ref(false)
+const packConfig = [
+  { match: 'buy 1', title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
+  { match: 'buy 2 get 1 free', title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
+  { match: 'buy 3 get 2 free', title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', bottles: 5 }
+]
 
 const activeProduct = computed(() => props.product || fallbackProduct)
 const productImages = computed(() => activeProduct.value.images?.length ? activeProduct.value.images : [activeProduct.value.image])
 const visibleProductImages = computed(() => productImages.value.slice(0, 5))
 const hiddenProductImagesCount = computed(() => Math.max(0, productImages.value.length - visibleProductImages.value.length))
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
-const currentPrice = computed(() => formatMoney(activeProduct.value.price))
-const compareAtPrice = computed(() => activeProduct.value.compareAtPrice ? formatMoney(activeProduct.value.compareAtPrice) : '')
+const selectedPack = computed(() => bundles.value[selectedBundle.value] || bundles.value[0])
+const currentPrice = computed(() => formatMoney(selectedPack.value?.price ?? activeProduct.value.price))
+const compareAtPrice = computed(() => selectedPack.value?.compareAtPrice ? formatMoney(selectedPack.value.compareAtPrice) : '')
+const perBottlePrice = computed(() => {
+  const pack = selectedPack.value
+  const price = Number(pack?.price ?? activeProduct.value.price ?? 0)
+  const bottles = Math.max(1, Number(pack?.bottles || 1))
 
-const bundles = computed(() => [
-  { title: 'Buy 1', meta: 'Starter routine', price: activeProduct.value.price, image: '/assets/one1.png', badge: '', quantity: 1 },
-  { title: 'Buy 2 Get 1 Free', meta: 'Most Popular', price: Number(activeProduct.value.price) * 2, image: '/assets/three.png', badge: 'Most Popular', quantity: 2 },
-  { title: 'Buy 3 Get 2 Free', meta: 'Best Value', price: Number(activeProduct.value.price) * 3, image: '/assets/five5.png', badge: 'Best Value', quantity: 3 }
-])
+  return formatMoney(price / bottles)
+})
+
+const bundles = computed(() => {
+  const variants = Array.isArray(activeProduct.value.variants) ? activeProduct.value.variants : []
+
+  if (!variants.length) {
+    return packConfig.map((pack, index) => ({
+      ...pack,
+      price: index === 0 ? activeProduct.value.price : Number(activeProduct.value.price) * (index + 1),
+      compareAtPrice: null,
+      variationId: null,
+      isAvailable: true
+    }))
+  }
+
+  return packConfig.map((pack) => {
+    const variant = variants.find((item) => item.title?.toLowerCase() === pack.match)
+
+    return {
+      ...pack,
+      title: variant?.title || pack.title,
+      price: variant?.price ?? activeProduct.value.price,
+      compareAtPrice: variant?.compareAtPrice ?? null,
+      variationId: variant?.id ?? null,
+      isAvailable: Boolean(variant?.id) && variant?.purchasable !== false && variant?.stockStatus !== 'outofstock'
+    }
+  })
+})
 
 const productAccordions = computed(() => [
   {
@@ -127,17 +161,17 @@ function updateStickyState() {
 }
 
 function submitCart() {
-  const bundle = bundles.value[selectedBundle.value] || bundles.value[0]
-  const packQuantity = Number(bundle.quantity || 1)
+  const bundle = selectedPack.value
   const formQuantity = Math.max(1, Number(quantity.value || 1))
-  const itemQuantity = packQuantity * formQuantity
 
   emit('add-to-cart', {
     product: activeProduct.value,
-    price: Number(activeProduct.value.price || 0),
-    quantity: itemQuantity,
+    variationId: bundle.variationId,
+    price: Number(bundle.price || activeProduct.value.price || 0),
+    unitPrice: Number(bundle.price || activeProduct.value.price || 0),
+    quantity: formQuantity,
     image: bundle.image || activeProduct.value.image,
-    bundleLabel: `${bundle.title} | ${formQuantity} pack${formQuantity === 1 ? '' : 's'}`
+    bundleLabel: `${bundle.title} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`
   })
 }
 
@@ -266,10 +300,10 @@ watch(activeProduct, () => {
                 v-for="(bundle, index) in bundles"
                 :key="bundle.title"
                 class="gg-promo"
-                :class="{ 'is-active': selectedBundle === index, 'gg-promo--featured': index === 1 }"
+                :class="{ 'is-active': selectedBundle === index, 'gg-promo--featured': index === 1, 'is-disabled': !bundle.isAvailable }"
               >
                 <span v-if="bundle.badge" class="gg-promo__badge">{{ bundle.badge }}</span>
-                <input type="radio" name="id" :value="index" :checked="selectedBundle === index" @change="selectedBundle = index">
+                <input type="radio" name="id" :value="index" :checked="selectedBundle === index" :disabled="!bundle.isAvailable" @change="selectedBundle = index">
                 <span class="gg-promo__selector" aria-hidden="true"></span>
                 <span class="gg-promo__image gg-promo__image--offer" aria-hidden="true">
                   <img :src="bundle.image" alt="" width="180" height="120" loading="lazy">
@@ -277,10 +311,11 @@ watch(activeProduct, () => {
                 <span class="gg-promo__body">
                   <strong>{{ bundle.title }}</strong>
                   <small class="gg-promo__meta">{{ bundle.meta }}</small>
+                  <small class="gg-promo__shipping">{{ t(bundle.shippingKey) }}</small>
                 </span>
                 <span class="gg-promo__price">
                   <b>{{ formatMoney(bundle.price) }}</b>
-                  <small>{{ currentPrice }} / frasco</small>
+                  <small>{{ formatMoney(Number(bundle.price || 0) / Math.max(1, bundle.bottles)) }} / frasco</small>
                 </span>
               </label>
             </fieldset>
@@ -291,15 +326,11 @@ watch(activeProduct, () => {
               <button type="button" data-gg-qty-plus :aria-label="t('product.quantity.increase')" @click="quantity += 1">+</button>
             </div>
 
-            <button class="gg-button gg-button--wide" type="button" @click="submitCart">{{ t('product.addToCart') }}</button>
+            <button class="gg-button gg-button--wide" type="button" :disabled="!selectedPack?.isAvailable" @click="submitCart">{{ t('product.addToCart') }}</button>
           </form>
 
           <div class="gg-post-cart-trust" :aria-label="t('product.trust.label')">
             <div class="gg-trust-pills">
-              <span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v10H3z"/><path d="M14 11h4l3 3v3h-7z"/><path d="M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M18 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
-                {{ t('product.trust.freeShipping') }}
-              </span>
               <span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 2.8 8.4 7 10 4.2-1.6 7-5.6 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
                 {{ t('product.trust.secureCheckout') }}
@@ -351,7 +382,7 @@ watch(activeProduct, () => {
           </div>
 
           <div class="gg-dynamic-checkout">
-            <button class="gg-button gg-button--blue gg-button--wide" type="button" @click="submitCart">{{ t('product.buyNow') }}</button>
+            <button class="gg-button gg-button--blue gg-button--wide" type="button" :disabled="!selectedPack?.isAvailable" @click="submitCart">{{ t('product.buyNow') }}</button>
           </div>
 
           <p class="gg-purchase-note">{{ t('product.purchaseNote') }}</p>
