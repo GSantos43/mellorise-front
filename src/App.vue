@@ -112,13 +112,13 @@ function removeCartItem() {
   cartItem.value = null
 }
 
-async function goToStripeCheckout() {
+async function goToStripeCheckout(options = {}) {
   if (!cartItem.value || isCheckoutLoading.value) return
 
   isCheckoutLoading.value = true
 
   try {
-    const checkoutUrl = await createCheckoutSession(cartItem.value)
+    const checkoutUrl = await createCheckoutSession(cartItem.value, options)
     window.location.href = checkoutUrl
   } catch (error) {
     console.error(error)

@@ -230,7 +230,12 @@ export const messages = {
       notePlaceholder: 'Add a note',
       subtotal: 'Subtotal',
       checkout: 'Check out',
-      checkoutLoading: 'Preparando checkout...'
+      checkoutLoading: 'Preparando checkout...',
+      shippingProtection: {
+        title: 'Protección de envío',
+        text: 'Protege tu pedido contra daños, pérdidas o robo durante el envío.',
+        toggle: 'Activar protección de envío'
+      }
     }
   },
   en: {
@@ -464,7 +469,12 @@ export const messages = {
       notePlaceholder: 'Add a note',
       subtotal: 'Subtotal',
       checkout: 'Check out',
-      checkoutLoading: 'Preparing checkout...'
+      checkoutLoading: 'Preparing checkout...',
+      shippingProtection: {
+        title: 'Shipping protection',
+        text: 'Protect your order against damage, loss, or theft during shipping.',
+        toggle: 'Toggle shipping protection'
+      }
     }
   }
 }

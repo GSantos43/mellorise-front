@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onUnmounted, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
 
@@ -23,7 +23,20 @@ const { t } = useI18n({ useScope: 'global' })
 
 const quantity = computed(() => props.item?.quantity || 0)
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
+const isShippingProtectionEnabled = ref(false)
+const shippingProtectionPrice = 3.5
+const shippingProtectionTotal = computed(() => props.item && isShippingProtectionEnabled.value ? shippingProtectionPrice : 0)
+const checkoutTotal = computed(() => subtotal.value + shippingProtectionTotal.value)
 const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') : t('cart.manyItems', { count: quantity.value }))
+
+function checkout() {
+  emit('checkout', {
+    shippingProtection: {
+      enabled: isShippingProtectionEnabled.value,
+      amount: shippingProtectionPrice
+    }
+  })
+}
 
 watch(
   () => props.isOpen,
@@ -95,13 +108,36 @@ onUnmounted(() => {
             <textarea rows="3" :placeholder="t('cart.notePlaceholder')"></textarea>
           </details>
 
-          <div class="mello-cart-subtotal">
-            <span>{{ t('cart.subtotal') }}</span>
-            <strong>{{ formatMoney(subtotal) }}</strong>
+          <div v-if="item" class="mello-shipping-protection">
+            <img
+              class="mello-shipping-protection__icon"
+              src="/assets/shipping-protection.png"
+              :alt="t('cart.shippingProtection.title')"
+              width="62"
+              height="62"
+              loading="eager"
+            >
+            <div class="mello-shipping-protection__content">
+              <div class="mello-shipping-protection__heading">
+                <strong>{{ t('cart.shippingProtection.title') }}</strong>
+                <span>{{ formatMoney(shippingProtectionPrice) }}</span>
+              </div>
+              <p>{{ t('cart.shippingProtection.text') }}</p>
+            </div>
+            <button
+              class="mello-shipping-protection__toggle"
+              type="button"
+              :class="{ 'is-active': isShippingProtectionEnabled }"
+              :aria-label="t('cart.shippingProtection.toggle')"
+              :aria-pressed="isShippingProtectionEnabled"
+              @click="isShippingProtectionEnabled = !isShippingProtectionEnabled"
+            >
+              <span></span>
+            </button>
           </div>
 
-          <button class="mello-cart-checkout" type="button" :disabled="!item || isCheckoutLoading" @click="emit('checkout')">
-            {{ isCheckoutLoading ? t('cart.checkoutLoading') : t('cart.checkout') }}
+          <button class="mello-cart-checkout" type="button" :disabled="!item || isCheckoutLoading" @click="checkout">
+            {{ isCheckoutLoading ? t('cart.checkoutLoading') : `${t('cart.checkout')} • ${formatMoney(checkoutTotal)}` }}
           </button>
 
           <div class="mello-cart-paypal" aria-hidden="true">
@@ -451,24 +487,113 @@ onUnmounted(() => {
   font-weight: 900;
 }
 
+.mello-shipping-protection {
+  align-items: center;
+  background: #f4f4f4;
+  border-radius: 0;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: 62px minmax(0, 1fr) 42px;
+  margin: 16px -7px 12px;
+  min-height: 83px;
+  padding: 12px 8px;
+}
+
+.mello-shipping-protection__icon {
+  display: block;
+  height: 62px;
+  object-fit: contain;
+  width: 62px;
+}
+
+.mello-shipping-protection__content {
+  min-width: 0;
+}
+
+.mello-shipping-protection__heading {
+  align-items: baseline;
+  color: #050505;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  line-height: 1.08;
+}
+
+.mello-shipping-protection__heading strong,
+.mello-shipping-protection__heading span {
+  color: #050505;
+  font-size: 16px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.mello-shipping-protection__heading strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.mello-shipping-protection__content p {
+  color: #667374;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.18;
+  margin: 4px 0 0;
+}
+
+.mello-shipping-protection__toggle {
+  align-items: center;
+  appearance: none;
+  background: #e4e4e4;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  height: 28px;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 3px;
+  transition: background 160ms ease;
+  width: 44px;
+}
+
+.mello-shipping-protection__toggle span {
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(7, 20, 21, 0.2);
+  display: block;
+  height: 22px;
+  transform: translateX(0);
+  transition: transform 160ms ease;
+  width: 22px;
+}
+
+.mello-shipping-protection__toggle.is-active {
+  background: #2f8deb;
+}
+
+.mello-shipping-protection__toggle.is-active span {
+  transform: translateX(16px);
+}
+
 .mello-cart-checkout {
   align-items: center;
   appearance: none;
-  background: var(--mcart-teal);
+  background: #006f12;
   border: 0;
   border-radius: 4px;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  font-size: 15px;
-  font-weight: 760;
+  font-size: 16px;
+  font-weight: 900;
   justify-content: center;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   line-height: 1;
   min-height: 48px;
   padding: 0 20px;
-  text-transform: uppercase;
+  text-transform: none;
   width: 100%;
 }
 
@@ -608,6 +733,27 @@ onUnmounted(() => {
 
   .mello-cart-subtotal strong {
     font-size: 18px;
+  }
+
+  .mello-shipping-protection {
+    grid-template-columns: 54px minmax(0, 1fr) 42px;
+    margin: 13px -7px 10px;
+    min-height: 76px;
+    padding: 10px 8px;
+  }
+
+  .mello-shipping-protection__icon {
+    height: 54px;
+    width: 54px;
+  }
+
+  .mello-shipping-protection__heading strong,
+  .mello-shipping-protection__heading span {
+    font-size: 14px;
+  }
+
+  .mello-shipping-protection__content p {
+    font-size: 12px;
   }
 
   .mello-cart-checkout {
