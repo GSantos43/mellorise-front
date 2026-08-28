@@ -222,7 +222,8 @@ export const messages = {
       note: 'Order special instructions',
       notePlaceholder: 'Add a note',
       subtotal: 'Subtotal',
-      checkout: 'Check out'
+      checkout: 'Check out',
+      checkoutLoading: 'Preparando checkout...'
     }
   },
   en: {
@@ -448,7 +449,8 @@ export const messages = {
       note: 'Order special instructions',
       notePlaceholder: 'Add a note',
       subtotal: 'Subtotal',
-      checkout: 'Check out'
+      checkout: 'Check out',
+      checkoutLoading: 'Preparing checkout...'
     }
   }
 }

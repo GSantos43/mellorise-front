@@ -11,6 +11,7 @@ import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
 import PageLoader from './components/PageLoader.vue'
+import { createCheckoutSession } from './services/checkout'
 import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 
@@ -19,6 +20,7 @@ const isLoading = ref(true)
 const route = ref(window.location.pathname)
 const isCartOpen = ref(false)
 const cartItem = ref(null)
+const isCheckoutLoading = ref(false)
 const isPageLoading = ref(true)
 const { locale } = useI18n({ useScope: 'global' })
 let staticTranslationFrame = 0
@@ -109,9 +111,18 @@ function removeCartItem() {
   cartItem.value = null
 }
 
-function goToStripeCheckout() {
-  const checkoutUrl = import.meta.env.VITE_STRIPE_CHECKOUT_URL || '/checkout/stripe'
-  window.location.href = checkoutUrl
+async function goToStripeCheckout() {
+  if (!cartItem.value || isCheckoutLoading.value) return
+
+  isCheckoutLoading.value = true
+
+  try {
+    const checkoutUrl = await createCheckoutSession(cartItem.value)
+    window.location.href = checkoutUrl
+  } catch (error) {
+    console.error(error)
+    isCheckoutLoading.value = false
+  }
 }
 
 function showPageLoader(duration = 240) {
@@ -202,6 +213,7 @@ watch([route, locale, isLoading, products, currentProduct], scheduleStaticTransl
     <CartDrawer
       :is-open="isCartOpen"
       :item="cartItem"
+      :is-checkout-loading="isCheckoutLoading"
       @close="closeCart"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"

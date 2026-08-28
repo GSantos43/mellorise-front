@@ -11,6 +11,10 @@ const props = defineProps({
   item: {
     type: Object,
     default: null
+  },
+  isCheckoutLoading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -96,7 +100,9 @@ onUnmounted(() => {
             <strong>{{ formatMoney(subtotal) }}</strong>
           </div>
 
-          <button class="mello-cart-checkout" type="button" :disabled="!item" @click="emit('checkout')">{{ t('cart.checkout') }}</button>
+          <button class="mello-cart-checkout" type="button" :disabled="!item || isCheckoutLoading" @click="emit('checkout')">
+            {{ isCheckoutLoading ? t('cart.checkoutLoading') : t('cart.checkout') }}
+          </button>
 
           <div class="mello-cart-paypal" aria-hidden="true">
             <span>P</span>

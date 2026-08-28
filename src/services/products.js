@@ -1,4 +1,9 @@
-const API_URL = 'http://localhost:3000/products'
+const BFF_URL = (
+  import.meta.env.VITE_BFF_URL ||
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:3000'
+).replace(/\/$/, '')
+const API_URL = `${BFF_URL}/products`
 
 const fallbackProducts = [
   {
