@@ -35,6 +35,7 @@ const productPanelHeight = ref(null)
 const openAccordionIndexes = ref([])
 const isGalleryDragging = ref(false)
 const galleryDragOffset = ref(0)
+const galleryDirection = ref('next')
 const suppressGalleryClick = ref(false)
 let productPanelObserver = null
 let galleryDragStartX = 0
@@ -51,6 +52,7 @@ const productImages = computed(() => activeProduct.value.images?.length ? active
 const visibleProductImages = computed(() => productImages.value.slice(0, 5))
 const hiddenProductImagesCount = computed(() => Math.max(0, productImages.value.length - visibleProductImages.value.length))
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
+const galleryTransitionName = computed(() => galleryDirection.value === 'previous' ? 'gg-gallery-slide-reverse' : 'gg-gallery-slide')
 const mainImageStyle = computed(() => ({
   transform: `translate3d(${galleryDragOffset.value}px, 0, 0)`,
 }))
@@ -176,12 +178,26 @@ function toggleAccordion(index) {
     : [...openAccordionIndexes.value, index]
 }
 
+function selectGalleryImage(index, direction = 'next') {
+  if (!productImages.value.length || index === selectedImageIndex.value) return
+
+  galleryDirection.value = direction
+  selectedImageIndex.value = index
+}
+
 function selectPreviousImage() {
-  selectedImageIndex.value = selectedImageIndex.value === 0 ? productImages.value.length - 1 : selectedImageIndex.value - 1
+  const previousIndex = selectedImageIndex.value === 0 ? productImages.value.length - 1 : selectedImageIndex.value - 1
+  selectGalleryImage(previousIndex, 'previous')
 }
 
 function selectNextImage() {
-  selectedImageIndex.value = selectedImageIndex.value === productImages.value.length - 1 ? 0 : selectedImageIndex.value + 1
+  const nextIndex = selectedImageIndex.value === productImages.value.length - 1 ? 0 : selectedImageIndex.value + 1
+  selectGalleryImage(nextIndex, 'next')
+}
+
+function selectThumbnailImage(index) {
+  const direction = index < selectedImageIndex.value ? 'previous' : 'next'
+  selectGalleryImage(index, direction)
 }
 
 function handleGalleryPreviousClick() {
@@ -322,7 +338,11 @@ watch(activeProduct, () => {
             @pointercancel="cancelGalleryDrag"
             @pointerleave="finishGalleryDrag"
           >
-            <img data-gg-main-image :style="mainImageStyle" :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @dragstart.prevent>
+            <div class="gg-gallery__stage" :style="mainImageStyle">
+              <Transition :name="galleryTransitionName" mode="out-in">
+                <img :key="mainImage" data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @dragstart.prevent>
+              </Transition>
+            </div>
             <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="handleGalleryPreviousClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
             </button>
@@ -342,7 +362,7 @@ watch(activeProduct, () => {
                 :class="{ 'is-active': selectedImageIndex === index }"
                 type="button"
                 data-gg-thumb
-                @click="selectedImageIndex = index"
+                @click="selectThumbnailImage(index)"
               >
                 <img :src="image" :alt="activeProduct.title" width="260" height="260" loading="lazy">
               </button>
@@ -351,7 +371,7 @@ watch(activeProduct, () => {
                 class="gg-image-card gg-more"
                 type="button"
                 data-gg-more
-                @click="selectedImageIndex = visibleProductImages.length"
+                @click="selectThumbnailImage(visibleProductImages.length)"
               >
                 +{{ hiddenProductImagesCount }}
               </button>
