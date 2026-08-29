@@ -84,6 +84,8 @@ export const messages = {
         label: 'Imagenes del producto',
         previous: 'Imagen anterior',
         next: 'Siguiente imagen',
+        expanded: 'Imagen ampliada del producto',
+        close: 'Cerrar imagen ampliada',
         loading: 'Cargando imagen'
       },
       addToCart: 'Agregar al carrito',
@@ -495,6 +497,8 @@ export const messages = {
         label: 'Product images',
         previous: 'Previous image',
         next: 'Next image',
+        expanded: 'Expanded product image',
+        close: 'Close expanded image',
         loading: 'Loading image'
       },
       addToCart: 'Add to cart',

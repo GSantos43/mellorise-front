@@ -39,10 +39,12 @@ const isGallerySettling = ref(false)
 const galleryDragOffset = ref(0)
 const loadedGalleryImages = ref(new Set())
 const suppressGalleryClick = ref(false)
+const isGalleryLightboxOpen = ref(false)
 let productPanelObserver = null
 let galleryDragStartX = 0
 let galleryDragStartY = 0
 let galleryPointerId = null
+let previousBodyOverflow = ''
 const packConfig = [
   { match: 'buy 1', title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
   { match: 'buy 2 get 1 free', title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
@@ -300,6 +302,22 @@ function handleGalleryNextClick() {
   selectNextImage()
 }
 
+function openGalleryLightbox() {
+  if (suppressGalleryClick.value || isGallerySettling.value || isGalleryDragging.value) return
+
+  isGalleryLightboxOpen.value = true
+}
+
+function closeGalleryLightbox() {
+  isGalleryLightboxOpen.value = false
+}
+
+function handleGalleryKeydown(event) {
+  if (event.key === 'Escape') {
+    closeGalleryLightbox()
+  }
+}
+
 function startGalleryDrag(event) {
   if (productImages.value.length < 2 || isGallerySettling.value || (event.pointerType === 'mouse' && event.button !== 0)) return
 
@@ -340,9 +358,9 @@ function finishGalleryDrag(event) {
       ? (selectedImageIndex.value === images.length - 1 ? 0 : selectedImageIndex.value + 1)
       : (selectedImageIndex.value === 0 ? images.length - 1 : selectedImageIndex.value - 1)
     completeGallerySlide(targetIndex, deltaX < 0 ? 'next' : 'previous')
-    window.requestAnimationFrame(() => {
+    window.setTimeout(() => {
       suppressGalleryClick.value = false
-    })
+    }, 320)
   }
 
   event.currentTarget.releasePointerCapture?.(event.pointerId)
@@ -391,6 +409,7 @@ onMounted(() => {
   nextTick(syncProductPanelHeight)
   window.addEventListener('scroll', updateStickyState, { passive: true })
   window.addEventListener('resize', syncProductPanelHeight)
+  window.addEventListener('keydown', handleGalleryKeydown)
 
   if ('ResizeObserver' in window) {
     productPanelObserver = new ResizeObserver(syncProductPanelHeight)
@@ -403,11 +422,14 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', updateStickyState)
   window.removeEventListener('resize', syncProductPanelHeight)
+  window.removeEventListener('keydown', handleGalleryKeydown)
+  document.body.style.overflow = previousBodyOverflow
   productPanelObserver?.disconnect()
 })
 
 watch(activeProduct, () => {
   selectedImageIndex.value = 0
+  closeGalleryLightbox()
   nextTick(syncProductPanelHeight)
 })
 
@@ -415,6 +437,16 @@ watch(mainImage, (src) => {
   preloadGalleryImage(src)
   preloadAdjacentGalleryImages()
 }, { immediate: true })
+
+watch(isGalleryLightboxOpen, (isOpen) => {
+  if (isOpen) {
+    previousBodyOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return
+  }
+
+  document.body.style.overflow = previousBodyOverflow
+})
 </script>
 
 <template>
@@ -443,6 +475,7 @@ watch(mainImage, (src) => {
             @pointerup="finishGalleryDrag"
             @pointercancel="cancelGalleryDrag"
             @pointerleave="finishGalleryDrag"
+            @click="openGalleryLightbox"
           >
             <div class="gg-gallery__stage" :class="{ 'is-loading': !isMainImageLoaded }">
               <div class="gg-gallery__track" :style="galleryTrackStyle">
@@ -490,6 +523,15 @@ watch(mainImage, (src) => {
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
             </button>
           </div>
+
+          <Teleport to="body">
+            <div v-if="isGalleryLightboxOpen" class="gg-image-lightbox" role="dialog" aria-modal="true" :aria-label="t('product.gallery.expanded')" @click.self="closeGalleryLightbox">
+              <button class="gg-image-lightbox__close" type="button" :aria-label="t('product.gallery.close')" @click="closeGalleryLightbox">
+                <span></span>
+              </button>
+              <img :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(mainImage)">
+            </div>
+          </Teleport>
 
           <div class="gg-product-accordions" aria-label="Informacion del producto">
             <section

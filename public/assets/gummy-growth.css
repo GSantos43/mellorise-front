@@ -360,7 +360,7 @@
   top: 0;
   touch-action: pan-y;
   transition: opacity 160ms ease;
-  width: 50%;
+  width: clamp(58px, 16%, 96px);
   z-index: 2;
 }
 
@@ -410,6 +410,73 @@
 .gg-gallery-hit:hover,
 .gg-gallery-hit:focus-visible {
   opacity: 1;
+}
+
+.gg-image-lightbox {
+  align-items: center;
+  background: rgba(9, 22, 22, 0.78);
+  backdrop-filter: blur(14px);
+  display: grid;
+  inset: 0;
+  justify-items: center;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  position: fixed;
+  z-index: 9999;
+}
+
+.gg-image-lightbox img {
+  background: #fffaf2;
+  border-radius: 16px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+  display: block;
+  max-height: min(86vh, 980px);
+  max-width: min(92vw, 980px);
+  object-fit: contain;
+  width: auto;
+}
+
+.gg-image-lightbox__close {
+  appearance: none;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.22);
+  color: #173132;
+  cursor: pointer;
+  display: inline-flex;
+  height: 46px;
+  justify-content: center;
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  top: max(18px, env(safe-area-inset-top));
+  transition: transform 160ms ease, background 160ms ease;
+  width: 46px;
+  z-index: 1;
+}
+
+.gg-image-lightbox__close:hover,
+.gg-image-lightbox__close:focus-visible {
+  background: #fff;
+  transform: scale(1.04);
+}
+
+.gg-image-lightbox__close span,
+.gg-image-lightbox__close span::after {
+  background: currentColor;
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 2px;
+  width: 18px;
+}
+
+.gg-image-lightbox__close span {
+  transform: rotate(45deg);
+}
+
+.gg-image-lightbox__close span::after {
+  transform: rotate(90deg);
 }
 
 .gg-gallery__thumb-row {
@@ -3459,6 +3526,7 @@ button.gg-image-card {
   .gg-gallery-hit {
     display: block;
     opacity: 1;
+    width: 68px;
   }
 
   .gg-gallery-hit span {
@@ -3474,6 +3542,23 @@ button.gg-image-card {
 
   .gg-gallery-hit--next span {
     right: 10px;
+  }
+
+  .gg-image-lightbox {
+    padding: max(14px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+
+  .gg-image-lightbox img {
+    border-radius: 12px;
+    max-height: 82vh;
+    max-width: calc(100vw - 24px);
+  }
+
+  .gg-image-lightbox__close {
+    height: 44px;
+    right: max(14px, env(safe-area-inset-right));
+    top: max(14px, env(safe-area-inset-top));
+    width: 44px;
   }
 
   .gg-gallery-hit:active span {
