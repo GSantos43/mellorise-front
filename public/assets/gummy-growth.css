@@ -213,6 +213,7 @@
 .gg-gallery__main img {
   object-fit: contain;
   padding: 0;
+  transition: transform 180ms ease;
   -webkit-user-drag: none;
   user-select: none;
 }
@@ -241,6 +242,10 @@
   cursor: grabbing;
 }
 
+.gg-gallery__main.is-dragging img {
+  transition: none;
+}
+
 .gg-gallery-hit {
   appearance: none;
   background: transparent;
@@ -251,6 +256,7 @@
   padding: 0;
   position: absolute;
   top: 0;
+  touch-action: pan-y;
   transition: opacity 160ms ease;
   width: 50%;
   z-index: 2;

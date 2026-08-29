@@ -34,6 +34,8 @@ const productPanelRef = ref(null)
 const productPanelHeight = ref(null)
 const openAccordionIndexes = ref([])
 const isGalleryDragging = ref(false)
+const galleryDragOffset = ref(0)
+const suppressGalleryClick = ref(false)
 let productPanelObserver = null
 let galleryDragStartX = 0
 let galleryDragStartY = 0
@@ -49,6 +51,9 @@ const productImages = computed(() => activeProduct.value.images?.length ? active
 const visibleProductImages = computed(() => productImages.value.slice(0, 5))
 const hiddenProductImagesCount = computed(() => Math.max(0, productImages.value.length - visibleProductImages.value.length))
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
+const mainImageStyle = computed(() => ({
+  transform: `translate3d(${galleryDragOffset.value}px, 0, 0)`,
+}))
 const selectedPack = computed(() => bundles.value[selectedBundle.value] || bundles.value[0])
 const currentPrice = computed(() => formatMoney(selectedPack.value?.price ?? activeProduct.value.price))
 const compareAtPrice = computed(() => selectedPack.value?.compareAtPrice ? formatMoney(selectedPack.value.compareAtPrice) : '')
@@ -179,14 +184,39 @@ function selectNextImage() {
   selectedImageIndex.value = selectedImageIndex.value === productImages.value.length - 1 ? 0 : selectedImageIndex.value + 1
 }
 
+function handleGalleryPreviousClick() {
+  if (suppressGalleryClick.value) return
+  selectPreviousImage()
+}
+
+function handleGalleryNextClick() {
+  if (suppressGalleryClick.value) return
+  selectNextImage()
+}
+
 function startGalleryDrag(event) {
-  if (productImages.value.length < 2) return
+  if (productImages.value.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return
 
   galleryPointerId = event.pointerId
   galleryDragStartX = event.clientX
   galleryDragStartY = event.clientY
+  galleryDragOffset.value = 0
   isGalleryDragging.value = true
   event.currentTarget.setPointerCapture?.(event.pointerId)
+}
+
+function moveGalleryDrag(event) {
+  if (!isGalleryDragging.value || galleryPointerId !== event.pointerId) return
+
+  const deltaX = event.clientX - galleryDragStartX
+  const deltaY = event.clientY - galleryDragStartY
+  const isHorizontalDrag = Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)
+
+  if (isHorizontalDrag) {
+    event.preventDefault()
+  }
+
+  galleryDragOffset.value = Math.max(-120, Math.min(120, deltaX))
 }
 
 function finishGalleryDrag(event) {
@@ -197,7 +227,11 @@ function finishGalleryDrag(event) {
   const isHorizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2
 
   if (isHorizontalSwipe) {
+    suppressGalleryClick.value = true
     deltaX < 0 ? selectNextImage() : selectPreviousImage()
+    window.requestAnimationFrame(() => {
+      suppressGalleryClick.value = false
+    })
   }
 
   event.currentTarget.releasePointerCapture?.(event.pointerId)
@@ -206,6 +240,7 @@ function finishGalleryDrag(event) {
 
 function cancelGalleryDrag() {
   isGalleryDragging.value = false
+  galleryDragOffset.value = 0
   galleryPointerId = null
 }
 
@@ -282,15 +317,16 @@ watch(activeProduct, () => {
             :class="{ 'is-dragging': isGalleryDragging }"
             :style="{ '--gg-panel-height': productPanelHeight }"
             @pointerdown="startGalleryDrag"
+            @pointermove="moveGalleryDrag"
             @pointerup="finishGalleryDrag"
             @pointercancel="cancelGalleryDrag"
             @pointerleave="finishGalleryDrag"
           >
-            <img data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @dragstart.prevent>
-            <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="selectPreviousImage">
+            <img data-gg-main-image :style="mainImageStyle" :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @dragstart.prevent>
+            <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="handleGalleryPreviousClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
             </button>
-            <button class="gg-gallery-hit gg-gallery-hit--next" type="button" :aria-label="t('product.gallery.next')" @click.stop="selectNextImage">
+            <button class="gg-gallery-hit gg-gallery-hit--next" type="button" :aria-label="t('product.gallery.next')" @click.stop="handleGalleryNextClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </button>
           </div>
