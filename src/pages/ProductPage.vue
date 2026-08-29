@@ -31,11 +31,12 @@ const selectedBundle = ref(1)
 const quantity = ref(1)
 const isPastHero = ref(false)
 const productPanelRef = ref(null)
+const galleryMainRef = ref(null)
 const productPanelHeight = ref(null)
 const openAccordionIndexes = ref([])
 const isGalleryDragging = ref(false)
+const isGallerySettling = ref(false)
 const galleryDragOffset = ref(0)
-const galleryDirection = ref('next')
 const loadedGalleryImages = ref(new Set())
 const suppressGalleryClick = ref(false)
 let productPanelObserver = null
@@ -54,9 +55,25 @@ const visibleProductImages = computed(() => productImages.value.slice(0, 5))
 const hiddenProductImagesCount = computed(() => Math.max(0, productImages.value.length - visibleProductImages.value.length))
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
 const isMainImageLoaded = computed(() => loadedGalleryImages.value.has(mainImage.value))
-const galleryTransitionName = computed(() => galleryDirection.value === 'previous' ? 'gg-gallery-slide-reverse' : 'gg-gallery-slide')
-const mainImageStyle = computed(() => ({
-  transform: `translate3d(${galleryDragOffset.value}px, 0, 0)`,
+const galleryTrackImages = computed(() => {
+  const images = productImages.value
+  if (images.length < 2) {
+    return [{ src: mainImage.value, position: 'current' }]
+  }
+
+  const previousIndex = selectedImageIndex.value === 0 ? images.length - 1 : selectedImageIndex.value - 1
+  const nextIndex = selectedImageIndex.value === images.length - 1 ? 0 : selectedImageIndex.value + 1
+
+  return [
+    { src: images[previousIndex], position: 'previous' },
+    { src: mainImage.value, position: 'current' },
+    { src: images[nextIndex], position: 'next' }
+  ]
+})
+const galleryTrackStyle = computed(() => ({
+  transform: productImages.value.length < 2
+    ? `translate3d(${galleryDragOffset.value}px, 0, 0)`
+    : `translate3d(calc(-100% + ${galleryDragOffset.value}px), 0, 0)`,
 }))
 const selectedPack = computed(() => bundles.value[selectedBundle.value] || bundles.value[0])
 const currentPrice = computed(() => formatMoney(selectedPack.value?.price ?? activeProduct.value.price))
@@ -180,11 +197,27 @@ function toggleAccordion(index) {
     : [...openAccordionIndexes.value, index]
 }
 
+function getGalleryWidth() {
+  return Math.max(1, Math.round(galleryMainRef.value?.getBoundingClientRect().width || 0))
+}
+
+function completeGallerySlide(index, direction) {
+  if (!productImages.value.length || index === selectedImageIndex.value || isGallerySettling.value) return
+
+  const width = getGalleryWidth()
+  isGallerySettling.value = true
+  galleryDragOffset.value = direction === 'previous' ? width : -width
+  window.setTimeout(() => {
+    selectedImageIndex.value = index
+    isGallerySettling.value = false
+    galleryDragOffset.value = 0
+  }, 260)
+}
+
 function selectGalleryImage(index, direction = 'next') {
   if (!productImages.value.length || index === selectedImageIndex.value) return
 
-  galleryDirection.value = direction
-  selectedImageIndex.value = index
+  completeGallerySlide(index, direction)
 }
 
 function selectPreviousImage() {
@@ -239,7 +272,7 @@ function handleGalleryNextClick() {
 }
 
 function startGalleryDrag(event) {
-  if (productImages.value.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return
+  if (productImages.value.length < 2 || isGallerySettling.value || (event.pointerType === 'mouse' && event.button !== 0)) return
 
   galleryPointerId = event.pointerId
   galleryDragStartX = event.clientX
@@ -260,7 +293,8 @@ function moveGalleryDrag(event) {
     event.preventDefault()
   }
 
-  galleryDragOffset.value = Math.max(-120, Math.min(120, deltaX))
+  const dragLimit = getGalleryWidth()
+  galleryDragOffset.value = Math.max(-dragLimit, Math.min(dragLimit, deltaX))
 }
 
 function finishGalleryDrag(event) {
@@ -272,14 +306,23 @@ function finishGalleryDrag(event) {
 
   if (isHorizontalSwipe) {
     suppressGalleryClick.value = true
-    deltaX < 0 ? selectNextImage() : selectPreviousImage()
+    const images = productImages.value
+    const targetIndex = deltaX < 0
+      ? (selectedImageIndex.value === images.length - 1 ? 0 : selectedImageIndex.value + 1)
+      : (selectedImageIndex.value === 0 ? images.length - 1 : selectedImageIndex.value - 1)
+    completeGallerySlide(targetIndex, deltaX < 0 ? 'next' : 'previous')
     window.requestAnimationFrame(() => {
       suppressGalleryClick.value = false
     })
   }
 
   event.currentTarget.releasePointerCapture?.(event.pointerId)
-  cancelGalleryDrag()
+  isGalleryDragging.value = false
+  galleryPointerId = null
+
+  if (!isHorizontalSwipe) {
+    galleryDragOffset.value = 0
+  }
 }
 
 function cancelGalleryDrag() {
@@ -362,8 +405,9 @@ watch(mainImage, (src) => {
       <div class="gg-shell gg-hero__grid">
         <div class="gg-gallery" :aria-label="t('product.gallery.label')">
           <div
+            ref="galleryMainRef"
             class="gg-gallery__main"
-            :class="{ 'is-dragging': isGalleryDragging }"
+            :class="{ 'is-dragging': isGalleryDragging, 'is-settling': isGallerySettling }"
             :style="{ '--gg-panel-height': productPanelHeight }"
             @pointerdown="startGalleryDrag"
             @pointermove="moveGalleryDrag"
@@ -371,10 +415,17 @@ watch(mainImage, (src) => {
             @pointercancel="cancelGalleryDrag"
             @pointerleave="finishGalleryDrag"
           >
-            <div class="gg-gallery__stage" :class="{ 'is-loading': !isMainImageLoaded }" :style="mainImageStyle">
-              <Transition :name="galleryTransitionName" mode="out-in">
-                <img :key="mainImage" data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(mainImage)" @dragstart.prevent>
-              </Transition>
+            <div class="gg-gallery__stage" :class="{ 'is-loading': !isMainImageLoaded }">
+              <div class="gg-gallery__track" :style="galleryTrackStyle">
+                <div
+                  v-for="slide in galleryTrackImages"
+                  :key="`${slide.position}-${slide.src}`"
+                  class="gg-gallery__slide"
+                  :class="`is-${slide.position}`"
+                >
+                  <img :data-gg-main-image="slide.position === 'current' ? true : null" :src="slide.src" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(slide.src)" @dragstart.prevent>
+                </div>
+              </div>
               <span v-if="!isMainImageLoaded" class="gg-gallery__loader" role="status" :aria-label="t('product.gallery.loading')">
                 <span aria-hidden="true"></span>
               </span>
