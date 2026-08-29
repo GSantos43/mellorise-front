@@ -4,6 +4,8 @@ const BFF_URL = (
   'http://localhost:3000'
 ).replace(/\/$/, '')
 const API_URL = `${BFF_URL}/products`
+const PRODUCT_CACHE_KEY = 'mellorise-products-cache-v1'
+const PRODUCT_CACHE_TTL = 10 * 60 * 1000
 
 const fallbackProducts = [
   {
@@ -36,19 +38,70 @@ const fallbackProducts = [
   }
 ]
 
-export async function fetchProducts() {
+export async function fetchProducts({ onUpdate } = {}) {
+  const cachedProducts = readCachedProducts()
+
+  if (cachedProducts.length) {
+    refreshProducts(onUpdate)
+    return cachedProducts
+  }
+
+  return refreshProducts()
+}
+
+async function refreshProducts(onUpdate) {
   try {
-    const response = await fetch(API_URL)
-
-    if (!response.ok) {
-      throw new Error(`Products request failed: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return Array.isArray(data) && data.length ? data.map(normalizeProduct) : fallbackProducts
+    const products = await requestProducts()
+    writeCachedProducts(products)
+    onUpdate?.(products)
+    return products
   } catch (error) {
     console.warn(error)
-    return fallbackProducts
+    const staleProducts = readCachedProducts({ allowExpired: true })
+    return staleProducts.length ? staleProducts : fallbackProducts
+  }
+}
+
+async function requestProducts() {
+  const response = await fetch(API_URL, {
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error(`Products request failed: ${response.status}`)
+  }
+
+  const data = await response.json()
+  return Array.isArray(data) && data.length ? data.map(normalizeProduct) : fallbackProducts
+}
+
+function readCachedProducts({ allowExpired = false } = {}) {
+  if (typeof window === 'undefined') return []
+
+  try {
+    const cached = JSON.parse(window.localStorage.getItem(PRODUCT_CACHE_KEY) || 'null')
+    const products = Array.isArray(cached?.products) ? cached.products.map(normalizeProduct) : []
+    const isFresh = Date.now() - Number(cached?.savedAt || 0) < PRODUCT_CACHE_TTL
+
+    return products.length && (allowExpired || isFresh) ? products : []
+  } catch (error) {
+    console.warn(error)
+    return []
+  }
+}
+
+function writeCachedProducts(products) {
+  if (typeof window === 'undefined' || !Array.isArray(products) || !products.length) return
+
+  try {
+    window.localStorage.setItem(PRODUCT_CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      products
+    }))
+  } catch (error) {
+    console.warn(error)
   }
 }
 

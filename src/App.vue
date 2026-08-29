@@ -15,6 +15,8 @@ import { createCheckoutSession } from './services/checkout'
 import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 
+const CART_STORAGE_KEY = 'mellorise-cart-v1'
+
 const products = ref([])
 const isLoading = ref(true)
 const route = ref(window.location.pathname)
@@ -93,6 +95,44 @@ function addToCart(payload = {}) {
   openCart()
 }
 
+function readSavedCartItem() {
+  try {
+    const savedCartItem = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || 'null')
+    const quantity = Math.max(1, Number(savedCartItem?.quantity || 1))
+    const price = Number(savedCartItem?.price ?? 0)
+
+    if (!savedCartItem?.id || !savedCartItem?.title || !Number.isFinite(price)) return null
+
+    return {
+      id: savedCartItem.id,
+      variationId: savedCartItem.variationId ?? null,
+      handle: savedCartItem.handle || '',
+      title: savedCartItem.title,
+      image: savedCartItem.image || '/assets/frasco.png',
+      price,
+      unitPrice: Number(savedCartItem.unitPrice ?? price),
+      quantity,
+      bundleLabel: savedCartItem.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`
+    }
+  } catch (error) {
+    console.warn(error)
+    return null
+  }
+}
+
+function persistCartItem(item) {
+  try {
+    if (!item) {
+      window.localStorage.removeItem(CART_STORAGE_KEY)
+      return
+    }
+
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(item))
+  } catch (error) {
+    console.warn(error)
+  }
+}
+
 function openCart() {
   isCartOpen.value = true
 }
@@ -160,7 +200,13 @@ async function scheduleStaticTranslation() {
 
 onMounted(async () => {
   scheduleStaticTranslation()
-  products.value = await fetchProducts()
+  cartItem.value = readSavedCartItem()
+  products.value = await fetchProducts({
+    onUpdate: (freshProducts) => {
+      products.value = freshProducts
+      scheduleStaticTranslation()
+    }
+  })
   isLoading.value = false
   showPageLoader(260)
   scheduleStaticTranslation()
@@ -199,6 +245,7 @@ watch([route, locale], () => {
 }, { flush: 'sync' })
 
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
+watch(cartItem, persistCartItem, { deep: true })
 </script>
 
 <template>
