@@ -24,7 +24,7 @@ const isCartOpen = ref(false)
 const cartItem = ref(null)
 const isCheckoutLoading = ref(false)
 const isPageLoading = ref(true)
-const { locale } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 let staticTranslationFrame = 0
 let staticTranslationTimeout = 0
 let staticTranslationObserver = null
@@ -44,6 +44,7 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/collections') || route.value === '/products') return 'collection'
   return 'home'
 })
+const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
 
 async function navigate(event) {
   const anchor = event.target.closest('a')
@@ -259,6 +260,15 @@ watch(cartItem, persistCartItem, { deep: true })
     <InstitutionalPage v-else-if="currentPage === 'institutional'" :route="route" />
     <CollectionPage v-else :products="products" :is-loading="isLoading" @add-to-cart="addToCart" />
     <StoreFooter />
+    <button
+      class="mello-floating-cart"
+      type="button"
+      :aria-label="t('nav.cart')"
+      @click.stop="openCart"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8Zm3 0a3 3 0 0 1 6 0"/></svg>
+      <span v-if="cartCount" class="mello-floating-cart__count" aria-hidden="true">{{ cartCount }}</span>
+    </button>
     <CartDrawer
       :is-open="isCartOpen"
       :item="cartItem"
@@ -270,3 +280,77 @@ watch(cartItem, persistCartItem, { deep: true })
     />
   </main>
 </template>
+
+<style>
+.mello-floating-cart {
+  align-items: center;
+  appearance: none;
+  background: #173132;
+  border: 0;
+  border-radius: 50%;
+  bottom: max(18px, calc(env(safe-area-inset-bottom) + 16px));
+  box-shadow: 0 18px 42px rgba(23, 49, 50, 0.24), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  height: 58px;
+  justify-content: center;
+  padding: 0;
+  position: fixed;
+  right: max(18px, calc(env(safe-area-inset-right) + 16px));
+  transition: box-shadow 180ms ease, transform 180ms ease, background 180ms ease;
+  width: 58px;
+  z-index: 90;
+}
+
+.mello-floating-cart:hover,
+.mello-floating-cart:focus-visible {
+  background: #102829;
+  box-shadow: 0 22px 50px rgba(23, 49, 50, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  outline: 0;
+  transform: translateY(-2px);
+}
+
+.mello-floating-cart:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.mello-floating-cart svg {
+  fill: none;
+  height: 27px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 27px;
+}
+
+.mello-floating-cart__count {
+  align-items: center;
+  background: #77cdfa;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(23, 49, 50, 0.18);
+  color: #102829;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  height: 24px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 24px;
+  padding: 0 7px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
+}
+
+@media (max-width: 640px) {
+  .mello-floating-cart {
+    bottom: max(16px, calc(env(safe-area-inset-bottom) + 14px));
+    height: 56px;
+    right: max(16px, calc(env(safe-area-inset-right) + 14px));
+    width: 56px;
+  }
+}
+</style>

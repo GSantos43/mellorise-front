@@ -128,9 +128,6 @@ watch(isMobileMenuOpen, (isOpen) => {
 
       <div class="mello-page-header__actions">
         <a class="mello-page-header__cta" href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
-        <a class="mello-page-header__cart" href="/cart" :aria-label="t('nav.cart')">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8Zm3 0a3 3 0 0 1 6 0"/></svg>
-        </a>
         <div class="mello-page-header__locale" :aria-label="t('language.label')" role="group">
           <span class="mello-page-header__locale-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3c2.2 2.5 3.3 5.5 3.3 9s-1.1 6.5-3.3 9c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z"/></svg>
@@ -187,10 +184,6 @@ watch(isMobileMenuOpen, (isOpen) => {
 
       <div class="mello-mobile-menu__actions">
         <a class="mello-mobile-menu__cta" href="/products/wondernest-heightener-gummies-2026#comprar" @click="closeMobileMenu">{{ t('nav.cta') }}</a>
-        <a class="mello-mobile-menu__cart" href="/cart" @click="closeMobileMenu">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8Zm3 0a3 3 0 0 1 6 0"/></svg>
-          {{ t('nav.cart') }}
-        </a>
       </div>
     </aside>
   </div>
@@ -413,36 +406,6 @@ watch(isMobileMenuOpen, (isOpen) => {
   font-weight: 850;
 }
 
-.mello-page-header__cart {
-  align-items: center;
-  background: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(90, 144, 145, 0.36);
-  border-radius: 50%;
-  color: #5a9091;
-  display: inline-flex;
-  height: 42px;
-  justify-content: center;
-  text-decoration: none;
-  transition: box-shadow 180ms ease, transform 180ms ease, color 180ms ease;
-  width: 42px;
-}
-
-.mello-page-header__cart:hover {
-  box-shadow: inset 0 0 0 1px rgba(90, 144, 145, 0.54), 0 10px 20px rgba(23, 49, 50, 0.08);
-  color: #173132;
-  transform: translateY(-1px);
-}
-
-.mello-page-header__cart svg {
-  fill: none;
-  height: 21px;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.9;
-  width: 21px;
-}
-
 .mello-page-header__menu-button {
   align-items: center;
   appearance: none;
@@ -656,12 +619,11 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-mobile-menu__actions {
     display: grid;
     gap: 10px;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     margin-top: 18px;
   }
 
-  .mello-mobile-menu__cta,
-  .mello-mobile-menu__cart {
+  .mello-mobile-menu__cta {
     align-items: center;
     border-radius: 999px;
     display: inline-flex;
@@ -676,23 +638,6 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-mobile-menu__cta {
     background: #77cdfa;
     color: #102829;
-  }
-
-  .mello-mobile-menu__cart {
-    background: #173132;
-    color: #ffffff;
-    gap: 8px;
-    min-width: 112px;
-  }
-
-  .mello-mobile-menu__cart svg {
-    fill: none;
-    height: 18px;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.9;
-    width: 18px;
   }
 }
 </style>
