@@ -477,6 +477,7 @@
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+  transition: opacity 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease, transform 180ms ease;
 }
 
 .gg-image-card::before {
@@ -553,6 +554,10 @@ button.gg-image-card {
 .gg-image-card.is-active {
   border-color: #173132;
   box-shadow: inset 0 0 0 1px #173132;
+}
+
+.gg-image-card.is-trailing-hint:not(.is-active) {
+  opacity: 0.42;
 }
 
 .gg-product-accordions {
@@ -3516,19 +3521,16 @@ button.gg-image-card {
     box-shadow: none;
   }
 
-  .gg-gallery__thumbs .gg-image-card.gg-more {
-    color: #173132;
-    display: grid;
-    flex: 0 0 28px;
-    font-size: 11px;
-    font-weight: 900;
-    height: 20px;
-    line-height: 1;
-    place-items: center;
-    width: 28px;
+  .gg-gallery__thumbs .gg-image-card.is-trailing-hint:not(.is-active) {
+    opacity: 0.32;
   }
 
   .gg-gallery__thumbs .gg-image-card img {
+    display: none;
+  }
+
+  .gg-gallery__thumbs .gg-image-card::before,
+  .gg-gallery__thumbs .gg-image-card__loader {
     display: none;
   }
 

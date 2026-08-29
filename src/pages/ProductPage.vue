@@ -48,13 +48,33 @@ const packConfig = [
   { match: 'buy 2 get 1 free', title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
   { match: 'buy 3 get 2 free', title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', bottles: 5 }
 ]
+const maxGalleryIndicators = 5
 
 const activeProduct = computed(() => props.product || fallbackProduct)
 const productImages = computed(() => activeProduct.value.images?.length ? activeProduct.value.images : [activeProduct.value.image])
-const visibleProductImages = computed(() => productImages.value.slice(0, 5))
-const hiddenProductImagesCount = computed(() => Math.max(0, productImages.value.length - visibleProductImages.value.length))
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
 const isMainImageLoaded = computed(() => loadedGalleryImages.value.has(mainImage.value))
+const galleryIndicators = computed(() => {
+  const images = productImages.value
+  const totalImages = images.length
+
+  if (totalImages <= maxGalleryIndicators) {
+    return images.map((src, index) => ({ src, index, isTrailingHint: false }))
+  }
+
+  const maxStartIndex = totalImages - maxGalleryIndicators
+  const startIndex = Math.min(Math.max(selectedImageIndex.value - 2, 0), maxStartIndex)
+
+  return images.slice(startIndex, startIndex + maxGalleryIndicators).map((src, offset) => {
+    const index = startIndex + offset
+
+    return {
+      src,
+      index,
+      isTrailingHint: offset === maxGalleryIndicators - 1 && index < totalImages - 1
+    }
+  })
+})
 const galleryTrackImages = computed(() => {
   const images = productImages.value
   if (images.length < 2) {
@@ -216,6 +236,15 @@ function completeGallerySlide(index, direction) {
 
 function selectGalleryImage(index, direction = 'next') {
   if (!productImages.value.length || index === selectedImageIndex.value) return
+
+  const totalImages = productImages.value.length
+  const distance = Math.abs(index - selectedImageIndex.value)
+  const isAdjacent = distance === 1 || distance === totalImages - 1
+
+  if (!isAdjacent) {
+    selectedImageIndex.value = index
+    return
+  }
 
   completeGallerySlide(index, direction)
 }
@@ -443,27 +472,18 @@ watch(mainImage, (src) => {
             </button>
             <div class="gg-gallery__thumbs" data-gg-thumbs>
               <button
-                v-for="(image, index) in visibleProductImages"
-                :key="image"
+                v-for="indicator in galleryIndicators"
+                :key="`${indicator.index}-${indicator.src}`"
                 class="gg-image-card"
-                :class="{ 'is-active': selectedImageIndex === index, 'is-loading': !loadedGalleryImages.has(image) }"
+                :class="{ 'is-active': selectedImageIndex === indicator.index, 'is-loading': !loadedGalleryImages.has(indicator.src), 'is-trailing-hint': indicator.isTrailingHint }"
                 type="button"
                 data-gg-thumb
-                @click="selectThumbnailImage(index)"
+                @click="selectThumbnailImage(indicator.index)"
               >
-                <img :src="image" :alt="activeProduct.title" width="260" height="260" loading="lazy" @load="markGalleryImageLoaded(image)">
-                <span v-if="!loadedGalleryImages.has(image)" class="gg-image-card__loader" role="status" :aria-label="t('product.gallery.loading')">
+                <img :src="indicator.src" :alt="activeProduct.title" width="260" height="260" loading="lazy" @load="markGalleryImageLoaded(indicator.src)">
+                <span v-if="!loadedGalleryImages.has(indicator.src)" class="gg-image-card__loader" role="status" :aria-label="t('product.gallery.loading')">
                   <span aria-hidden="true"></span>
                 </span>
-              </button>
-              <button
-                v-if="hiddenProductImagesCount"
-                class="gg-image-card gg-more"
-                type="button"
-                data-gg-more
-                @click="selectThumbnailImage(visibleProductImages.length)"
-              >
-                +{{ hiddenProductImagesCount }}
               </button>
             </div>
             <button class="gg-gallery-arrow" type="button" :aria-label="t('product.gallery.next')" @click="selectNextImage">
