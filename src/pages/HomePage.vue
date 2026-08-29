@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
-import ProductCard from '../components/ProductCard.vue'
+import { useI18n } from 'vue-i18n'
 
 defineProps({
   products: {
@@ -13,91 +13,93 @@ defineProps({
   }
 })
 
+const { t } = useI18n()
+
 const announcementItems = ['Sin hormonas', 'Etiqueta clara', 'Uso responsable', 'Sin gluten', 'Ingredientes seleccionados']
 const nutrients = [
   {
-    title: 'Calcio',
-    text: 'Mineral asociado al mantenimiento normal de huesos y dientes dentro de una alimentación equilibrada.',
+    titleKey: 'home.nutrients.items.calcium.title',
+    textKey: 'home.nutrients.items.calcium.text',
     icon: ['M7.5 13.5c-1.2-1.2-1.2-3.1 0-4.3s3.1-1.2 4.3 0l2.9 2.9c1.2 1.2 1.2 3.1 0 4.3s-3.1 1.2-4.3 0l-2.9-2.9Z', 'M12.5 8.2l3-3c1.2-1.2 3.1-1.2 4.3 0s1.2 3.1 0 4.3l-3 3', 'M11.5 15.8l-3 3c-1.2 1.2-3.1 1.2-4.3 0s-1.2-3.1 0-4.3l3-3']
   },
   {
-    title: 'Magnesio',
-    text: 'Participa en funciones nutricionales importantes y acompaña rutinas diarias de bienestar.',
+    titleKey: 'home.nutrients.items.magnesium.title',
+    textKey: 'home.nutrients.items.magnesium.text',
     icon: ['M5 18c2.8-5.3 5.8-8.6 13-12', 'M9 7c2 2.1 3.3 4.2 3.8 6.3', 'M7 15c2.7-.2 5.4.5 8 2.2', 'M18 6c.2 3.4-.3 6.1-1.5 8']
   },
   {
-    title: 'Boro',
-    text: 'Ingrediente de apoyo formulado para complementar la mezcla mineral del producto.',
+    titleKey: 'home.nutrients.items.boron.title',
+    textKey: 'home.nutrients.items.boron.text',
     icon: ['M12 3v18', 'M7 7l10 10', 'M17 7 7 17', 'M7 12h10']
   },
   {
-    title: 'Zinc',
-    text: 'Mineral utilizado en suplementos por su papel en procesos normales del organismo.',
+    titleKey: 'home.nutrients.items.zinc.title',
+    textKey: 'home.nutrients.items.zinc.text',
     icon: ['M12 3 5 6v5c0 4.4 2.8 8.4 7 10 4.2-1.6 7-5.6 7-10V6l-7-3Z', 'm9 12 2 2 4-4']
   },
   {
-    title: 'Vitamina D3',
-    text: 'Ayuda al aprovechamiento normal del calcio cuando se combina con hábitos saludables.',
+    titleKey: 'home.nutrients.items.vitaminD3.title',
+    textKey: 'home.nutrients.items.vitaminD3.text',
     icon: ['M12 6.5v-3', 'M12 20.5v-3', 'M6.5 12h-3', 'M20.5 12h-3', 'm7.8 7.8-2.1-2.1', 'm18.3 18.3-2.1-2.1', 'm16.2 7.8 2.1-2.1', 'm5.7 18.3 2.1-2.1', 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z']
   },
   {
-    title: 'Vitamina K2',
-    text: 'Forma parte de una fórmula pensada para acompañar el soporte nutricional diario.',
+    titleKey: 'home.nutrients.items.vitaminK2.title',
+    textKey: 'home.nutrients.items.vitaminK2.text',
     icon: ['M12 3 5 6v5c0 4.4 2.8 8.4 7 10 4.2-1.6 7-5.6 7-10V6l-7-3Z', 'M12 8v8', 'M9 11l3-3 3 3']
   },
   {
-    title: 'L-Arginina',
-    text: 'Aminoácido incluido como parte de la combinación nutricional de la goma.',
+    titleKey: 'home.nutrients.items.arginine.title',
+    textKey: 'home.nutrients.items.arginine.text',
     icon: ['M8 20c-1.7-1.1-2.5-2.5-2.5-4.4 0-2.7 2.1-5.1 5-5.1h1.2C11.8 5 13 3.7 15 3.7c2.2 0 4 1.8 4 4 0 3.6-3.8 5.3-6.4 7.2-1.5 1.1-2.5 2.3-2.6 4.1', 'M14 12.4h4.5', 'M16.5 10.2l2 2.2-2 2.2']
   },
   {
-    title: 'L-Ornitina',
-    text: 'Acompaña la fórmula junto con otros nutrientes seleccionados para uso responsable.',
+    titleKey: 'home.nutrients.items.ornithine.title',
+    textKey: 'home.nutrients.items.ornithine.text',
     icon: ['M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z', 'M5 19l2-2', 'M17 7l2-2']
   }
 ]
 const ingredientMapColumns = [
   [
     {
-      title: 'Calcio (250 mg)',
-      text: 'Apoya una rutina nutricional diaria junto con una alimentación equilibrada.',
+      titleKey: 'home.ingredientMap.items.calcium.title',
+      textKey: 'home.ingredientMap.items.calcium.text',
       image: '/assets/gummy-ingredient-calcium.png'
     },
     {
-      title: 'Magnesio (100 mg)',
-      text: 'Participa en funciones nutricionales importantes para el bienestar diario.',
+      titleKey: 'home.ingredientMap.items.magnesium.title',
+      textKey: 'home.ingredientMap.items.magnesium.text',
       image: '/assets/gummy-ingredient-magnesium.png'
     },
     {
-      title: 'Vitamina K2',
-      text: 'Forma parte de una fórmula pensada para acompañar el soporte nutricional diario.',
+      titleKey: 'home.ingredientMap.items.vitaminK2.title',
+      textKey: 'home.ingredientMap.items.vitaminK2.text',
       image: '/assets/gummy-ingredient-k2.avif'
     },
     {
-      title: 'L-Arginina (100 mg)',
-      text: 'Aminoácido incluido como parte de la combinación nutricional de la goma.',
+      titleKey: 'home.ingredientMap.items.arginine.title',
+      textKey: 'home.ingredientMap.items.arginine.text',
       image: '/assets/gummy-ingredient-arginine.png'
     }
   ],
   [
     {
-      title: 'Zinc (10 mg)',
-      text: 'Mineral utilizado en suplementos por su papel en procesos normales del organismo.',
+      titleKey: 'home.ingredientMap.items.zinc.title',
+      textKey: 'home.ingredientMap.items.zinc.text',
       image: '/assets/gummy-ingredient-zinc.png'
     },
     {
-      title: 'Vitamina D3 15 mcg',
-      text: 'Ayuda al aprovechamiento normal del calcio cuando se combina con hábitos saludables.',
+      titleKey: 'home.ingredientMap.items.vitaminD3.title',
+      textKey: 'home.ingredientMap.items.vitaminD3.text',
       image: '/assets/gummy-ingredient-d3.png'
     },
     {
-      title: 'L-Ornitina',
-      text: 'Acompaña la fórmula junto con otros nutrientes seleccionados para uso responsable.',
+      titleKey: 'home.ingredientMap.items.ornithine.title',
+      textKey: 'home.ingredientMap.items.ornithine.text',
       image: '/assets/gummy-ingredient-ornithine.png'
     },
     {
-      title: 'L-Glutamina (50 mg)',
-      text: 'Ingrediente dentro del perfil nutricional de la rutina MelloRise.',
+      titleKey: 'home.ingredientMap.items.glutamine.title',
+      textKey: 'home.ingredientMap.items.glutamine.text',
       image: '/assets/gummy-ingredient-glutamine.png'
     }
   ]
@@ -122,20 +124,20 @@ const scienceCards = [
   ['Información editable', 'Textos preparados para ajustarse a la etiqueta real del producto antes de publicar.']
 ]
 const journeySteps = [
-  ['Selección', 'Ingredientes organizados para una fórmula fácil de presentar y revisar.'],
-  ['Preparación', 'Formato tipo gummy pensado para integrarse a una rutina diaria simple.'],
-  ['Revisión', 'Información lista para ajustarse conforme a la etiqueta real del producto.'],
-  ['Cuidado', 'Comunicación clara, sin promesas exageradas ni datos no confirmados.'],
-  ['Empaque', 'Presentación de marca consistente para reforzar confianza en la compra.'],
-  ['Entrega', 'Ruta final hacia el carrito y la página de producto con menos fricción.']
+  'selection',
+  'preparation',
+  'review',
+  'care',
+  'packaging',
+  'delivery'
 ]
 const homeFaqs = [
-  ['¿Qué son MelloRise Heightener Gummies?', 'MelloRise Heightener Gummies son gummies de apoyo nutricional pensadas para acompañar la rutina diaria de familias con niños y adolescentes. Reúnen nutrientes presentes en la fórmula como vitamina D3, vitamina K2, calcio, magnesio, zinc y aminoácidos seleccionados.'],
-  ['¿Para quién son?', 'Para familias que buscan una forma práctica de complementar hábitos diarios durante etapas de crecimiento. Si existe una condición médica, medicación o duda de uso, consulta a un profesional antes de incorporar cualquier suplemento.'],
-  ['Beneficios clave', 'MelloRise ayuda a presentar el apoyo nutricional diario de forma clara y organizada, con formato gummy pensado para familias y una rutina más práctica.'],
-  ['¿Cómo se usa?', 'Revisa la porción indicada en la etiqueta real del producto e incluye las gummies dentro de una rutina diaria constante.'],
-  ['Calidad y fórmula', 'Esta sección debe reflejar únicamente características confirmadas por el rótulo final. Valida ingredientes, sellos, advertencias, dosis y beneficios permitidos antes de publicar.'],
-  ['Envíos y devoluciones', 'Los plazos de envío, políticas de devolución y condiciones de garantía deben reflejar la configuración real de la tienda Shopify.']
+  'what',
+  'who',
+  'benefits',
+  'usage',
+  'quality',
+  'shipping'
 ]
 const comparisonPositive = [
   'Apoyo nutricional en una gummy',
@@ -176,8 +178,6 @@ const revealSelectors = [
   '.gh-science-card',
   '.gh-journey__head',
   '.gh-journey__step',
-  '.gh-products .gh-head',
-  '.gh-products .product-grid > *',
   '.mello-home-faq__media',
   '.mello-home-faq__header',
   '.mello-home-faq__item',
@@ -356,19 +356,19 @@ onUnmounted(() => {
       </div>
       <div class="gh-shell gh-nutrients__shell">
         <div class="gh-head gh-nutrients__head">
-          <span class="gh-pill">All In One Nutrients</span>
-          <h2 class="gh-heading">Todo en una presentación <strong>fácil de recordar</strong></h2>
-          <p class="gh-subhead">MelloRise reúne nutrientes seleccionados en formato gummy para acompañar una rutina diaria simple.</p>
+          <span class="gh-pill">{{ t('home.nutrients.badge') }}</span>
+          <h2 class="gh-heading">{{ t('home.nutrients.title') }} <strong>{{ t('home.nutrients.titleStrong') }}</strong></h2>
+          <p class="gh-subhead">{{ t('home.nutrients.intro') }}</p>
         </div>
         <div class="gh-nutrient-grid">
-          <article v-for="nutrient in nutrients" :key="nutrient.title" class="gh-nutrient">
+          <article v-for="nutrient in nutrients" :key="nutrient.titleKey" class="gh-nutrient">
             <span class="gh-nutrient__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <path v-for="path in nutrient.icon" :key="path" :d="path"/>
               </svg>
             </span>
-            <h3>{{ nutrient.title }}</h3>
-            <p>{{ nutrient.text }}</p>
+            <h3>{{ t(nutrient.titleKey) }}</h3>
+            <p>{{ t(nutrient.textKey) }}</p>
           </article>
         </div>
       </div>
@@ -378,15 +378,15 @@ onUnmounted(() => {
       <img class="gh-ingredient-map__fruit" src="/assets/gummy-ingredients-fruit.png" alt="" width="200" height="183" loading="lazy" aria-hidden="true">
       <div class="gh-shell">
         <div class="gh-head gh-ingredient-map__head">
-          <span class="gh-pill">Formula</span>
-          <h2 class="gh-heading">Todo en una presentación <strong>fácil de recordar</strong></h2>
-          <p class="gh-subhead">Nutrientes seleccionados cuidadosamente para una rutina simple, clara y fácil de seguir.</p>
+          <span class="gh-pill">{{ t('home.ingredientMap.badge') }}</span>
+          <h2 class="gh-heading">{{ t('home.ingredientMap.title') }} <strong>{{ t('home.ingredientMap.titleStrong') }}</strong></h2>
+          <p class="gh-subhead">{{ t('home.ingredientMap.intro') }}</p>
         </div>
         <div class="gh-ingredient-map__layout">
           <div class="gh-ingredient-map__side gh-ingredient-map__side--left">
-            <article v-for="nutrient in ingredientMapColumns[0]" :key="nutrient.title" class="gh-ingredient-card">
-              <img :src="nutrient.image" :alt="nutrient.title" width="100" height="100" loading="lazy">
-              <div><h3>{{ nutrient.title }}</h3><p>{{ nutrient.text }}</p></div>
+            <article v-for="nutrient in ingredientMapColumns[0]" :key="nutrient.titleKey" class="gh-ingredient-card">
+              <img :src="nutrient.image" :alt="t(nutrient.titleKey)" width="100" height="100" loading="lazy">
+              <div><h3>{{ t(nutrient.titleKey) }}</h3><p>{{ t(nutrient.textKey) }}</p></div>
             </article>
           </div>
           <div class="gh-ingredient-map__center">
@@ -403,9 +403,9 @@ onUnmounted(() => {
             <img src="/assets/nutri2.png" alt="Frasco MelloRise Heightener Gummies con gomitas rojas" width="1080" height="1080" loading="lazy">
           </div>
           <div class="gh-ingredient-map__side gh-ingredient-map__side--right">
-            <article v-for="nutrient in ingredientMapColumns[1]" :key="nutrient.title" class="gh-ingredient-card gh-ingredient-card--right">
-              <img :src="nutrient.image" :alt="nutrient.title" width="100" height="100" loading="lazy">
-              <div><h3>{{ nutrient.title }}</h3><p>{{ nutrient.text }}</p></div>
+            <article v-for="nutrient in ingredientMapColumns[1]" :key="nutrient.titleKey" class="gh-ingredient-card gh-ingredient-card--right">
+              <img :src="nutrient.image" :alt="t(nutrient.titleKey)" width="100" height="100" loading="lazy">
+              <div><h3>{{ t(nutrient.titleKey) }}</h3><p>{{ t(nutrient.textKey) }}</p></div>
             </article>
           </div>
         </div>
@@ -450,39 +450,21 @@ onUnmounted(() => {
     <div class="gh-section gh-journey" id="proceso">
       <div class="gh-shell">
         <div class="gh-head gh-journey__head">
-          <span class="gh-pill">Proceso y cuidado</span>
-          <h2 class="gh-heading">Del origen a tu puerta. <strong>Cada paso cuenta.</strong></h2>
-          <p class="gh-subhead">Una vista simple del recorrido de MelloRise: desde la selección de ingredientes hasta la experiencia de compra, con información que puede ajustarse según la operación real de la marca.</p>
+          <span class="gh-pill">{{ t('home.journey.badge') }}</span>
+          <h2 class="gh-heading">{{ t('home.journey.title') }} <strong>{{ t('home.journey.titleStrong') }}</strong></h2>
+          <p class="gh-subhead">{{ t('home.journey.intro') }}</p>
         </div>
 
-        <div class="gh-journey__track" aria-label="Proceso de cuidado MelloRise">
-          <article v-for="(step, index) in journeySteps" :key="step[0]" class="gh-journey__step">
+        <div class="gh-journey__track" :aria-label="t('home.journey.ariaLabel')">
+          <article v-for="(step, index) in journeySteps" :key="step" class="gh-journey__step">
             <span class="gh-journey__number">{{ index + 1 }}</span>
             <span class="gh-journey__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M5 19c8-1 13-7 14-14-7 1-13 6-14 14Zm0 0c3-4 6-6 10-8"/></svg>
             </span>
-            <h3>{{ step[0] }}</h3>
-            <p>{{ step[1] }}</p>
+            <h3>{{ t(`home.journey.steps.${step}.title`) }}</h3>
+            <p>{{ t(`home.journey.steps.${step}.text`) }}</p>
           </article>
         </div>
-      </div>
-    </div>
-
-    <div class="gh-section gh-products" id="productos">
-      <div class="gh-shell">
-        <div class="gh-head">
-          <span class="gh-pill">Productos</span>
-          <h2 class="gh-heading">Elige tu rutina <strong>MelloRise</strong></h2>
-          <p class="gh-subhead">Opciones pensadas para mantener una rutina familiar simple, clara y fácil de repetir.</p>
-        </div>
-        <div v-if="isLoading" class="collection collection--empty page-width">
-          <div class="title-wrapper center">
-            <h2 class="title title--primary">Cargando productos...</h2>
-          </div>
-        </div>
-        <ul v-else id="product-grid" class="grid product-grid grid--2-col-tablet-down grid--4-col-desktop">
-          <ProductCard v-for="(product, index) in products" :key="product.id" :product="product" :index="index" />
-        </ul>
       </div>
     </div>
 
@@ -496,6 +478,7 @@ onUnmounted(() => {
             width="900"
             height="900"
             loading="lazy"
+            :alt="t('home.faq.imageAlt')"
           >
         </div>
       </div>
@@ -507,28 +490,28 @@ onUnmounted(() => {
               <path d="M12 3.75 5.25 6.7v5.1c0 4.3 2.86 6.97 6.75 8.45 3.89-1.48 6.75-4.15 6.75-8.45V6.7L12 3.75Z"/>
               <path d="m9.35 12.2 1.78 1.78 3.74-4.06"/>
             </svg>
-            FAQ's
+            {{ t('home.faq.badge') }}
           </span>
           <h2 class="mello-home-faq__title">
-            ¿Tienes preguntas?
-            <span>Tenemos respuestas</span>
+            {{ t('home.faq.title') }}
+            <span>{{ t('home.faq.titleStrong') }}</span>
           </h2>
-          <p class="mello-home-faq__subheading">Respuestas claras sobre MelloRise, la rutina diaria y los detalles antes de comprar.</p>
+          <p class="mello-home-faq__subheading">{{ t('home.faq.intro') }}</p>
         </div>
 
         <div class="mello-home-faq__list">
           <details
             v-for="(faq, index) in homeFaqs"
-            :key="faq[0]"
+            :key="faq"
             class="mello-home-faq__item"
           >
             <summary class="mello-home-faq__summary">
               <span class="mello-home-faq__number">{{ index + 1 }}</span>
-              <span class="mello-home-faq__question">{{ faq[0] }}</span>
+              <span class="mello-home-faq__question">{{ t(`home.faq.items.${faq}.question`) }}</span>
               <span class="mello-home-faq__toggle" aria-hidden="true"></span>
             </summary>
             <div class="mello-home-faq__answer">
-              <p>{{ faq[1] }}</p>
+              <p>{{ t(`home.faq.items.${faq}.answer`) }}</p>
             </div>
           </details>
         </div>

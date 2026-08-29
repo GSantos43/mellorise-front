@@ -213,6 +213,8 @@
 .gg-gallery__main img {
   object-fit: contain;
   padding: 0;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .gg-image-card img {
@@ -227,9 +229,16 @@
   display: grid;
   place-items: center;
   background: #fff;
+  cursor: grab;
   position: sticky;
   top: 84px;
+  touch-action: pan-y;
+  user-select: none;
   z-index: 2;
+}
+
+.gg-gallery__main.is-dragging {
+  cursor: grabbing;
 }
 
 .gg-gallery-hit {
@@ -492,16 +501,14 @@ button.gg-image-card {
   grid-template-rows: 0fr;
   letter-spacing: 0;
   line-height: 1.7;
-  max-height: 0;
   opacity: 0;
   overflow: hidden;
   transform: translateY(-6px);
-  transition: grid-template-rows 280ms cubic-bezier(0.2, 0.8, 0.2, 1), max-height 280ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease, transform 220ms ease;
+  transition: grid-template-rows 280ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease, transform 220ms ease;
 }
 
 .gg-product-accordion[data-expanded="true"] .gg-product-accordion__content {
   grid-template-rows: 1fr;
-  max-height: 760px;
   opacity: 1;
   transform: translateY(0);
 }

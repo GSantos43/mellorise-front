@@ -33,7 +33,11 @@ const isPastHero = ref(false)
 const productPanelRef = ref(null)
 const productPanelHeight = ref(null)
 const openAccordionIndexes = ref([])
+const isGalleryDragging = ref(false)
 let productPanelObserver = null
+let galleryDragStartX = 0
+let galleryDragStartY = 0
+let galleryPointerId = null
 const packConfig = [
   { match: 'buy 1', title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
   { match: 'buy 2 get 1 free', title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
@@ -175,6 +179,36 @@ function selectNextImage() {
   selectedImageIndex.value = selectedImageIndex.value === productImages.value.length - 1 ? 0 : selectedImageIndex.value + 1
 }
 
+function startGalleryDrag(event) {
+  if (productImages.value.length < 2) return
+
+  galleryPointerId = event.pointerId
+  galleryDragStartX = event.clientX
+  galleryDragStartY = event.clientY
+  isGalleryDragging.value = true
+  event.currentTarget.setPointerCapture?.(event.pointerId)
+}
+
+function finishGalleryDrag(event) {
+  if (!isGalleryDragging.value || galleryPointerId !== event.pointerId) return
+
+  const deltaX = event.clientX - galleryDragStartX
+  const deltaY = event.clientY - galleryDragStartY
+  const isHorizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2
+
+  if (isHorizontalSwipe) {
+    deltaX < 0 ? selectNextImage() : selectPreviousImage()
+  }
+
+  event.currentTarget.releasePointerCapture?.(event.pointerId)
+  cancelGalleryDrag()
+}
+
+function cancelGalleryDrag() {
+  isGalleryDragging.value = false
+  galleryPointerId = null
+}
+
 function updateStickyState() {
   isPastHero.value = window.scrollY > 640
 }
@@ -242,18 +276,26 @@ watch(activeProduct, () => {
 
     <div class="gg-hero" id="comprar">
       <div class="gg-shell gg-hero__grid">
-        <div class="gg-gallery" aria-label="Imagenes del producto">
-          <div class="gg-gallery__main" :style="{ '--gg-panel-height': productPanelHeight }">
-            <img data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager">
-            <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" aria-label="Imagen anterior" @click="selectPreviousImage">
+        <div class="gg-gallery" :aria-label="t('product.gallery.label')">
+          <div
+            class="gg-gallery__main"
+            :class="{ 'is-dragging': isGalleryDragging }"
+            :style="{ '--gg-panel-height': productPanelHeight }"
+            @pointerdown="startGalleryDrag"
+            @pointerup="finishGalleryDrag"
+            @pointercancel="cancelGalleryDrag"
+            @pointerleave="finishGalleryDrag"
+          >
+            <img data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @dragstart.prevent>
+            <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="selectPreviousImage">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
             </button>
-            <button class="gg-gallery-hit gg-gallery-hit--next" type="button" aria-label="Siguiente imagen" @click="selectNextImage">
+            <button class="gg-gallery-hit gg-gallery-hit--next" type="button" :aria-label="t('product.gallery.next')" @click.stop="selectNextImage">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </button>
           </div>
           <div class="gg-gallery__thumb-row">
-            <button class="gg-gallery-arrow" type="button" aria-label="Imagen anterior" @click="selectPreviousImage">
+            <button class="gg-gallery-arrow" type="button" :aria-label="t('product.gallery.previous')" @click="selectPreviousImage">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
             </button>
             <div class="gg-gallery__thumbs" data-gg-thumbs>
@@ -278,7 +320,7 @@ watch(activeProduct, () => {
                 +{{ hiddenProductImagesCount }}
               </button>
             </div>
-            <button class="gg-gallery-arrow" type="button" aria-label="Siguiente imagen" @click="selectNextImage">
+            <button class="gg-gallery-arrow" type="button" :aria-label="t('product.gallery.next')" @click="selectNextImage">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
             </button>
           </div>

@@ -29,6 +29,7 @@ const links = [
 
 const localeOptions = computed(() => supportedLocales.map((value) => ({
   value,
+  flag: value === 'en' ? '🇺🇸' : '🇪🇸',
   label: t(`language.${value}`)
 })))
 
@@ -143,7 +144,8 @@ watch(isMobileMenuOpen, (isOpen) => {
             :aria-pressed="locale === option.value"
             @click="changeLocale(option.value)"
           >
-            {{ option.label }}
+            <span class="mello-page-header__locale-flag" aria-hidden="true">{{ option.flag }}</span>
+            <span>{{ option.label }}</span>
           </button>
         </div>
         <button
@@ -376,20 +378,32 @@ watch(isMobileMenuOpen, (isOpen) => {
 }
 
 .mello-page-header__locale-option {
+  align-items: center;
   appearance: none;
   background: transparent;
   border: 0;
   border-radius: 999px;
   color: rgba(23, 49, 50, 0.62);
   cursor: pointer;
+  display: inline-flex;
+  gap: 5px;
   font-family: var(--font-body-family);
   font-size: 12px;
   font-weight: 650;
   height: 32px;
+  justify-content: center;
   line-height: 1;
-  min-width: 40px;
-  padding: 0 10px;
+  min-width: 58px;
+  padding: 0 11px;
   transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.mello-page-header__locale-flag {
+  display: inline-block;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 14px;
+  line-height: 1;
+  transform: translateY(-0.5px);
 }
 
 .mello-page-header__locale-option.is-active {
@@ -499,7 +513,8 @@ watch(isMobileMenuOpen, (isOpen) => {
 
   .mello-page-header__locale-option {
     height: 30px;
-    min-width: 38px;
+    min-width: 54px;
+    padding: 0 9px;
   }
 
   .mello-page-header__menu-button {

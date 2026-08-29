@@ -80,6 +80,11 @@ export const messages = {
         decrease: 'Reducir cantidad',
         increase: 'Aumentar cantidad'
       },
+      gallery: {
+        label: 'Imagenes del producto',
+        previous: 'Imagen anterior',
+        next: 'Siguiente imagen'
+      },
       addToCart: 'Agregar al carrito',
       buyNow: 'Buy Now',
       purchaseNote: 'Compra segura. Revisa siempre ingredientes, dosis y uso conforme a la etiqueta real del producto.',
@@ -148,6 +153,154 @@ export const messages = {
           intro: 'MelloRise Heightener Gummies esta hecho con ingredientes cuidadosamente seleccionados y de alta calidad, diseñados para la seguridad y efectividad en cuerpos en crecimiento.',
           claims: 'Nuestras gummies son: ✓ Veganas ✓ Non-GMO ✓ Sin gluten ✓ Libres de colorantes y tintes artificiales ✓ Sin hormonas ✓ Probadas por terceros',
           note: 'Cada lote se produce bajo estrictos estandares de calidad para asegurar pureza, seguridad y consistencia.'
+        }
+      }
+    },
+    home: {
+      nutrients: {
+        badge: 'All In One Nutrients',
+        title: 'Todo en una presentación',
+        titleStrong: 'fácil de recordar',
+        intro: 'MelloRise reúne nutrientes seleccionados en formato gummy para acompañar una rutina diaria simple.',
+        items: {
+          calcium: {
+            title: 'Calcio',
+            text: 'Mineral asociado al mantenimiento normal de huesos y dientes dentro de una alimentación equilibrada.'
+          },
+          magnesium: {
+            title: 'Magnesio',
+            text: 'Participa en funciones nutricionales importantes y acompaña rutinas diarias de bienestar.'
+          },
+          boron: {
+            title: 'Boro',
+            text: 'Ingrediente de apoyo formulado para complementar la mezcla mineral del producto.'
+          },
+          zinc: {
+            title: 'Zinc',
+            text: 'Mineral utilizado en suplementos por su papel en procesos normales del organismo.'
+          },
+          vitaminD3: {
+            title: 'Vitamina D3',
+            text: 'Ayuda al aprovechamiento normal del calcio cuando se combina con hábitos saludables.'
+          },
+          vitaminK2: {
+            title: 'Vitamina K2',
+            text: 'Forma parte de una fórmula pensada para acompañar el soporte nutricional diario.'
+          },
+          arginine: {
+            title: 'L-Arginina',
+            text: 'Aminoácido incluido como parte de la combinación nutricional de la goma.'
+          },
+          ornithine: {
+            title: 'L-Ornitina',
+            text: 'Acompaña la fórmula junto con otros nutrientes seleccionados para uso responsable.'
+          }
+        }
+      },
+      ingredientMap: {
+        badge: 'Formula',
+        title: 'Todo en una presentación',
+        titleStrong: 'fácil de recordar',
+        intro: 'Nutrientes seleccionados cuidadosamente para una rutina simple, clara y fácil de seguir.',
+        items: {
+          calcium: {
+            title: 'Calcio (250 mg)',
+            text: 'Apoya una rutina nutricional diaria junto con una alimentación equilibrada.'
+          },
+          magnesium: {
+            title: 'Magnesio (100 mg)',
+            text: 'Participa en funciones nutricionales importantes para el bienestar diario.'
+          },
+          vitaminK2: {
+            title: 'Vitamina K2',
+            text: 'Forma parte de una fórmula pensada para acompañar el soporte nutricional diario.'
+          },
+          arginine: {
+            title: 'L-Arginina (100 mg)',
+            text: 'Aminoácido incluido como parte de la combinación nutricional de la goma.'
+          },
+          zinc: {
+            title: 'Zinc (10 mg)',
+            text: 'Mineral utilizado en suplementos por su papel en procesos normales del organismo.'
+          },
+          vitaminD3: {
+            title: 'Vitamina D3 15 mcg',
+            text: 'Ayuda al aprovechamiento normal del calcio cuando se combina con hábitos saludables.'
+          },
+          ornithine: {
+            title: 'L-Ornitina',
+            text: 'Acompaña la fórmula junto con otros nutrientes seleccionados para uso responsable.'
+          },
+          glutamine: {
+            title: 'L-Glutamina (50 mg)',
+            text: 'Ingrediente dentro del perfil nutricional de la rutina MelloRise.'
+          }
+        }
+      },
+      journey: {
+        badge: 'Proceso y cuidado',
+        title: 'Del origen a tu puerta.',
+        titleStrong: 'Cada paso cuenta.',
+        intro: 'Una vista simple del recorrido de MelloRise: desde la selección de ingredientes hasta la experiencia de compra, con información que puede ajustarse según la operación real de la marca.',
+        ariaLabel: 'Proceso de cuidado MelloRise',
+        steps: {
+          selection: {
+            title: 'Selección',
+            text: 'Ingredientes organizados para una fórmula fácil de presentar y revisar.'
+          },
+          preparation: {
+            title: 'Preparación',
+            text: 'Formato tipo gummy pensado para integrarse a una rutina diaria simple.'
+          },
+          review: {
+            title: 'Revisión',
+            text: 'Información lista para ajustarse conforme a la etiqueta real del producto.'
+          },
+          care: {
+            title: 'Cuidado',
+            text: 'Comunicación clara, sin promesas exageradas ni datos no confirmados.'
+          },
+          packaging: {
+            title: 'Empaque',
+            text: 'Presentación de marca consistente para reforzar confianza en la compra.'
+          },
+          delivery: {
+            title: 'Entrega',
+            text: 'Ruta final hacia el carrito y la página de producto con menos fricción.'
+          }
+        }
+      },
+      faq: {
+        badge: "FAQ's",
+        title: '¿Tienes preguntas?',
+        titleStrong: 'Tenemos respuestas',
+        intro: 'Respuestas claras sobre MelloRise, la rutina diaria y los detalles antes de comprar.',
+        imageAlt: 'Frasco MelloRise Heightener Gummies con gummies',
+        items: {
+          what: {
+            question: '¿Qué son MelloRise Heightener Gummies?',
+            answer: 'MelloRise Heightener Gummies son gummies de apoyo nutricional pensadas para acompañar la rutina diaria de familias con niños y adolescentes. Reúnen nutrientes presentes en la fórmula como vitamina D3, vitamina K2, calcio, magnesio, zinc y aminoácidos seleccionados.'
+          },
+          who: {
+            question: '¿Para quién son?',
+            answer: 'Para familias que buscan una forma práctica de complementar hábitos diarios durante etapas de crecimiento. Si existe una condición médica, medicación o duda de uso, consulta a un profesional antes de incorporar cualquier suplemento.'
+          },
+          benefits: {
+            question: 'Beneficios clave',
+            answer: 'MelloRise ayuda a presentar el apoyo nutricional diario de forma clara y organizada, con formato gummy pensado para familias y una rutina más práctica.'
+          },
+          usage: {
+            question: '¿Cómo se usa?',
+            answer: 'Revisa la porción indicada en la etiqueta real del producto e incluye las gummies dentro de una rutina diaria constante.'
+          },
+          quality: {
+            question: 'Calidad y fórmula',
+            answer: 'Esta sección debe reflejar únicamente características confirmadas por el rótulo final. Valida ingredientes, sellos, advertencias, dosis y beneficios permitidos antes de publicar.'
+          },
+          shipping: {
+            question: 'Envíos y devoluciones',
+            answer: 'Los plazos de envío, políticas de devolución y condiciones de garantía deben reflejar la configuración real de la tienda Shopify.'
+          }
         }
       }
     },
@@ -337,6 +490,11 @@ export const messages = {
         decrease: 'Decrease quantity',
         increase: 'Increase quantity'
       },
+      gallery: {
+        label: 'Product images',
+        previous: 'Previous image',
+        next: 'Next image'
+      },
       addToCart: 'Add to cart',
       buyNow: 'Buy Now',
       purchaseNote: 'Secure purchase. Always review ingredients, dosage, and use according to the real product label.',
@@ -405,6 +563,154 @@ export const messages = {
           intro: 'MelloRise Heightener Gummies are made with carefully selected, high-quality ingredients designed for safety and effectiveness for growing bodies.',
           claims: 'Our gummies are: ✓ Vegan ✓ Non-GMO ✓ Gluten-free ✓ Free of artificial colors and dyes ✓ Hormone-free ✓ Third-party tested',
           note: 'Every batch is produced under strict quality standards to ensure purity, safety and consistency.'
+        }
+      }
+    },
+    home: {
+      nutrients: {
+        badge: 'All In One Nutrients',
+        title: 'Everything in one',
+        titleStrong: 'easy-to-remember format',
+        intro: 'MelloRise brings selected nutrients together in gummy format to support a simple daily routine.',
+        items: {
+          calcium: {
+            title: 'Calcium',
+            text: 'A mineral associated with the normal maintenance of bones and teeth as part of a balanced diet.'
+          },
+          magnesium: {
+            title: 'Magnesium',
+            text: 'Supports important nutritional functions and fits into daily wellness routines.'
+          },
+          boron: {
+            title: 'Boron',
+            text: 'A supporting ingredient formulated to complement the product mineral blend.'
+          },
+          zinc: {
+            title: 'Zinc',
+            text: 'A mineral used in supplements for its role in normal body processes.'
+          },
+          vitaminD3: {
+            title: 'Vitamin D3',
+            text: 'Helps normal calcium utilization when combined with healthy habits.'
+          },
+          vitaminK2: {
+            title: 'Vitamin K2',
+            text: 'Part of a formula designed to support daily nutritional routines.'
+          },
+          arginine: {
+            title: 'L-Arginine',
+            text: 'An amino acid included as part of the gummy nutritional combination.'
+          },
+          ornithine: {
+            title: 'L-Ornithine',
+            text: 'Complements the formula alongside other selected nutrients for responsible use.'
+          }
+        }
+      },
+      ingredientMap: {
+        badge: 'Formula',
+        title: 'Everything in one',
+        titleStrong: 'easy-to-remember format',
+        intro: 'Nutrients carefully selected for a simple, clear, and easy-to-follow routine.',
+        items: {
+          calcium: {
+            title: 'Calcium (250 mg)',
+            text: 'Supports a daily nutritional routine alongside a balanced diet.'
+          },
+          magnesium: {
+            title: 'Magnesium (100 mg)',
+            text: 'Supports important nutritional functions for everyday wellness.'
+          },
+          vitaminK2: {
+            title: 'Vitamin K2',
+            text: 'Part of a formula designed to support daily nutritional routines.'
+          },
+          arginine: {
+            title: 'L-Arginine (100 mg)',
+            text: 'An amino acid included as part of the gummy nutritional combination.'
+          },
+          zinc: {
+            title: 'Zinc (10 mg)',
+            text: 'A mineral used in supplements for its role in normal body processes.'
+          },
+          vitaminD3: {
+            title: 'Vitamin D3 15 mcg',
+            text: 'Helps normal calcium utilization when combined with healthy habits.'
+          },
+          ornithine: {
+            title: 'L-Ornithine',
+            text: 'Complements the formula alongside other selected nutrients for responsible use.'
+          },
+          glutamine: {
+            title: 'L-Glutamine (50 mg)',
+            text: 'An ingredient within the nutritional profile of the MelloRise routine.'
+          }
+        }
+      },
+      journey: {
+        badge: 'Process and care',
+        title: 'From origin to your door.',
+        titleStrong: 'Every step matters.',
+        intro: 'A simple view of the MelloRise journey: from ingredient selection to the shopping experience, with information that can be adjusted to the brand real operation.',
+        ariaLabel: 'MelloRise care process',
+        steps: {
+          selection: {
+            title: 'Selection',
+            text: 'Ingredients organized for a formula that is easy to present and review.'
+          },
+          preparation: {
+            title: 'Preparation',
+            text: 'Gummy format designed to fit into a simple daily routine.'
+          },
+          review: {
+            title: 'Review',
+            text: 'Information ready to be adjusted according to the real product label.'
+          },
+          care: {
+            title: 'Care',
+            text: 'Clear communication, without exaggerated promises or unconfirmed data.'
+          },
+          packaging: {
+            title: 'Packaging',
+            text: 'Consistent brand presentation to strengthen purchase confidence.'
+          },
+          delivery: {
+            title: 'Delivery',
+            text: 'Final path to the cart and product page with less friction.'
+          }
+        }
+      },
+      faq: {
+        badge: "FAQ's",
+        title: 'Have questions?',
+        titleStrong: 'We have answers',
+        intro: 'Clear answers about MelloRise, the daily routine, and the details before buying.',
+        imageAlt: 'MelloRise Heightener Gummies bottle with gummies',
+        items: {
+          what: {
+            question: 'What are MelloRise Heightener Gummies?',
+            answer: 'MelloRise Heightener Gummies are nutritional support gummies designed to fit into the daily routine of families with kids and teens. They bring together nutrients in the formula such as vitamin D3, vitamin K2, calcium, magnesium, zinc, and selected amino acids.'
+          },
+          who: {
+            question: 'Who are they for?',
+            answer: 'For families looking for a practical way to complement daily habits during growth stages. If there is a medical condition, medication, or any question about use, consult a professional before adding any supplement.'
+          },
+          benefits: {
+            question: 'Key benefits',
+            answer: 'MelloRise helps present daily nutritional support in a clear and organized way, with a gummy format designed for families and a more practical routine.'
+          },
+          usage: {
+            question: 'How do you use it?',
+            answer: 'Review the serving size listed on the real product label and include the gummies within a consistent daily routine.'
+          },
+          quality: {
+            question: 'Quality and formula',
+            answer: 'This section should reflect only characteristics confirmed by the final label. Validate ingredients, seals, warnings, dosage, and permitted benefits before publishing.'
+          },
+          shipping: {
+            question: 'Shipping and returns',
+            answer: 'Shipping times, return policies, and guarantee conditions should reflect the store real configuration.'
+          }
         }
       }
     },
