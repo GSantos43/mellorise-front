@@ -83,7 +83,8 @@ export const messages = {
       gallery: {
         label: 'Imagenes del producto',
         previous: 'Imagen anterior',
-        next: 'Siguiente imagen'
+        next: 'Siguiente imagen',
+        loading: 'Cargando imagen'
       },
       addToCart: 'Agregar al carrito',
       buyNow: 'Buy Now',
@@ -493,7 +494,8 @@ export const messages = {
       gallery: {
         label: 'Product images',
         previous: 'Previous image',
-        next: 'Next image'
+        next: 'Next image',
+        loading: 'Loading image'
       },
       addToCart: 'Add to cart',
       buyNow: 'Buy Now',

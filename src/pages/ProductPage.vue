@@ -36,6 +36,7 @@ const openAccordionIndexes = ref([])
 const isGalleryDragging = ref(false)
 const galleryDragOffset = ref(0)
 const galleryDirection = ref('next')
+const loadedGalleryImages = ref(new Set())
 const suppressGalleryClick = ref(false)
 let productPanelObserver = null
 let galleryDragStartX = 0
@@ -52,6 +53,7 @@ const productImages = computed(() => activeProduct.value.images?.length ? active
 const visibleProductImages = computed(() => productImages.value.slice(0, 5))
 const hiddenProductImagesCount = computed(() => Math.max(0, productImages.value.length - visibleProductImages.value.length))
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
+const isMainImageLoaded = computed(() => loadedGalleryImages.value.has(mainImage.value))
 const galleryTransitionName = computed(() => galleryDirection.value === 'previous' ? 'gg-gallery-slide-reverse' : 'gg-gallery-slide')
 const mainImageStyle = computed(() => ({
   transform: `translate3d(${galleryDragOffset.value}px, 0, 0)`,
@@ -200,6 +202,32 @@ function selectThumbnailImage(index) {
   selectGalleryImage(index, direction)
 }
 
+function markGalleryImageLoaded(src) {
+  if (!src || loadedGalleryImages.value.has(src)) return
+
+  const nextLoadedImages = new Set(loadedGalleryImages.value)
+  nextLoadedImages.add(src)
+  loadedGalleryImages.value = nextLoadedImages
+}
+
+function preloadGalleryImage(src) {
+  if (!src || loadedGalleryImages.value.has(src) || typeof window === 'undefined') return
+
+  const image = new window.Image()
+  image.onload = () => markGalleryImageLoaded(src)
+  image.src = src
+}
+
+function preloadAdjacentGalleryImages() {
+  const images = productImages.value
+  if (images.length < 2) return
+
+  const previousIndex = selectedImageIndex.value === 0 ? images.length - 1 : selectedImageIndex.value - 1
+  const nextIndex = selectedImageIndex.value === images.length - 1 ? 0 : selectedImageIndex.value + 1
+  preloadGalleryImage(images[previousIndex])
+  preloadGalleryImage(images[nextIndex])
+}
+
 function handleGalleryPreviousClick() {
   if (suppressGalleryClick.value) return
   selectPreviousImage()
@@ -310,6 +338,11 @@ watch(activeProduct, () => {
   selectedImageIndex.value = 0
   nextTick(syncProductPanelHeight)
 })
+
+watch(mainImage, (src) => {
+  preloadGalleryImage(src)
+  preloadAdjacentGalleryImages()
+}, { immediate: true })
 </script>
 
 <template>
@@ -338,10 +371,14 @@ watch(activeProduct, () => {
             @pointercancel="cancelGalleryDrag"
             @pointerleave="finishGalleryDrag"
           >
-            <div class="gg-gallery__stage" :style="mainImageStyle">
+            <div class="gg-gallery__stage" :class="{ 'is-loading': !isMainImageLoaded }" :style="mainImageStyle">
               <Transition :name="galleryTransitionName" mode="out-in">
-                <img :key="mainImage" data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @dragstart.prevent>
+                <img :key="mainImage" data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(mainImage)" @dragstart.prevent>
               </Transition>
+              <div v-if="!isMainImageLoaded" class="gg-gallery__loader" role="status" :aria-label="t('product.gallery.loading')">
+                <span class="gg-gallery__loader-ring" aria-hidden="true"></span>
+                <span class="gg-gallery__loader-text">{{ t('product.gallery.loading') }}</span>
+              </div>
             </div>
             <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="handleGalleryPreviousClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
