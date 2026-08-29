@@ -247,35 +247,29 @@
 
 .gg-gallery__loader {
   align-items: center;
-  background: rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.78);
   border: 1px solid rgba(105, 171, 173, 0.18);
   border-radius: 999px;
   box-shadow: 0 18px 44px rgba(23, 49, 50, 0.12);
   display: inline-flex;
-  gap: 10px;
-  inset: auto auto 22px 50%;
-  padding: 10px 14px;
+  height: 44px;
+  inset: 50% auto auto 50%;
+  justify-content: center;
   pointer-events: none;
   position: absolute;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+  width: 44px;
   z-index: 3;
 }
 
-.gg-gallery__loader-ring {
+.gg-gallery__loader > span,
+.gg-image-card__loader > span {
   animation: gg-gallery-loader-spin 780ms linear infinite;
   border: 2px solid rgba(105, 171, 173, 0.22);
   border-top-color: #5f999a;
   border-radius: 50%;
   height: 18px;
   width: 18px;
-}
-
-.gg-gallery__loader-text {
-  color: #173132;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0;
-  white-space: nowrap;
 }
 
 .gg-image-card img {
@@ -364,7 +358,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .gg-gallery__stage.is-loading::before,
-  .gg-gallery__loader-ring {
+  .gg-image-card.is-loading::before,
+  .gg-gallery__loader > span,
+  .gg-image-card__loader > span {
     animation: none;
   }
 
@@ -512,6 +508,44 @@
   aspect-ratio: auto;
   flex: 0 0 98px;
   border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.gg-image-card::before {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(105, 171, 173, 0.12), transparent 44%),
+    linear-gradient(110deg, rgba(255, 255, 255, 0) 0%, rgba(255, 249, 236, 0.92) 48%, rgba(255, 255, 255, 0) 100%);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transform: translateX(-100%);
+  transition: opacity 160ms ease;
+}
+
+.gg-image-card.is-loading::before {
+  animation: gg-gallery-shimmer 1.05s ease-in-out infinite;
+  opacity: 1;
+}
+
+.gg-image-card.is-loading img {
+  opacity: 0.18;
+}
+
+.gg-image-card__loader {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 34px;
+  inset: 50% auto auto 50%;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  z-index: 1;
 }
 
 .gg-gallery-more,

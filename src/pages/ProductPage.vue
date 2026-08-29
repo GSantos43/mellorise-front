@@ -375,10 +375,9 @@ watch(mainImage, (src) => {
               <Transition :name="galleryTransitionName" mode="out-in">
                 <img :key="mainImage" data-gg-main-image :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(mainImage)" @dragstart.prevent>
               </Transition>
-              <div v-if="!isMainImageLoaded" class="gg-gallery__loader" role="status" :aria-label="t('product.gallery.loading')">
-                <span class="gg-gallery__loader-ring" aria-hidden="true"></span>
-                <span class="gg-gallery__loader-text">{{ t('product.gallery.loading') }}</span>
-              </div>
+              <span v-if="!isMainImageLoaded" class="gg-gallery__loader" role="status" :aria-label="t('product.gallery.loading')">
+                <span aria-hidden="true"></span>
+              </span>
             </div>
             <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="handleGalleryPreviousClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
@@ -396,12 +395,15 @@ watch(mainImage, (src) => {
                 v-for="(image, index) in visibleProductImages"
                 :key="image"
                 class="gg-image-card"
-                :class="{ 'is-active': selectedImageIndex === index }"
+                :class="{ 'is-active': selectedImageIndex === index, 'is-loading': !loadedGalleryImages.has(image) }"
                 type="button"
                 data-gg-thumb
                 @click="selectThumbnailImage(index)"
               >
-                <img :src="image" :alt="activeProduct.title" width="260" height="260" loading="lazy">
+                <img :src="image" :alt="activeProduct.title" width="260" height="260" loading="lazy" @load="markGalleryImageLoaded(image)">
+                <span v-if="!loadedGalleryImages.has(image)" class="gg-image-card__loader" role="status" :aria-label="t('product.gallery.loading')">
+                  <span aria-hidden="true"></span>
+                </span>
               </button>
               <button
                 v-if="hiddenProductImagesCount"
