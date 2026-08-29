@@ -3379,7 +3379,27 @@ button.gg-image-card {
   }
 
   .gg-gallery-hit {
-    display: none;
+    display: block;
+    opacity: 1;
+  }
+
+  .gg-gallery-hit span {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 30px rgba(23, 49, 50, 0.16);
+    height: 42px;
+    width: 42px;
+  }
+
+  .gg-gallery-hit--prev span {
+    left: 10px;
+  }
+
+  .gg-gallery-hit--next span {
+    right: 10px;
+  }
+
+  .gg-gallery-hit:active span {
+    transform: translateY(-50%) scale(0.94);
   }
 
   .gg-gallery__thumb-row {
