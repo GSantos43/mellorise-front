@@ -28,6 +28,9 @@ export async function createCheckoutSession(item, options = {}) {
       customerEmail: options.customerEmail,
       customerNote: options.customerNote,
       couponCode: options.couponCode,
+      customer: options.customer,
+      billingAddress: options.billingAddress,
+      shippingAddress: options.shippingAddress,
       shippingProtection: options.shippingProtection
     })
   })

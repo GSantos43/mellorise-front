@@ -13,12 +13,29 @@ const emit = defineEmits(['checkout', 'update-quantity', 'remove'])
 const { t } = useI18n({ useScope: 'global' })
 
 const customerEmail = ref(props.discount?.email || '')
+const firstName = ref('')
+const lastName = ref('')
+const phone = ref('')
+const address1 = ref('')
+const address2 = ref('')
+const city = ref('')
+const state = ref('')
+const postalCode = ref('')
 const couponCode = ref(props.discount?.code || '')
 const customerNote = ref('')
 const selectedDelivery = ref('fast')
 const selectedPayment = ref('stripe')
 const isShippingProtectionEnabled = ref(false)
 const shippingProtectionPrice = 3.5
+
+const usStates = [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+  'DC'
+]
 
 const quantity = computed(() => Math.max(0, Number(props.item?.quantity || 0)))
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
@@ -29,7 +46,17 @@ const discountTotal = computed(() => props.item && hasSavedDiscount.value ? subt
 const shippingProtectionTotal = computed(() => props.item && isShippingProtectionEnabled.value ? shippingProtectionPrice : 0)
 const total = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingProtectionTotal.value)
 const totalSavings = computed(() => discountTotal.value)
-const canSubmit = computed(() => Boolean(props.item && customerEmail.value.trim() && !props.isCheckoutLoading))
+const hasRequiredAddress = computed(() => [
+  firstName.value,
+  lastName.value,
+  phone.value,
+  address1.value,
+  city.value,
+  state.value,
+  postalCode.value
+].every((value) => value.trim()))
+const fullName = computed(() => `${firstName.value.trim()} ${lastName.value.trim()}`.trim())
+const canSubmit = computed(() => Boolean(props.item && customerEmail.value.trim() && hasRequiredAddress.value && !props.isCheckoutLoading))
 
 watch(
   () => props.discount,
@@ -48,6 +75,39 @@ function submitCheckout() {
     customerEmail: customerEmail.value.trim(),
     customerNote: customerNote.value.trim(),
     couponCode: normalizedCoupon.value || undefined,
+    customer: {
+      firstName: firstName.value.trim(),
+      lastName: lastName.value.trim(),
+      name: fullName.value,
+      email: customerEmail.value.trim(),
+      phone: phone.value.trim()
+    },
+    shippingAddress: {
+      firstName: firstName.value.trim(),
+      lastName: lastName.value.trim(),
+      company: '',
+      address1: address1.value.trim(),
+      address2: address2.value.trim(),
+      city: city.value.trim(),
+      state: state.value.trim(),
+      postcode: postalCode.value.trim(),
+      country: 'US',
+      email: customerEmail.value.trim(),
+      phone: phone.value.trim()
+    },
+    billingAddress: {
+      firstName: firstName.value.trim(),
+      lastName: lastName.value.trim(),
+      company: '',
+      address1: address1.value.trim(),
+      address2: address2.value.trim(),
+      city: city.value.trim(),
+      state: state.value.trim(),
+      postcode: postalCode.value.trim(),
+      country: 'US',
+      email: customerEmail.value.trim(),
+      phone: phone.value.trim()
+    },
     shippingProtection: {
       enabled: isShippingProtectionEnabled.value,
       amount: shippingProtectionPrice
@@ -96,6 +156,44 @@ function submitCheckout() {
               <small>{{ t('checkout.delivery.addressText') }}</small>
             </span>
           </label>
+
+          <div class="mello-checkout-address-form">
+            <label class="mello-checkout-field">
+              <span>{{ t('checkout.contact.firstName') }}</span>
+              <input v-model="firstName" type="text" autocomplete="given-name" :placeholder="t('checkout.contact.firstNamePlaceholder')" required>
+            </label>
+            <label class="mello-checkout-field">
+              <span>{{ t('checkout.contact.lastName') }}</span>
+              <input v-model="lastName" type="text" autocomplete="family-name" :placeholder="t('checkout.contact.lastNamePlaceholder')" required>
+            </label>
+            <label class="mello-checkout-field">
+              <span>{{ t('checkout.contact.phone') }}</span>
+              <input v-model="phone" type="tel" autocomplete="tel" :placeholder="t('checkout.contact.phonePlaceholder')" required>
+            </label>
+            <label class="mello-checkout-field mello-checkout-field--wide">
+              <span>{{ t('checkout.delivery.address1') }}</span>
+              <input v-model="address1" type="text" autocomplete="address-line1" :placeholder="t('checkout.delivery.address1Placeholder')" required>
+            </label>
+            <label class="mello-checkout-field mello-checkout-field--wide">
+              <span>{{ t('checkout.delivery.address2') }}</span>
+              <input v-model="address2" type="text" autocomplete="address-line2" :placeholder="t('checkout.delivery.address2Placeholder')">
+            </label>
+            <label class="mello-checkout-field">
+              <span>{{ t('checkout.delivery.city') }}</span>
+              <input v-model="city" type="text" autocomplete="address-level2" :placeholder="t('checkout.delivery.cityPlaceholder')" required>
+            </label>
+            <label class="mello-checkout-field">
+              <span>{{ t('checkout.delivery.state') }}</span>
+              <select v-model="state" autocomplete="address-level1" required>
+                <option value="">{{ t('checkout.delivery.statePlaceholder') }}</option>
+                <option v-for="stateCode in usStates" :key="stateCode" :value="stateCode">{{ stateCode }}</option>
+              </select>
+            </label>
+            <label class="mello-checkout-field">
+              <span>{{ t('checkout.delivery.postalCode') }}</span>
+              <input v-model="postalCode" type="text" inputmode="numeric" autocomplete="postal-code" :placeholder="t('checkout.delivery.postalCodePlaceholder')" required>
+            </label>
+          </div>
 
           <div class="mello-checkout-option-list">
             <label class="mello-checkout-radio" :class="{ 'is-selected': selectedDelivery === 'fast' }">
@@ -147,6 +245,7 @@ function submitCheckout() {
             <span>{{ t('checkout.contact.email') }}</span>
             <input v-model="customerEmail" type="email" autocomplete="email" :placeholder="t('checkout.contact.emailPlaceholder')" required>
           </label>
+          <p class="mello-checkout-help">{{ t('checkout.contact.help') }}</p>
           <label class="mello-checkout-field">
             <span>{{ t('checkout.note.label') }}</span>
             <textarea v-model="customerNote" rows="2" :placeholder="t('checkout.note.placeholder')"></textarea>
@@ -421,6 +520,17 @@ function submitCheckout() {
   margin-top: 4px;
 }
 
+.mello-checkout-address-form {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 20px;
+}
+
+.mello-checkout-field--wide {
+  grid-column: 1 / -1;
+}
+
 .mello-checkout-option-list { display: grid; gap: 2px; }
 
 .mello-checkout-radio {
@@ -518,6 +628,7 @@ function submitCheckout() {
 }
 
 .mello-checkout-field input,
+.mello-checkout-field select,
 .mello-checkout-field textarea {
   appearance: none;
   background: #ffffff;
@@ -532,6 +643,13 @@ function submitCheckout() {
   width: 100%;
 }
 
+.mello-checkout-field select {
+  background-image: linear-gradient(45deg, transparent 50%, #6d6d6d 50%), linear-gradient(135deg, #6d6d6d 50%, transparent 50%);
+  background-position: calc(100% - 17px) 19px, calc(100% - 12px) 19px;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
+}
+
 .mello-checkout-field textarea {
   line-height: 1.38;
   min-height: 74px;
@@ -540,6 +658,7 @@ function submitCheckout() {
 }
 
 .mello-checkout-field input:focus,
+.mello-checkout-field select:focus,
 .mello-checkout-field textarea:focus {
   border-color: var(--checkout-blue);
   box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.18);
@@ -677,7 +796,12 @@ function submitCheckout() {
 }
 
 .mello-checkout-summary .mello-checkout-submit { margin-top: 22px; }
-.mello-checkout-submit:disabled { cursor: not-allowed; opacity: 0.58; }
+.mello-checkout-submit:disabled {
+  background: #b9d5ff;
+  color: rgba(255, 255, 255, 0.88);
+  cursor: not-allowed;
+  opacity: 1;
+}
 .mello-checkout-mobile-bar { display: none; }
 
 .mello-checkout-empty {
@@ -736,6 +860,10 @@ function submitCheckout() {
 
   .mello-checkout-product h2 {
     font-size: 16px;
+  }
+
+  .mello-checkout-address-form {
+    grid-template-columns: 1fr;
   }
 
   .mello-checkout-summary {
