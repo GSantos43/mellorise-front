@@ -27,6 +27,7 @@ const cartItem = ref(null)
 const activeDiscount = ref(null)
 const isCheckoutLoading = ref(false)
 const isCheckoutTransitionLoading = ref(false)
+const isCheckoutExitConfirmVisible = ref(false)
 const isPageLoading = ref(true)
 const { t, locale } = useI18n({ useScope: 'global' })
 let staticTranslationFrame = 0
@@ -34,6 +35,7 @@ let staticTranslationTimeout = 0
 let staticTranslationObserver = null
 let pageLoaderTimer = 0
 let checkoutTransitionTimer = 0
+let pendingCheckoutExitPath = ''
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
@@ -51,6 +53,11 @@ const currentPage = computed(() => {
   return 'home'
 })
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
+const shouldConfirmCheckoutExit = computed(() => (
+  currentPage.value === 'checkout' &&
+  Boolean(cartItem.value) &&
+  !isCheckoutLoading.value
+))
 
 async function navigate(event) {
   const anchor = event.target.closest('a')
@@ -61,6 +68,12 @@ async function navigate(event) {
 
   const url = new URL(href, window.location.origin)
   if (url.origin !== window.location.origin) return
+
+  if (shouldConfirmCheckoutExit.value && !url.pathname.startsWith('/checkout')) {
+    event.preventDefault()
+    requestCheckoutExit(`${url.pathname}${url.search}${url.hash}`)
+    return
+  }
 
   if (url.pathname === '/cart') {
     event.preventDefault()
@@ -214,6 +227,44 @@ function navigateToCheckout() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+function requestCheckoutExit(targetPath = '/products/wondernest-heightener-gummies-2026') {
+  pendingCheckoutExitPath = targetPath || '/products/wondernest-heightener-gummies-2026'
+  isCheckoutExitConfirmVisible.value = true
+}
+
+function keepCheckout() {
+  pendingCheckoutExitPath = ''
+  isCheckoutExitConfirmVisible.value = false
+}
+
+function confirmCheckoutExit() {
+  const targetPath = pendingCheckoutExitPath || '/products/wondernest-heightener-gummies-2026'
+  pendingCheckoutExitPath = ''
+  isCheckoutExitConfirmVisible.value = false
+  window.history.pushState({}, '', targetPath)
+  route.value = window.location.pathname
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function handlePopState() {
+  const nextPath = window.location.pathname
+
+  if (shouldConfirmCheckoutExit.value && !nextPath.startsWith('/checkout')) {
+    window.history.pushState({}, '', route.value)
+    requestCheckoutExit(nextPath)
+    return
+  }
+
+  route.value = nextPath
+}
+
+function handleBeforeUnload(event) {
+  if (!shouldConfirmCheckoutExit.value) return
+
+  event.preventDefault()
+  event.returnValue = ''
+}
+
 function updateCartQuantity(quantity) {
   if (!cartItem.value) return
   cartItem.value = {
@@ -294,9 +345,8 @@ onMounted(async () => {
   showPageLoader(260)
   scheduleStaticTranslation()
 
-  window.addEventListener('popstate', () => {
-    route.value = window.location.pathname
-  })
+  window.addEventListener('popstate', handlePopState)
+  window.addEventListener('beforeunload', handleBeforeUnload)
 
   staticTranslationObserver = new MutationObserver(() => {
     scheduleStaticTranslation()
@@ -309,6 +359,8 @@ onMounted(async () => {
 
 onUnmounted(() => {
   hideCheckoutTransition()
+  window.removeEventListener('popstate', handlePopState)
+  window.removeEventListener('beforeunload', handleBeforeUnload)
 
   if (pageLoaderTimer) {
     window.clearTimeout(pageLoaderTimer)
@@ -346,6 +398,38 @@ watch(activeDiscount, persistDiscount, { deep: true })
             <strong>{{ t('checkoutTransition.title') }}</strong>
             <small>{{ t('checkoutTransition.text') }}</small>
           </div>
+        </div>
+      </Transition>
+    </Teleport>
+    <Teleport to="body">
+      <Transition name="mello-checkout-exit" appear>
+        <div
+          v-if="isCheckoutExitConfirmVisible"
+          class="mello-checkout-exit"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="t('checkoutExit.ariaLabel')"
+        >
+          <button class="mello-checkout-exit__shade" type="button" :aria-label="t('checkoutExit.keep')" @click="keepCheckout"></button>
+          <section class="mello-checkout-exit__card">
+            <button class="mello-checkout-exit__close" type="button" :aria-label="t('checkoutExit.keep')" @click="keepCheckout">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+            <img class="mello-checkout-exit__logo" src="/assets/logo-oficial.png" alt="MelloRise" />
+            <span class="mello-checkout-exit__badge">{{ t('checkoutExit.badge') }}</span>
+            <h2>{{ t('checkoutExit.title') }}</h2>
+            <p>{{ t('checkoutExit.text') }}</p>
+            <div class="mello-checkout-exit__actions">
+              <button class="mello-checkout-exit__primary" type="button" @click="keepCheckout">
+                {{ t('checkoutExit.keep') }}
+              </button>
+              <button class="mello-checkout-exit__secondary" type="button" @click="confirmCheckoutExit">
+                {{ t('checkoutExit.leave') }}
+              </button>
+            </div>
+          </section>
         </div>
       </Transition>
     </Teleport>
@@ -483,9 +567,234 @@ watch(activeDiscount, persistDiscount, { deep: true })
   }
 }
 
+.mello-checkout-exit {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: max(22px, env(safe-area-inset-top)) 18px max(22px, env(safe-area-inset-bottom));
+  position: fixed;
+  z-index: 21000;
+}
+
+.mello-checkout-exit__shade {
+  appearance: none;
+  background: rgba(3, 12, 13, 0.72);
+  backdrop-filter: blur(9px);
+  border: 0;
+  cursor: pointer;
+  inset: 0;
+  padding: 0;
+  position: absolute;
+}
+
+.mello-checkout-exit__card {
+  background: #fbfcfb;
+  border: 1px solid rgba(16, 40, 41, 0.12);
+  border-radius: 22px;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.34);
+  color: #102829;
+  font-family: var(--font-body-family);
+  max-width: 430px;
+  overflow: hidden;
+  padding: 34px 28px 28px;
+  position: relative;
+  text-align: center;
+  width: min(100%, 430px);
+}
+
+.mello-checkout-exit__card::before {
+  background:
+    radial-gradient(circle at 15% 12%, rgba(119, 205, 250, 0.2), transparent 32%),
+    radial-gradient(circle at 86% 0%, rgba(44, 213, 177, 0.16), transparent 30%);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.mello-checkout-exit__close {
+  align-items: center;
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 12px 28px rgba(16, 40, 41, 0.12);
+  color: #536468;
+  cursor: pointer;
+  display: inline-flex;
+  height: 42px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  transition: color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  width: 42px;
+  z-index: 1;
+}
+
+.mello-checkout-exit__close:hover,
+.mello-checkout-exit__close:focus-visible {
+  color: #102829;
+  outline: 0;
+  box-shadow: 0 16px 32px rgba(16, 40, 41, 0.18);
+  transform: translateY(-1px);
+}
+
+.mello-checkout-exit__close svg {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.4;
+  width: 22px;
+}
+
+.mello-checkout-exit__logo,
+.mello-checkout-exit__badge,
+.mello-checkout-exit__card h2,
+.mello-checkout-exit__card p,
+.mello-checkout-exit__actions {
+  position: relative;
+  z-index: 1;
+}
+
+.mello-checkout-exit__logo {
+  display: block;
+  height: 28px;
+  margin: 4px auto 24px;
+  object-fit: contain;
+  width: auto;
+}
+
+.mello-checkout-exit__badge {
+  color: #0a936f;
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.mello-checkout-exit__card h2 {
+  color: #102829;
+  font-size: clamp(34px, 6vw, 46px);
+  font-weight: 950;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.mello-checkout-exit__card p {
+  color: #536468;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.45;
+  margin: 16px auto 0;
+  max-width: 34ch;
+}
+
+.mello-checkout-exit__actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.mello-checkout-exit__primary,
+.mello-checkout-exit__secondary {
+  align-items: center;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 18px;
+  transition: box-shadow 180ms ease, transform 180ms ease, background 180ms ease, color 180ms ease;
+  width: 100%;
+}
+
+.mello-checkout-exit__primary {
+  background: #77cdfa;
+  box-shadow: 0 18px 36px rgba(119, 205, 250, 0.32);
+  color: #102829;
+}
+
+.mello-checkout-exit__secondary {
+  background: transparent;
+  color: #536468;
+  min-height: 46px;
+}
+
+.mello-checkout-exit__primary:hover,
+.mello-checkout-exit__primary:focus-visible {
+  background: #66c6f8;
+  box-shadow: 0 22px 46px rgba(119, 205, 250, 0.42);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-checkout-exit__secondary:hover,
+.mello-checkout-exit__secondary:focus-visible {
+  color: #102829;
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-checkout-exit-enter-active,
+.mello-checkout-exit-leave-active {
+  transition: opacity 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-exit-enter-from,
+.mello-checkout-exit-leave-to {
+  opacity: 0;
+}
+
+.mello-checkout-exit-enter-active .mello-checkout-exit__shade,
+.mello-checkout-exit-leave-active .mello-checkout-exit__shade {
+  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-exit-enter-from .mello-checkout-exit__shade,
+.mello-checkout-exit-leave-to .mello-checkout-exit__shade {
+  backdrop-filter: blur(0);
+  opacity: 0;
+}
+
+.mello-checkout-exit-enter-active .mello-checkout-exit__card {
+  transition: opacity 340ms cubic-bezier(0.16, 1, 0.3, 1), filter 380ms cubic-bezier(0.16, 1, 0.3, 1), transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-exit-leave-active .mello-checkout-exit__card {
+  transition: opacity 220ms ease, filter 260ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-exit-enter-from .mello-checkout-exit__card {
+  filter: blur(10px);
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+}
+
+.mello-checkout-exit-leave-to .mello-checkout-exit__card {
+  filter: blur(12px);
+  opacity: 0;
+  transform: translateY(-8px) scale(0.985);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mello-checkout-transition,
-  .mello-checkout-transition__card {
+  .mello-checkout-transition__card,
+  .mello-checkout-exit,
+  .mello-checkout-exit__shade,
+  .mello-checkout-exit__card {
     transition: opacity 160ms ease;
   }
 
@@ -558,6 +867,24 @@ watch(activeDiscount, persistDiscount, { deep: true })
 }
 
 @media (max-width: 640px) {
+  .mello-checkout-exit {
+    align-items: flex-end;
+    padding-inline: 12px;
+  }
+
+  .mello-checkout-exit__card {
+    border-radius: 20px 20px 16px 16px;
+    padding: 32px 22px 22px;
+  }
+
+  .mello-checkout-exit__card h2 {
+    font-size: clamp(32px, 11vw, 42px);
+  }
+
+  .mello-checkout-exit__card p {
+    font-size: 15px;
+  }
+
   .mello-floating-cart {
     bottom: max(16px, calc(env(safe-area-inset-bottom) + 14px));
     height: 56px;

@@ -441,6 +441,14 @@ export const messages = {
       title: 'Preparando tu checkout',
       text: 'Estamos asegurando tu carrito y preparando el pago.'
     },
+    checkoutExit: {
+      ariaLabel: 'Confirmar salida del checkout',
+      badge: 'Pedido en progreso',
+      title: '¿Salir sin finalizar?',
+      text: 'Tu descuento, cantidades seleccionadas y carrito están listos. Quédate para terminar tu compra segura.',
+      keep: 'Continuar mi compra',
+      leave: 'Salir del checkout'
+    },
     checkout: {
       eyebrow: 'Checkout seguro',
       title: 'Finaliza tu compra',
@@ -965,6 +973,14 @@ export const messages = {
     checkoutTransition: {
       title: 'Preparing your checkout',
       text: 'We are securing your cart and preparing payment.'
+    },
+    checkoutExit: {
+      ariaLabel: 'Confirm leaving checkout',
+      badge: 'Order in progress',
+      title: 'Leave without finishing?',
+      text: 'Your discount, selected bottles, and cart are ready. Stay here to finish your secure checkout.',
+      keep: 'Continue my purchase',
+      leave: 'Leave checkout'
     },
     checkout: {
       eyebrow: 'Secure checkout',
