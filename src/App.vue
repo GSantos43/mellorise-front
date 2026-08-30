@@ -16,12 +16,14 @@ import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
+const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
 
 const products = ref([])
 const isLoading = ref(true)
 const route = ref(window.location.pathname)
 const isCartOpen = ref(false)
 const cartItem = ref(null)
+const activeDiscount = ref(null)
 const isCheckoutLoading = ref(false)
 const isPageLoading = ref(true)
 const { t, locale } = useI18n({ useScope: 'global' })
@@ -96,6 +98,12 @@ function addToCart(payload = {}) {
   openCart()
 }
 
+function applyDiscount(discount) {
+  if (!discount?.code || !discount?.email) return
+
+  activeDiscount.value = discount
+}
+
 function readSavedCartItem() {
   try {
     const savedCartItem = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || 'null')
@@ -134,6 +142,37 @@ function persistCartItem(item) {
   }
 }
 
+function readSavedDiscount() {
+  try {
+    const discount = JSON.parse(window.localStorage.getItem(DISCOUNT_STORAGE_KEY) || 'null')
+
+    if (!discount?.code || !discount?.email) return null
+
+    if (discount.expiresAt && new Date(discount.expiresAt).getTime() <= Date.now()) {
+      window.localStorage.removeItem(DISCOUNT_STORAGE_KEY)
+      return null
+    }
+
+    return discount
+  } catch (error) {
+    console.warn(error)
+    return null
+  }
+}
+
+function persistDiscount(discount) {
+  try {
+    if (!discount) {
+      window.localStorage.removeItem(DISCOUNT_STORAGE_KEY)
+      return
+    }
+
+    window.localStorage.setItem(DISCOUNT_STORAGE_KEY, JSON.stringify(discount))
+  } catch (error) {
+    console.warn(error)
+  }
+}
+
 function openCart() {
   isCartOpen.value = true
 }
@@ -160,6 +199,11 @@ async function goToStripeCheckout(options = {}) {
   isCheckoutLoading.value = true
 
   try {
+    if (activeDiscount.value?.code) {
+      options.couponCode = activeDiscount.value.code
+      options.customerEmail = activeDiscount.value.email
+    }
+
     const checkoutUrl = await createCheckoutSession(cartItem.value, options)
     window.location.href = checkoutUrl
   } catch (error) {
@@ -202,6 +246,7 @@ async function scheduleStaticTranslation() {
 onMounted(async () => {
   scheduleStaticTranslation()
   cartItem.value = readSavedCartItem()
+  activeDiscount.value = readSavedDiscount()
   products.value = await fetchProducts({
     onUpdate: (freshProducts) => {
       products.value = freshProducts
@@ -247,13 +292,14 @@ watch([route, locale], () => {
 
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
 watch(cartItem, persistCartItem, { deep: true })
+watch(activeDiscount, persistDiscount, { deep: true })
 </script>
 
 <template>
   <main data-template="vue3-store" @click="navigate">
     <SiteHeader :current-route="route" />
     <PageLoader :active="isPageLoading" />
-    <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" />
+    <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
     <ContactPage v-else-if="currentPage === 'contact'" />
     <FaqPage v-else-if="currentPage === 'faq'" />
@@ -272,6 +318,7 @@ watch(cartItem, persistCartItem, { deep: true })
     <CartDrawer
       :is-open="isCartOpen"
       :item="cartItem"
+      :discount="activeDiscount"
       :is-checkout-loading="isCheckoutLoading"
       @close="closeCart"
       @update-quantity="updateCartQuantity"

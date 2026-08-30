@@ -27,6 +27,7 @@ export async function createCheckoutSession(item, options = {}) {
       cancelUrl: `${origin}${window.location.pathname}`,
       customerEmail: options.customerEmail,
       customerNote: options.customerNote,
+      couponCode: options.couponCode,
       shippingProtection: options.shippingProtection
     })
   })

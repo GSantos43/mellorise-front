@@ -243,8 +243,14 @@
 .gh-offer__kicker { margin: 0 0 6px; color: var(--gh-muted); font-size: 13px; font-weight: 900; text-transform: uppercase; }
 .gh-offer__title { max-width: 420px; margin: 0; font-size: clamp(34px, 4vw, 46px); line-height: 1.1; font-weight: 950; }
 .gh-offer__discount { margin: 22px 0 0; color: var(--gh-blue); font-size: clamp(58px, 8vw, 78px); line-height: 0.92; font-weight: 950; }
-.gh-offer__subtitle { margin: 8px 0 30px; font-size: clamp(28px, 4vw, 40px); line-height: 1.1; font-weight: 950; }
-.gh-offer__primary { width: min(380px, 100%); min-height: 60px; display: inline-flex; align-items: center; justify-content: center; background: #050505; color: #fff; text-decoration: none; font-size: 23px; font-weight: 950; padding: 0 22px; }
+.gh-offer__subtitle { margin: 8px 0 22px; font-size: clamp(25px, 4vw, 36px); line-height: 1.1; font-weight: 950; }
+.gh-offer__form { width: min(380px, 100%); display: grid; gap: 10px; margin: 0; text-align: left; }
+.gh-offer__label { color: #1f3132; font-size: 13px; font-weight: 900; line-height: 1.2; }
+.gh-offer__input { width: 100%; min-height: 54px; border: 1px solid rgba(23, 49, 50, 0.22); border-radius: 10px; background: #fffaf2; color: #071415; font: inherit; font-size: 16px; font-weight: 700; padding: 0 15px; outline: 0; }
+.gh-offer__input:focus { border-color: #5a9091; box-shadow: 0 0 0 3px rgba(119, 205, 250, 0.24); }
+.gh-offer__error { margin: 0; color: #9f1239; font-size: 13px; font-weight: 800; line-height: 1.25; }
+.gh-offer__primary { width: min(380px, 100%); min-height: 60px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: #050505; color: #fff; cursor: pointer; text-decoration: none; font: inherit; font-size: 21px; font-weight: 950; padding: 0 22px; }
+.gh-offer__primary:disabled { cursor: wait; opacity: 0.64; }
 .gh-offer__secondary { margin-top: 28px; border: 0; background: transparent; color: #050505; font-size: 18px; font-weight: 850; cursor: pointer; }
 
 @media (max-width: 920px) {

@@ -12,6 +12,10 @@ const props = defineProps({
     type: Object,
     default: null
   },
+  discount: {
+    type: Object,
+    default: null
+  },
   isCheckoutLoading: {
     type: Boolean,
     default: false
@@ -23,10 +27,12 @@ const { t } = useI18n({ useScope: 'global' })
 
 const quantity = computed(() => props.item?.quantity || 0)
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
+const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount || 0)))
+const discountTotal = computed(() => props.item && props.discount?.code ? subtotal.value * (discountPercent.value / 100) : 0)
 const isShippingProtectionEnabled = ref(false)
 const shippingProtectionPrice = 3.5
 const shippingProtectionTotal = computed(() => props.item && isShippingProtectionEnabled.value ? shippingProtectionPrice : 0)
-const checkoutTotal = computed(() => subtotal.value + shippingProtectionTotal.value)
+const checkoutTotal = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingProtectionTotal.value)
 const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') : t('cart.manyItems', { count: quantity.value }))
 
 function checkout() {
@@ -34,7 +40,9 @@ function checkout() {
     shippingProtection: {
       enabled: isShippingProtectionEnabled.value,
       amount: shippingProtectionPrice
-    }
+    },
+    couponCode: props.discount?.code,
+    customerEmail: props.discount?.email
   })
 }
 
@@ -134,6 +142,11 @@ onUnmounted(() => {
             >
               <span></span>
             </button>
+          </div>
+
+          <div v-if="item && discount?.code" class="mello-cart-discount">
+            <span>{{ t('cart.discount.label') }} <strong>{{ discount.code }}</strong></span>
+            <b>-{{ formatMoney(discountTotal) }}</b>
           </div>
 
           <button class="mello-cart-checkout" type="button" :disabled="!item || isCheckoutLoading" @click="checkout">
@@ -585,6 +598,33 @@ onUnmounted(() => {
 
 .mello-shipping-protection__toggle.is-active span {
   transform: translateX(16px);
+}
+
+.mello-cart-discount {
+  align-items: center;
+  background: #effaf6;
+  border: 1px solid rgba(47, 141, 92, 0.16);
+  color: #12312a;
+  display: flex;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 12px;
+  justify-content: space-between;
+  margin: 0 -7px 12px;
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+.mello-cart-discount strong {
+  color: #006f12;
+  font-weight: 950;
+}
+
+.mello-cart-discount b {
+  color: #006f12;
+  font-size: 14px;
+  font-weight: 950;
+  white-space: nowrap;
 }
 
 .mello-cart-checkout {

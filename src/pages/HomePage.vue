@@ -1,8 +1,9 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { createWelcomeDiscount } from '../services/discounts'
 
-defineProps({
+const props = defineProps({
   products: {
     type: Array,
     default: () => []
@@ -10,8 +11,13 @@ defineProps({
   isLoading: {
     type: Boolean,
     default: false
+  },
+  activeDiscount: {
+    type: Object,
+    default: null
   }
 })
+const emit = defineEmits(['discount-created'])
 
 const { t } = useI18n()
 
@@ -156,6 +162,9 @@ const comparisonNegative = [
 
 const OFFER_LOAD_COUNT_KEY = 'mellorise-offer-load-count'
 const isOfferVisible = ref(false)
+const offerEmail = ref('')
+const offerError = ref('')
+const isOfferSubmitting = ref(false)
 const homeRoot = ref(null)
 const densityCard = ref(null)
 const isDensityVisible = ref(false)
@@ -237,6 +246,25 @@ function closeOffer() {
   isOfferVisible.value = false
 }
 
+async function claimWelcomeOffer() {
+  if (isOfferSubmitting.value) return
+
+  offerError.value = ''
+  isOfferSubmitting.value = true
+
+  try {
+    const discount = await createWelcomeDiscount(offerEmail.value)
+    emit('discount-created', discount)
+    closeOffer()
+    window.history.pushState({}, '', '/products/wondernest-heightener-gummies-2026')
+    window.dispatchEvent(new Event('popstate'))
+  } catch (error) {
+    offerError.value = error.message || t('home.offer.error')
+  } finally {
+    isOfferSubmitting.value = false
+  }
+}
+
 onMounted(() => {
   isOfferVisible.value = shouldShowOffer()
   setupScrollReveal()
@@ -304,12 +332,28 @@ onUnmounted(() => {
           <span></span>
         </button>
         <img class="gh-offer__logo" src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
-        <p class="gh-offer__kicker">Oferta de bienvenida</p>
-        <h2 class="gh-offer__title">¿Te gustaría ahorrar en tu primera orden?</h2>
+        <p class="gh-offer__kicker">{{ t('home.offer.kicker') }}</p>
+        <h2 class="gh-offer__title">{{ t('home.offer.title') }}</h2>
         <p class="gh-offer__discount">10% OFF</p>
-        <p class="gh-offer__subtitle">En tu primera compra</p>
-        <a class="gh-offer__primary" href="/products/wondernest-heightener-gummies-2026" @click="closeOffer">Sí, quiero mi descuento</a>
-        <button class="gh-offer__secondary" type="button" @click="closeOffer">No, prefiero continuar</button>
+        <p class="gh-offer__subtitle">{{ props.activeDiscount?.code ? t('home.offer.alreadySaved') : t('home.offer.subtitle') }}</p>
+        <form v-if="!props.activeDiscount?.code" class="gh-offer__form" @submit.prevent="claimWelcomeOffer">
+          <label class="gh-offer__label" for="welcome-offer-email">{{ t('home.offer.emailLabel') }}</label>
+          <input
+            id="welcome-offer-email"
+            v-model="offerEmail"
+            class="gh-offer__input"
+            type="email"
+            autocomplete="email"
+            :placeholder="t('home.offer.emailPlaceholder')"
+            required
+          >
+          <p v-if="offerError" class="gh-offer__error">{{ offerError }}</p>
+          <button class="gh-offer__primary" type="submit" :disabled="isOfferSubmitting">
+            {{ isOfferSubmitting ? t('home.offer.loading') : t('home.offer.claim') }}
+          </button>
+        </form>
+        <a v-else class="gh-offer__primary" href="/products/wondernest-heightener-gummies-2026" @click="closeOffer">{{ t('home.offer.shopWithDiscount') }}</a>
+        <button class="gh-offer__secondary" type="button" @click="closeOffer">{{ t('home.offer.dismiss') }}</button>
       </div>
     </div>
 

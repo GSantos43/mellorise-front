@@ -160,6 +160,19 @@ export const messages = {
       }
     },
     home: {
+      offer: {
+        kicker: 'Oferta de bienvenida',
+        title: '¿Te gustaría ahorrar en tu primera orden?',
+        subtitle: 'En tu primera compra',
+        alreadySaved: 'Tu descuento está listo',
+        emailLabel: 'Email para reservar el cupón',
+        emailPlaceholder: 'tu@email.com',
+        claim: 'Sí, quiero mi descuento',
+        loading: 'Generando cupón...',
+        error: 'No fue posible generar el cupón. Intenta de nuevo.',
+        dismiss: 'No, prefiero continuar',
+        shopWithDiscount: 'Comprar con descuento'
+      },
       nutrients: {
         badge: 'All In One Nutrients',
         title: 'Todo en una presentación',
@@ -409,6 +422,9 @@ export const messages = {
         title: 'Protección de envío',
         text: 'Protege tu pedido contra daños, pérdidas o robo durante el envío.',
         toggle: 'Activar protección de envío'
+      },
+      discount: {
+        label: 'Descuento aplicado'
       }
     }
   },
@@ -573,6 +589,19 @@ export const messages = {
       }
     },
     home: {
+      offer: {
+        kicker: 'Welcome offer',
+        title: 'Want to save on your first order?',
+        subtitle: 'On your first purchase',
+        alreadySaved: 'Your discount is ready',
+        emailLabel: 'Email to reserve your coupon',
+        emailPlaceholder: 'you@email.com',
+        claim: 'Yes, claim my discount',
+        loading: 'Creating coupon...',
+        error: 'We could not create the coupon. Please try again.',
+        dismiss: 'No, I prefer to continue',
+        shopWithDiscount: 'Shop with discount'
+      },
       nutrients: {
         badge: 'All In One Nutrients',
         title: 'Everything in one',
@@ -822,6 +851,9 @@ export const messages = {
         title: 'Shipping protection',
         text: 'Protect your order against damage, loss, or theft during shipping.',
         toggle: 'Toggle shipping protection'
+      },
+      discount: {
+        label: 'Discount applied'
       }
     }
   }
