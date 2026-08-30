@@ -171,43 +171,44 @@ function launchOfferConfetti() {
 
   const colors = ['#31d6b0', '#77cdfa', '#fabd00', '#ff7733', '#173132', '#ffffff']
   const timestamp = Date.now()
+  const isMobile = window.matchMedia('(max-width: 700px)').matches
 
-  const fallingPieces = Array.from({ length: 34 }, (_, index) => ({
+  const fallingPieces = Array.from({ length: isMobile ? 18 : 34 }, (_, index) => ({
     id: `${timestamp}-${index}`,
-    animation: 'melloCheckoutConfettiFall',
+    animation: isMobile ? 'melloCheckoutConfettiMobileFall' : 'melloCheckoutConfettiFall',
     color: colors[index % colors.length],
     left: `${12 + Math.random() * 76}%`,
     top: `${10 + Math.random() * 12}vh`,
     drift: `${(Math.random() - 0.5) * 260}px`,
     lift: '0px',
     rotation: `${Math.random() * 720 - 360}deg`,
-    delay: `${Math.random() * 220}ms`,
-    duration: `${1850 + Math.random() * 950}ms`,
+    delay: `${Math.random() * (isMobile ? 120 : 220)}ms`,
+    duration: `${isMobile ? 1320 + Math.random() * 520 : 1850 + Math.random() * 950}ms`,
     width: `${5 + Math.random() * 5}px`,
     height: `${10 + Math.random() * 8}px`,
     radius: Math.random() > 0.68 ? '999px' : '2px'
   }))
 
   const burstPieces = ['left', 'right'].flatMap((side) => (
-    Array.from({ length: 18 }, (_, index) => {
+    Array.from({ length: isMobile ? 16 : 18 }, (_, index) => {
       const direction = side === 'left' ? 1 : -1
-      const drift = direction * (120 + Math.random() * 280)
-      const lift = -120 + Math.random() * 250
+      const drift = direction * (isMobile ? 190 + Math.random() * 310 : 120 + Math.random() * 280)
+      const lift = isMobile ? -90 + Math.random() * 190 : -120 + Math.random() * 250
       const rotation = direction * (180 + Math.random() * 780)
 
       return {
         id: `${timestamp}-${side}-${index}`,
-        animation: 'melloCheckoutConfettiBurst',
+        animation: isMobile ? 'melloCheckoutConfettiMobileBurst' : 'melloCheckoutConfettiBurst',
         color: colors[(index + (side === 'left' ? 0 : 3)) % colors.length],
-        left: side === 'left' ? '4vw' : '96vw',
-        top: `${34 + Math.random() * 24}vh`,
+        left: side === 'left' ? (isMobile ? '-14vw' : '4vw') : (isMobile ? '114vw' : '96vw'),
+        top: `${isMobile ? 30 + Math.random() * 34 : 34 + Math.random() * 24}vh`,
         drift: `${drift}px`,
         midDrift: `${drift * 0.72}px`,
         lift: `${lift}px`,
         rotation: `${rotation}deg`,
         midRotation: `${rotation * 0.58}deg`,
-        delay: `${80 + Math.random() * 150}ms`,
-        duration: `${1250 + Math.random() * 650}ms`,
+        delay: `${isMobile ? Math.random() * 90 : 80 + Math.random() * 150}ms`,
+        duration: `${isMobile ? 980 + Math.random() * 420 : 1250 + Math.random() * 650}ms`,
         width: `${5 + Math.random() * 6}px`,
         height: `${8 + Math.random() * 10}px`,
         radius: Math.random() > 0.55 ? '999px' : '2px'
@@ -1400,6 +1401,31 @@ onUnmounted(() => {
   }
 }
 
+@keyframes melloCheckoutConfettiMobileFall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -18px, 0) rotate(0deg) scale(0.86);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  34% {
+    opacity: 0.9;
+  }
+
+  58% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), 28vh, 0) rotate(var(--confetti-rotation)) scale(0.96);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), 34vh, 0) rotate(var(--confetti-rotation)) scale(0.96);
+  }
+}
+
 @keyframes melloCheckoutUpsellGlow {
   0%,
   100% {
@@ -1453,6 +1479,27 @@ onUnmounted(() => {
   100% {
     opacity: 0;
     transform: translate3d(var(--confetti-drift), calc(var(--confetti-lift) + 34vh), 0) rotate(var(--confetti-rotation)) scale(0.95);
+  }
+}
+
+@keyframes melloCheckoutConfettiMobileBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.45);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 1;
+    transform: translate3d(var(--confetti-mid-drift), var(--confetti-lift), 0) rotate(var(--confetti-mid-rotation)) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), var(--confetti-lift), 0) rotate(var(--confetti-rotation)) scale(0.94);
   }
 }
 
