@@ -324,7 +324,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <FaqPage v-else-if="currentPage === 'faq'" />
     <InstitutionalPage v-else-if="currentPage === 'institutional'" :route="route" />
     <CollectionPage v-else :products="products" :is-loading="isLoading" @add-to-cart="addToCart" />
-    <StoreFooter />
+    <StoreFooter v-if="currentPage !== 'checkout'" />
     <button
       v-if="currentPage !== 'checkout'"
       class="mello-floating-cart"

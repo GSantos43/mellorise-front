@@ -447,6 +447,20 @@ export const messages = {
         label: 'Producto',
         badge: 'Más vendido'
       },
+      quantity: {
+        title: 'Cantidad',
+        current: '{count} unidad en tu pedido',
+        help: 'Ajusta cuántos frascos quieres antes de pagar.',
+        unitPrice: '{price} por unidad',
+        decrease: 'Disminuir cantidad',
+        increase: 'Aumentar cantidad'
+      },
+      upsell: {
+        badge: 'Mejor valor',
+        title: 'Lleva 3 y paga 2',
+        text: 'Agrega el pack Buy 2 Get 1 para tener una rutina más completa y reducir el costo por frasco.',
+        action: 'Ver pack Buy 2 Get 1'
+      },
       contact: {
         title: 'Email de compra',
         firstName: 'Nombre',
@@ -966,6 +980,20 @@ export const messages = {
       product: {
         label: 'Product',
         badge: 'Best seller'
+      },
+      quantity: {
+        title: 'Quantity',
+        current: '{count} item in your order',
+        help: 'Adjust how many bottles you want before payment.',
+        unitPrice: '{price} each',
+        decrease: 'Decrease quantity',
+        increase: 'Increase quantity'
+      },
+      upsell: {
+        badge: 'Best value',
+        title: 'Buy 2, get 1 free',
+        text: 'Upgrade to the Buy 2 Get 1 pack for a longer routine and a better cost per bottle.',
+        action: 'View Buy 2 Get 1 pack'
       },
       contact: {
         title: 'Purchase email',

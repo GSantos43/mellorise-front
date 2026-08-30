@@ -46,6 +46,8 @@ const localeOptions = computed(() => supportedLocales.map((value) => ({
 
 const quantity = computed(() => Math.max(0, Number(props.item?.quantity || 0)))
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
+const unitPrice = computed(() => Number(props.item?.unitPrice || props.item?.price || 0))
+const isSingleQuantity = computed(() => quantity.value === 1)
 const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount || 0)))
 const normalizedCoupon = computed(() => couponCode.value.trim().toUpperCase())
 const hasSavedDiscount = computed(() => Boolean(props.discount?.code && normalizedCoupon.value === props.discount.code))
@@ -125,6 +127,10 @@ function submitCheckout() {
 function changeLocale(value) {
   setLocale(value)
 }
+
+function setCheckoutQuantity(nextQuantity) {
+  emit('update-quantity', Math.max(1, Number(nextQuantity || 1)))
+}
 </script>
 
 <template>
@@ -180,18 +186,39 @@ function changeLocale(value) {
           <strong>{{ formatMoney(subtotal) }}</strong>
         </section>
 
+        <section class="mello-checkout-section" aria-labelledby="checkout-quantity">
+          <div class="mello-checkout-section__head">
+            <h2 id="checkout-quantity">{{ t('checkout.quantity.title') }}</h2>
+            <span>{{ t('checkout.quantity.unitPrice', { price: formatMoney(unitPrice) }) }}</span>
+          </div>
+
+          <div class="mello-checkout-quantity-row">
+            <div>
+              <strong>{{ t('checkout.quantity.current', { count: quantity }) }}</strong>
+              <small>{{ t('checkout.quantity.help') }}</small>
+            </div>
+            <div class="mello-checkout-quantity-control" :aria-label="t('checkout.quantity.title')">
+              <button type="button" :aria-label="t('checkout.quantity.decrease')" @click="setCheckoutQuantity(quantity - 1)">-</button>
+              <output>{{ quantity }}</output>
+              <button type="button" :aria-label="t('checkout.quantity.increase')" @click="setCheckoutQuantity(quantity + 1)">+</button>
+            </div>
+          </div>
+
+          <article v-if="isSingleQuantity" class="mello-checkout-upsell">
+            <div>
+              <span>{{ t('checkout.upsell.badge') }}</span>
+              <h3>{{ t('checkout.upsell.title') }}</h3>
+              <p>{{ t('checkout.upsell.text') }}</p>
+            </div>
+            <a href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('checkout.upsell.action') }}</a>
+          </article>
+        </section>
+
         <section class="mello-checkout-section" aria-labelledby="checkout-delivery">
           <div class="mello-checkout-section__head">
             <h2 id="checkout-delivery">{{ t('checkout.delivery.title') }}</h2>
           </div>
-
-          <label class="mello-checkout-address">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-4.4 7-11a7 7 0 1 0-14 0c0 6.6 7 11 7 11Z"/><path d="M12 10.5h.01"/></svg>
-            <span>
-              <strong>{{ t('checkout.delivery.addressTitle') }}</strong>
-              <small>{{ t('checkout.delivery.addressText') }}</small>
-            </span>
-          </label>
+          <p class="mello-checkout-section__intro">{{ t('checkout.delivery.addressText') }}</p>
 
           <div class="mello-checkout-address-form">
             <label class="mello-checkout-field">
@@ -342,15 +369,6 @@ function changeLocale(value) {
         </div>
       </aside>
 
-      <footer class="mello-checkout-mobile-bar">
-        <div>
-          <small v-if="totalSavings">{{ t('checkout.summary.saved', { amount: formatMoney(totalSavings) }) }}</small>
-          <strong>{{ formatMoney(total) }}</strong>
-        </div>
-        <button class="mello-checkout-submit" type="submit" :disabled="!canSubmit">
-          {{ isCheckoutLoading ? t('checkout.summary.loading') : t('checkout.summary.pay') }}
-        </button>
-      </footer>
     </form>
   </section>
 </template>
@@ -530,6 +548,140 @@ function changeLocale(value) {
   white-space: nowrap;
 }
 
+.mello-checkout-quantity-row {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.mello-checkout-quantity-row > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.mello-checkout-quantity-row strong {
+  color: #173132;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.mello-checkout-quantity-row small {
+  color: var(--checkout-muted);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.mello-checkout-quantity-control {
+  align-items: center;
+  border: 1px solid rgba(23, 49, 50, 0.16);
+  border-radius: 999px;
+  display: inline-grid;
+  flex: 0 0 auto;
+  grid-template-columns: 42px 42px 42px;
+  min-height: 44px;
+  overflow: hidden;
+}
+
+.mello-checkout-quantity-control button {
+  align-items: center;
+  appearance: none;
+  background: #ffffff;
+  border: 0;
+  color: #173132;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 23px;
+  font-weight: 520;
+  height: 44px;
+  justify-content: center;
+}
+
+.mello-checkout-quantity-control button:hover,
+.mello-checkout-quantity-control button:focus-visible {
+  background: rgba(239, 249, 255, 0.95);
+  outline: 0;
+}
+
+.mello-checkout-quantity-control output {
+  align-items: center;
+  border-left: 1px solid rgba(23, 49, 50, 0.12);
+  border-right: 1px solid rgba(23, 49, 50, 0.12);
+  color: #173132;
+  display: inline-flex;
+  font-size: 16px;
+  font-weight: 850;
+  height: 44px;
+  justify-content: center;
+}
+
+.mello-checkout-upsell {
+  align-items: center;
+  background: #173132;
+  border-radius: 12px;
+  color: #ffffff;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.mello-checkout-upsell span {
+  background: #77cdfa;
+  border-radius: 999px;
+  color: #0f2a2c;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+  margin-bottom: 9px;
+  padding: 7px 10px;
+  text-transform: uppercase;
+}
+
+.mello-checkout-upsell h3 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.mello-checkout-upsell p {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 6px 0 0;
+  max-width: 54ch;
+}
+
+.mello-checkout-upsell a {
+  align-items: center;
+  appearance: none;
+  background: #ffffff;
+  border: 0;
+  border-radius: 999px;
+  color: #173132;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mello-checkout-upsell a:hover,
+.mello-checkout-upsell a:focus-visible {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  outline: 0;
+}
+
 .mello-checkout-section__head {
   align-items: center;
   display: flex;
@@ -552,18 +704,6 @@ function changeLocale(value) {
   font-weight: 650;
 }
 
-.mello-checkout-address {
-  align-items: center;
-  border: 1.5px solid var(--checkout-blue);
-  border-radius: 6px;
-  display: grid;
-  gap: 13px;
-  grid-template-columns: 28px minmax(0, 1fr);
-  margin-bottom: 18px;
-  padding: 16px;
-}
-
-.mello-checkout-address svg,
 .mello-checkout-coupon-line svg,
 .mello-checkout-payment-icon svg {
   fill: none;
@@ -573,29 +713,9 @@ function changeLocale(value) {
   stroke-width: 1.9;
 }
 
-.mello-checkout-address svg {
-  color: var(--checkout-blue);
-  height: 28px;
-  width: 28px;
-}
-
-.mello-checkout-address strong,
-.mello-checkout-address small,
 .mello-checkout-radio__content strong,
 .mello-checkout-radio__content small {
   display: block;
-}
-
-.mello-checkout-address strong {
-  font-size: 18px;
-  font-weight: 650;
-  line-height: 1.25;
-}
-
-.mello-checkout-address small {
-  color: var(--checkout-blue);
-  font-size: 15px;
-  margin-top: 4px;
 }
 
 .mello-checkout-address-form {
@@ -603,6 +723,14 @@ function changeLocale(value) {
   gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-bottom: 20px;
+}
+
+.mello-checkout-section__intro {
+  color: var(--checkout-blue);
+  font-size: 15px;
+  line-height: 1.4;
+  margin: -3px 0 18px;
+  max-width: 68ch;
 }
 
 .mello-checkout-field--wide {
@@ -880,8 +1008,6 @@ function changeLocale(value) {
   cursor: not-allowed;
   opacity: 1;
 }
-.mello-checkout-mobile-bar { display: none; }
-
 .mello-checkout-empty {
   align-items: center;
   display: flex;
@@ -899,7 +1025,7 @@ function changeLocale(value) {
 
 @media (max-width: 900px) {
   .mello-checkout {
-    padding-bottom: 110px;
+    padding-bottom: 28px;
   }
 
   .mello-checkout-top {
@@ -965,53 +1091,31 @@ function changeLocale(value) {
     font-size: 16px;
   }
 
+  .mello-checkout-quantity-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mello-checkout-quantity-control {
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+  }
+
+  .mello-checkout-upsell {
+    grid-template-columns: 1fr;
+  }
+
+  .mello-checkout-upsell a {
+    width: 100%;
+  }
+
   .mello-checkout-address-form {
     grid-template-columns: 1fr;
   }
 
   .mello-checkout-summary {
-    display: none;
-  }
-
-  .mello-checkout-mobile-bar {
-    align-items: center;
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 8px 8px 0 0;
-    bottom: 0;
-    box-shadow: 0 -8px 22px rgba(0, 0, 0, 0.12);
-    display: grid;
-    gap: 16px;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
-    left: 0;
-    padding: 14px 16px max(14px, env(safe-area-inset-bottom));
-    position: fixed;
-    right: 0;
-    z-index: 50;
-  }
-
-  .mello-checkout-mobile-bar small,
-  .mello-checkout-mobile-bar strong {
-    display: block;
-  }
-
-  .mello-checkout-mobile-bar small {
-    color: var(--checkout-green);
-    font-size: 12px;
-    font-weight: 650;
-    line-height: 1.15;
-    margin-bottom: 4px;
-  }
-
-  .mello-checkout-mobile-bar strong {
-    color: #1d1d1f;
-    font-size: 23px;
-    font-weight: 520;
-    line-height: 1;
-  }
-
-  .mello-checkout-mobile-bar .mello-checkout-submit {
-    margin: 0;
-    min-height: 58px;
+    margin: 16px;
+    position: static;
   }
 }
 
@@ -1019,8 +1123,6 @@ function changeLocale(value) {
   .mello-checkout-top h1 { font-size: 21px; }
   .mello-checkout-section h2,
   .mello-checkout-section__head h2 { font-size: 21px; }
-  .mello-checkout-address { padding: 14px; }
-  .mello-checkout-address strong { font-size: 18px; }
   .mello-checkout-radio { grid-template-columns: 26px minmax(0, 1fr) auto; }
   .mello-checkout-radio--payment { grid-template-columns: 26px 52px minmax(0, 1fr); }
 }
