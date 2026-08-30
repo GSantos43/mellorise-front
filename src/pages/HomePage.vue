@@ -239,7 +239,7 @@ function shouldShowOffer() {
   const nextCount = currentCount + 1
   window.localStorage.setItem(OFFER_LOAD_COUNT_KEY, String(nextCount))
 
-  return nextCount === 1 || nextCount % 4 === 0
+  return nextCount % 4 === 0
 }
 
 function closeOffer() {
