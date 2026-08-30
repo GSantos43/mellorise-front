@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { setLocale, supportedLocales } from '../i18n'
 import { formatMoney } from '../services/products'
 
 const props = defineProps({
@@ -10,7 +11,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['checkout', 'update-quantity', 'remove'])
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 
 const customerEmail = ref(props.discount?.email || '')
 const firstName = ref('')
@@ -36,6 +37,12 @@ const usStates = [
   'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
   'DC'
 ]
+
+const localeOptions = computed(() => supportedLocales.map((value) => ({
+  value,
+  flag: value === 'en' ? '🇺🇸' : '🇪🇸',
+  label: t(`language.${value}`)
+})))
 
 const quantity = computed(() => Math.max(0, Number(props.item?.quantity || 0)))
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
@@ -114,15 +121,44 @@ function submitCheckout() {
     }
   })
 }
+
+function changeLocale(value) {
+  setLocale(value)
+}
 </script>
 
 <template>
   <section class="mello-checkout" aria-labelledby="mello-checkout-title">
     <header class="mello-checkout-top">
-      <a class="mello-checkout-top__back" href="/products/wondernest-heightener-gummies-2026" :aria-label="t('checkout.back')">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-      </a>
-      <h1 id="mello-checkout-title">{{ t('checkout.title') }}</h1>
+      <div class="mello-checkout-top__inner">
+        <div class="mello-checkout-top__main">
+          <a class="mello-checkout-top__back" href="/products/wondernest-heightener-gummies-2026" :aria-label="t('checkout.back')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </a>
+          <a class="mello-checkout-top__logo" href="/" aria-label="MelloRise">
+            <img src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
+          </a>
+          <h1 id="mello-checkout-title">{{ t('checkout.title') }}</h1>
+        </div>
+
+        <div class="mello-page-header__locale mello-checkout-locale" :aria-label="t('language.label')" role="group">
+          <span class="mello-page-header__locale-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3c2.2 2.5 3.3 5.5 3.3 9s-1.1 6.5-3.3 9c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z"/></svg>
+          </span>
+          <button
+            v-for="option in localeOptions"
+            :key="option.value"
+            class="mello-page-header__locale-option"
+            :class="{ 'is-active': locale === option.value }"
+            type="button"
+            :aria-pressed="locale === option.value"
+            @click="changeLocale(option.value)"
+          >
+            <span class="mello-page-header__locale-flag" aria-hidden="true">{{ option.flag }}</span>
+            <span>{{ option.label }}</span>
+          </button>
+        </div>
+      </div>
     </header>
 
     <div v-if="!item" class="mello-checkout-empty">
@@ -321,7 +357,6 @@ function submitCheckout() {
 
 <style>
 .mello-checkout {
-  --checkout-yellow: #ffe600;
   --checkout-blue: #3483fa;
   --checkout-green: #00a650;
   --checkout-ink: #1d1d1f;
@@ -338,25 +373,47 @@ function submitCheckout() {
 
 .mello-checkout-top {
   align-items: center;
-  background: var(--checkout-yellow);
-  display: grid;
-  gap: 14px;
-  grid-template-columns: 44px minmax(0, 1fr);
-  min-height: 76px;
-  padding: 0 max(20px, calc((100vw - 1180px) / 2));
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid rgba(9, 31, 32, 0.08);
+  box-shadow: 0 12px 34px rgba(23, 49, 50, 0.07);
+  display: flex;
+  min-height: 82px;
   position: sticky;
   top: 0;
   z-index: 45;
 }
 
+.mello-checkout-top__inner {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: min(1180px, 100%);
+}
+
+.mello-checkout-top__main {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+}
+
 .mello-checkout-top__back {
   align-items: center;
-  color: #1d1d1f;
+  border: 1px solid rgba(23, 49, 50, 0.12);
+  border-radius: 50%;
+  color: #173132;
   display: inline-flex;
   height: 44px;
   justify-content: center;
   text-decoration: none;
   width: 44px;
+}
+
+.mello-checkout-top__back:hover {
+  background: rgba(239, 249, 255, 0.95);
 }
 
 .mello-checkout-top__back svg {
@@ -369,11 +426,32 @@ function submitCheckout() {
   width: 30px;
 }
 
+.mello-checkout-top__logo {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 44px;
+  text-decoration: none;
+}
+
+.mello-checkout-top__logo img {
+  display: block;
+  height: 31px;
+  object-fit: contain;
+  width: auto;
+}
+
 .mello-checkout-top h1 {
-  font-size: 23px;
+  color: #173132;
+  font-size: 20px;
   font-weight: 650;
   line-height: 1.1;
   margin: 0;
+  min-width: 0;
+}
+
+.mello-checkout-locale {
+  box-shadow: 0 10px 24px rgba(23, 49, 50, 0.06);
 }
 
 .mello-checkout-body {
@@ -826,7 +904,32 @@ function submitCheckout() {
 
   .mello-checkout-top {
     min-height: 72px;
+  }
+
+  .mello-checkout-top__inner {
+    gap: 10px;
     padding: 0 14px;
+  }
+
+  .mello-checkout-top__main {
+    gap: 10px;
+  }
+
+  .mello-checkout-top__back {
+    height: 40px;
+    width: 40px;
+  }
+
+  .mello-checkout-top__logo img {
+    height: 28px;
+  }
+
+  .mello-checkout-top h1 {
+    display: none;
+  }
+
+  .mello-checkout-locale .mello-page-header__locale-icon {
+    display: none;
   }
 
   .mello-checkout-body {
