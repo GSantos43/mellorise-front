@@ -120,7 +120,6 @@ function setCheckoutQuantity(nextQuantity) {
           <a class="mello-checkout-top__logo" href="/" aria-label="MelloRise">
             <img src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
           </a>
-          <h1 id="mello-checkout-title">{{ t('checkout.title') }}</h1>
         </div>
 
         <div class="mello-page-header__locale mello-checkout-locale" :aria-label="t('language.label')" role="group">
@@ -152,6 +151,10 @@ function setCheckoutQuantity(nextQuantity) {
 
     <form v-else class="mello-checkout-body" @submit.prevent="submitCheckout">
       <main class="mello-checkout-flow">
+        <section class="mello-checkout-heading">
+          <h1 id="mello-checkout-title">{{ t('checkout.title') }}</h1>
+        </section>
+
         <section class="mello-checkout-product" :aria-label="t('checkout.product.label')">
           <img :src="item.image" :alt="item.title" width="76" height="76" loading="eager">
           <div>
@@ -366,15 +369,6 @@ function setCheckoutQuantity(nextQuantity) {
   width: auto;
 }
 
-.mello-checkout-top h1 {
-  color: #173132;
-  font-size: 20px;
-  font-weight: 650;
-  line-height: 1.1;
-  margin: 0;
-  min-width: 0;
-}
-
 .mello-checkout-locale {
   box-shadow: 0 10px 24px rgba(23, 49, 50, 0.06);
 }
@@ -397,6 +391,23 @@ function setCheckoutQuantity(nextQuantity) {
 }
 
 .mello-checkout-flow { overflow: hidden; }
+
+.mello-checkout-heading {
+  background: #ffffff;
+  border-bottom: 1px solid var(--checkout-line);
+  padding: 26px 24px 20px;
+}
+
+.mello-checkout-heading h1 {
+  color: rgba(0, 0, 0, 0.72);
+  font-family: "Inter", var(--font-body-family), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  margin: 0;
+  text-transform: uppercase;
+}
 
 .mello-checkout-product,
 .mello-checkout-section {
@@ -942,10 +953,6 @@ function setCheckoutQuantity(nextQuantity) {
     height: 28px;
   }
 
-  .mello-checkout-top h1 {
-    display: none;
-  }
-
   .mello-checkout-locale .mello-page-header__locale-icon {
     display: none;
   }
@@ -959,6 +966,10 @@ function setCheckoutQuantity(nextQuantity) {
   .mello-checkout-flow {
     border-radius: 0;
     box-shadow: none;
+  }
+
+  .mello-checkout-heading {
+    padding: 22px 16px 16px;
   }
 
   .mello-checkout-product,
@@ -1008,7 +1019,6 @@ function setCheckoutQuantity(nextQuantity) {
 }
 
 @media (max-width: 520px) {
-  .mello-checkout-top h1 { font-size: 21px; }
   .mello-checkout-section h2,
   .mello-checkout-section__head h2 { font-size: 21px; }
   .mello-checkout-radio { grid-template-columns: 26px minmax(0, 1fr) auto; }
