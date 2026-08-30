@@ -339,13 +339,15 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <SiteHeader v-if="currentPage !== 'checkout'" :current-route="route" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
-      <div v-if="isCheckoutTransitionLoading" class="mello-checkout-transition" role="status" aria-live="polite" aria-busy="true">
-        <div class="mello-checkout-transition__card">
-          <span class="mello-checkout-transition__spinner" aria-hidden="true"></span>
-          <strong>{{ t('checkoutTransition.title') }}</strong>
-          <small>{{ t('checkoutTransition.text') }}</small>
+      <Transition name="mello-checkout-transition" appear>
+        <div v-if="isCheckoutTransitionLoading" class="mello-checkout-transition" role="status" aria-live="polite" aria-busy="true">
+          <div class="mello-checkout-transition__card">
+            <span class="mello-checkout-transition__spinner" aria-hidden="true"></span>
+            <strong>{{ t('checkoutTransition.title') }}</strong>
+            <small>{{ t('checkoutTransition.text') }}</small>
+          </div>
         </div>
-      </div>
+      </Transition>
     </Teleport>
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
@@ -400,6 +402,40 @@ watch(activeDiscount, persistDiscount, { deep: true })
   z-index: 20000;
 }
 
+.mello-checkout-transition-enter-active {
+  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-transition-leave-active {
+  transition: opacity 420ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-transition-enter-from,
+.mello-checkout-transition-leave-to {
+  opacity: 0;
+  backdrop-filter: blur(0);
+}
+
+.mello-checkout-transition-enter-active .mello-checkout-transition__card {
+  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), filter 320ms cubic-bezier(0.16, 1, 0.3, 1), transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-transition-leave-active .mello-checkout-transition__card {
+  transition: opacity 300ms ease, filter 360ms ease, transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-checkout-transition-enter-from .mello-checkout-transition__card {
+  filter: blur(10px);
+  opacity: 0;
+  transform: translateY(10px) scale(0.97);
+}
+
+.mello-checkout-transition-leave-to .mello-checkout-transition__card {
+  filter: blur(14px);
+  opacity: 0;
+  transform: translateY(-8px) scale(0.985);
+}
+
 .mello-checkout-transition__card {
   align-items: center;
   background: rgba(255, 255, 255, 0.96);
@@ -444,6 +480,17 @@ watch(activeDiscount, persistDiscount, { deep: true })
 @keyframes mello-checkout-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mello-checkout-transition,
+  .mello-checkout-transition__card {
+    transition: opacity 160ms ease;
+  }
+
+  .mello-checkout-transition__spinner {
+    animation: none;
   }
 }
 

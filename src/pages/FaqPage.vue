@@ -1,4 +1,8 @@
 <script setup>
+import { ref } from 'vue'
+
+const openFaqIndex = ref(null)
+
 const faqSections = [
   {
     icon: '🕘',
@@ -47,6 +51,14 @@ const faqSections = [
     ]
   }
 ]
+
+function isFaqOpen(index) {
+  return openFaqIndex.value === index
+}
+
+function toggleFaq(index) {
+  openFaqIndex.value = isFaqOpen(index) ? null : index
+}
 </script>
 
 <template>
@@ -60,15 +72,32 @@ const faqSections = [
         </p>
 
         <div class="mello-faq-list">
-          <details v-for="item in faqSections" :key="item.title" class="mello-faq-item">
-            <summary class="mello-faq-item__summary">
+          <article
+            v-for="(item, index) in faqSections"
+            :key="item.title"
+            class="mello-faq-item"
+            :data-open="isFaqOpen(index)"
+          >
+            <button
+              class="mello-faq-item__summary"
+              type="button"
+              :aria-expanded="isFaqOpen(index)"
+              :aria-controls="`mello-faq-answer-${index}`"
+              @click="toggleFaq(index)"
+            >
               <span><b>{{ item.icon }}</b>{{ item.title }}</span>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
-            </summary>
-            <div class="mello-faq-item__content">
-              <p v-for="line in item.body" :key="line" v-html="line"></p>
+            </button>
+            <div
+              :id="`mello-faq-answer-${index}`"
+              class="mello-faq-item__content"
+              :aria-hidden="!isFaqOpen(index)"
+            >
+              <div class="mello-faq-item__content-inner">
+                <p v-for="line in item.body" :key="line" v-html="line"></p>
+              </div>
             </div>
-          </details>
+          </article>
         </div>
       </div>
     </main>
@@ -144,9 +173,13 @@ const faqSections = [
 
 .mello-faq-item__summary {
   align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
   color: #111111;
   cursor: pointer;
   display: flex;
+  font: inherit;
   font-size: 17.5px;
   font-weight: 900;
   justify-content: space-between;
@@ -154,6 +187,9 @@ const faqSections = [
   list-style: none;
   min-height: 45px;
   padding: 11px 8px 8px 4px;
+  text-align: left;
+  transition: color 180ms ease, background 180ms ease;
+  width: 100%;
 }
 
 .mello-faq-item__summary::-webkit-details-marker {
@@ -180,18 +216,40 @@ const faqSections = [
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
   width: 15px;
 }
 
-.mello-faq-item:not([open]) .mello-faq-item__summary svg {
+.mello-faq-item:not([data-open="true"]) .mello-faq-item__summary svg {
   transform: rotate(180deg);
 }
 
 .mello-faq-item__content {
   color: var(--faq-text);
+  display: grid;
   font-size: 17.5px;
+  grid-template-rows: 0fr;
   line-height: 1.62;
+  opacity: 0;
+  overflow: hidden;
+  transition: grid-template-rows 340ms cubic-bezier(0.16, 1, 0.3, 1), opacity 240ms ease;
+}
+
+.mello-faq-item[data-open="true"] .mello-faq-item__content {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.mello-faq-item__content-inner {
+  min-height: 0;
+  overflow: hidden;
   padding: 0 5px 17px;
+  transform: translateY(-5px);
+  transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-faq-item[data-open="true"] .mello-faq-item__content-inner {
+  transform: translateY(0);
 }
 
 .mello-faq-item__content p {
@@ -233,5 +291,14 @@ const faqSections = [
     font-size: 16px;
   }
 
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mello-faq-item__summary,
+  .mello-faq-item__summary svg,
+  .mello-faq-item__content,
+  .mello-faq-item__content-inner {
+    transition-duration: 1ms;
+  }
 }
 </style>

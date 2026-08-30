@@ -166,6 +166,7 @@ const isOfferExitConfirmVisible = ref(false)
 const offerEmail = ref('')
 const offerError = ref('')
 const isOfferSubmitting = ref(false)
+const openHomeFaqIndex = ref(null)
 const homeRoot = ref(null)
 const densityCard = ref(null)
 const isDensityVisible = ref(false)
@@ -282,6 +283,14 @@ async function claimWelcomeOffer() {
   } finally {
     isOfferSubmitting.value = false
   }
+}
+
+function isHomeFaqOpen(index) {
+  return openHomeFaqIndex.value === index
+}
+
+function toggleHomeFaq(index) {
+  openHomeFaqIndex.value = isHomeFaqOpen(index) ? null : index
 }
 
 onMounted(() => {
@@ -576,20 +585,33 @@ onUnmounted(() => {
         </div>
 
         <div class="mello-home-faq__list">
-          <details
+          <article
             v-for="(faq, index) in homeFaqs"
             :key="faq"
             class="mello-home-faq__item"
+            :data-open="isHomeFaqOpen(index)"
           >
-            <summary class="mello-home-faq__summary">
+            <button
+              class="mello-home-faq__summary"
+              type="button"
+              :aria-expanded="isHomeFaqOpen(index)"
+              :aria-controls="`mello-home-faq-answer-${index}`"
+              @click="toggleHomeFaq(index)"
+            >
               <span class="mello-home-faq__number">{{ index + 1 }}</span>
               <span class="mello-home-faq__question">{{ t(`home.faq.items.${faq}.question`) }}</span>
               <span class="mello-home-faq__toggle" aria-hidden="true"></span>
-            </summary>
-            <div class="mello-home-faq__answer">
-              <p>{{ t(`home.faq.items.${faq}.answer`) }}</p>
+            </button>
+            <div
+              :id="`mello-home-faq-answer-${index}`"
+              class="mello-home-faq__answer"
+              :aria-hidden="!isHomeFaqOpen(index)"
+            >
+              <div class="mello-home-faq__answer-inner">
+                <p>{{ t(`home.faq.items.${faq}.answer`) }}</p>
+              </div>
             </div>
-          </details>
+          </article>
         </div>
       </div>
     </section>
