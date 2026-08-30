@@ -488,8 +488,9 @@ export const messages = {
       payment: {
         title: 'Medios de pago',
         secure: 'Stripe seguro',
+        secureTitle: 'Pago seguro con Stripe',
         stripe: 'Tarjeta o wallet',
-        stripeText: 'Paga con tarjeta, Apple Pay, Google Pay u opciones disponibles en Stripe.'
+        stripeText: 'Tus datos de pago se procesan en Stripe con protección de tarjeta, wallet y checkout cifrado.'
       },
       billing: {
         title: 'Facturación'
@@ -1004,8 +1005,9 @@ export const messages = {
       payment: {
         title: 'Payment methods',
         secure: 'Secure Stripe',
+        secureTitle: 'Payment secure with Stripe',
         stripe: 'Card or wallet',
-        stripeText: 'Pay with card, Apple Pay, Google Pay, or available Stripe options.'
+        stripeText: 'Your payment details are processed by Stripe with encrypted card, wallet, and checkout protection.'
       },
       billing: {
         title: 'Billing'
