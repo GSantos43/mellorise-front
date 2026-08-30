@@ -925,7 +925,8 @@ onUnmounted(() => {
 .mello-checkout-payment-secure {
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(49, 214, 176, 0.16), rgba(119, 205, 250, 0) 42%),
+    radial-gradient(circle at 18% 20%, rgba(118, 91, 255, 0.16), rgba(118, 91, 255, 0) 36%),
+    radial-gradient(circle at 88% 22%, rgba(149, 76, 233, 0.13), rgba(149, 76, 233, 0) 32%),
     #f7fbfa;
   border: 1px solid rgba(16, 49, 50, 0.18);
   border-radius: 10px;
@@ -940,7 +941,7 @@ onUnmounted(() => {
 }
 
 .mello-checkout-payment-secure::after {
-  background: radial-gradient(circle, rgba(49, 214, 176, 0.18), rgba(49, 214, 176, 0) 64%);
+  background: radial-gradient(circle, rgba(118, 91, 255, 0.16), rgba(118, 91, 255, 0) 64%);
   content: "";
   height: 120px;
   pointer-events: none;
