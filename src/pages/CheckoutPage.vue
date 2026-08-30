@@ -19,7 +19,7 @@ const selectedPayment = ref('stripe')
 
 const localeOptions = computed(() => supportedLocales.map((value) => ({
   value,
-  flag: value === 'en' ? '🇺🇸' : '🇪🇸',
+  flag: value === 'en' ? '/assets/flag-us.svg' : '/assets/flag-es.svg',
   label: t(`language.${value}`)
 })))
 
@@ -135,7 +135,7 @@ function setCheckoutQuantity(nextQuantity) {
             :aria-pressed="locale === option.value"
             @click="changeLocale(option.value)"
           >
-            <span class="mello-page-header__locale-flag" aria-hidden="true">{{ option.flag }}</span>
+            <img class="mello-page-header__locale-flag" :src="option.flag" alt="" width="18" height="18" loading="eager">
             <span>{{ option.label }}</span>
           </button>
         </div>

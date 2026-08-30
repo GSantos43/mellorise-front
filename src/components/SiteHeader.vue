@@ -29,7 +29,7 @@ const links = [
 
 const localeOptions = computed(() => supportedLocales.map((value) => ({
   value,
-  flag: value === 'en' ? '🇺🇸' : '🇪🇸',
+  flag: value === 'en' ? '/assets/flag-us.svg' : '/assets/flag-es.svg',
   label: t(`language.${value}`)
 })))
 
@@ -141,7 +141,7 @@ watch(isMobileMenuOpen, (isOpen) => {
             :aria-pressed="locale === option.value"
             @click="changeLocale(option.value)"
           >
-            <span class="mello-page-header__locale-flag" aria-hidden="true">{{ option.flag }}</span>
+            <img class="mello-page-header__locale-flag" :src="option.flag" alt="" width="18" height="18" loading="eager">
             <span>{{ option.label }}</span>
           </button>
         </div>
@@ -379,24 +379,26 @@ watch(isMobileMenuOpen, (isOpen) => {
   color: rgba(23, 49, 50, 0.62);
   cursor: pointer;
   display: inline-flex;
-  gap: 5px;
+  gap: 6px;
   font-family: var(--font-body-family);
   font-size: 12px;
   font-weight: 650;
   height: 32px;
   justify-content: center;
   line-height: 1;
-  min-width: 58px;
-  padding: 0 11px;
+  min-width: 68px;
+  padding: 0 12px;
   transition: background 160ms ease, box-shadow 160ms ease, color 160ms ease;
 }
 
 .mello-page-header__locale-flag {
-  display: inline-block;
-  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-  font-size: 14px;
-  line-height: 1;
-  transform: translateY(-0.5px);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(23, 49, 50, 0.12);
+  display: block;
+  flex: 0 0 auto;
+  height: 18px;
+  object-fit: cover;
+  width: 18px;
 }
 
 .mello-page-header__locale-option.is-active {
