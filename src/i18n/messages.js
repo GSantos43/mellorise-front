@@ -457,20 +457,20 @@ export const messages = {
       },
       promo: {
         activeBadge: 'Promoción activa',
-        buyTwoTitle: 'Buy 2, Get 1 está aplicado',
+        buyTwoTitle: 'Compra 2 y recibe 1 gratis está aplicado',
         buyTwoText: 'Pagas {paid} frascos y recibes {total} en total: {free} frasco gratis incluido en el pedido.',
-        buyThreeTitle: 'Buy 3, Get 2 está aplicado',
+        buyThreeTitle: 'Compra 3 y recibe 2 gratis está aplicado',
         buyThreeText: 'Pagas {paid} frascos y recibes {total} en total: {free} frascos gratis incluidos en el pedido.'
       },
       upsell: {
         buyTwoBadge: 'Oferta recomendada',
         buyTwoTitle: 'Compra 2 y recibe 1 gratis',
         buyTwoText: 'Sube a 2 frascos pagados para recibir 3 en total y reducir el costo por frasco.',
-        buyTwoAction: 'Activar Buy 2 Get 1',
+        buyTwoAction: 'Activar compra 2 y recibe 1',
         buyThreeBadge: 'Mejor ahorro',
         buyThreeTitle: 'Compra 3 y recibe 2 gratis',
-        buyThreeText: 'Ya tienes Buy 2 Get 1. Sube a 3 frascos pagados para recibir 5 en total.',
-        buyThreeAction: 'Activar Buy 3 Get 2'
+        buyThreeText: 'Ya tienes compra 2 y recibe 1 gratis. Sube a 3 frascos pagados para recibir 5 en total.',
+        buyThreeAction: 'Activar compra 3 y recibe 2'
       },
       contact: {
         title: 'Email de compra',
@@ -482,8 +482,8 @@ export const messages = {
         title: 'Cupón',
         label: 'Código de descuento',
         placeholder: 'MELLO10',
-        apply: 'Apply',
-        applying: 'Applying...',
+        apply: 'Aplicar',
+        applying: 'Aplicando...',
         applied: '{percent}% reservado para este email',
         invalid: 'Cupón inválido o expirado.',
         help: 'Inserta tu cupón y aplícalo antes del pago.'
