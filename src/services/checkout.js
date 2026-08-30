@@ -8,6 +8,18 @@ export async function createCheckoutSession(item, options = {}) {
   }
 
   const origin = window.location.origin
+  const quantity = Number(item.quantity || 1)
+  const freeQuantity = quantity >= 3 ? 2 : quantity === 2 ? 1 : 0
+  const promotion = freeQuantity
+    ? {
+        code: quantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
+        label: quantity >= 3 ? 'Buy 3 Get 2' : 'Buy 2 Get 1',
+        paidQuantity: quantity,
+        freeQuantity,
+        deliveredQuantity: quantity + freeQuantity
+      }
+    : undefined
+
   const response = await fetch(`${BFF_URL}/checkout/session`, {
     method: 'POST',
     headers: {
@@ -18,13 +30,14 @@ export async function createCheckoutSession(item, options = {}) {
         {
           productId: Number(item.id),
           variationId: item.variationId ? Number(item.variationId) : undefined,
-          quantity: Number(item.quantity || 1)
+          quantity
         }
       ],
       successUrl: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${origin}/checkout`,
       customerEmail: options.customerEmail,
-      couponCode: options.couponCode
+      couponCode: options.couponCode,
+      promotion
     })
   })
 

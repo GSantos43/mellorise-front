@@ -26,7 +26,53 @@ const localeOptions = computed(() => supportedLocales.map((value) => ({
 const quantity = computed(() => Math.max(0, Number(props.item?.quantity || 0)))
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
 const unitPrice = computed(() => Number(props.item?.unitPrice || props.item?.price || 0))
-const isSingleQuantity = computed(() => quantity.value === 1)
+const bonusBottleCount = computed(() => {
+  if (quantity.value >= 3) return 2
+  if (quantity.value === 2) return 1
+  return 0
+})
+const deliveredBottleCount = computed(() => quantity.value + bonusBottleCount.value)
+const hasBundlePromotion = computed(() => bonusBottleCount.value > 0)
+const activePromotion = computed(() => {
+  if (quantity.value >= 3) {
+    return {
+      title: 'checkout.promo.buyThreeTitle',
+      text: 'checkout.promo.buyThreeText'
+    }
+  }
+
+  if (quantity.value === 2) {
+    return {
+      title: 'checkout.promo.buyTwoTitle',
+      text: 'checkout.promo.buyTwoText'
+    }
+  }
+
+  return null
+})
+const checkoutUpsell = computed(() => {
+  if (quantity.value === 1) {
+    return {
+      quantity: 2,
+      badge: 'checkout.upsell.buyTwoBadge',
+      title: 'checkout.upsell.buyTwoTitle',
+      text: 'checkout.upsell.buyTwoText',
+      action: 'checkout.upsell.buyTwoAction'
+    }
+  }
+
+  if (quantity.value === 2) {
+    return {
+      quantity: 3,
+      badge: 'checkout.upsell.buyThreeBadge',
+      title: 'checkout.upsell.buyThreeTitle',
+      text: 'checkout.upsell.buyThreeText',
+      action: 'checkout.upsell.buyThreeAction'
+    }
+  }
+
+  return null
+})
 const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount || 0)))
 const normalizedCoupon = computed(() => couponCode.value.trim().toUpperCase())
 const hasSavedDiscount = computed(() => Boolean(props.discount?.code && normalizedCoupon.value === props.discount.code))
@@ -134,13 +180,19 @@ function setCheckoutQuantity(nextQuantity) {
             </div>
           </div>
 
-          <article v-if="isSingleQuantity" class="mello-checkout-upsell">
+          <article v-if="activePromotion" class="mello-checkout-promo-active">
+            <span>{{ t('checkout.promo.activeBadge') }}</span>
+            <h3>{{ t(activePromotion.title) }}</h3>
+            <p>{{ t(activePromotion.text, { paid: quantity, free: bonusBottleCount, total: deliveredBottleCount }) }}</p>
+          </article>
+
+          <article v-if="checkoutUpsell" class="mello-checkout-upsell">
             <div>
-              <span>{{ t('checkout.upsell.badge') }}</span>
-              <h3>{{ t('checkout.upsell.title') }}</h3>
-              <p>{{ t('checkout.upsell.text') }}</p>
+              <span>{{ t(checkoutUpsell.badge) }}</span>
+              <h3>{{ t(checkoutUpsell.title) }}</h3>
+              <p>{{ t(checkoutUpsell.text) }}</p>
             </div>
-            <a href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('checkout.upsell.action') }}</a>
+            <button type="button" @click="setCheckoutQuantity(checkoutUpsell.quantity)">{{ t(checkoutUpsell.action) }}</button>
           </article>
         </section>
 
@@ -196,6 +248,14 @@ function setCheckoutQuantity(nextQuantity) {
             <div>
               <dt>{{ t('checkout.summary.product') }}</dt>
               <dd>{{ formatMoney(subtotal) }}</dd>
+            </div>
+            <div v-if="hasBundlePromotion">
+              <dt>{{ t('checkout.summary.freeBonus') }}</dt>
+              <dd class="is-saving">{{ t('checkout.summary.freeBonusValue', { count: bonusBottleCount }) }}</dd>
+            </div>
+            <div v-if="hasBundlePromotion">
+              <dt>{{ t('checkout.summary.delivered') }}</dt>
+              <dd>{{ t('checkout.summary.deliveredValue', { count: deliveredBottleCount }) }}</dd>
             </div>
             <div v-if="discountTotal">
               <dt>{{ t('checkout.summary.productDiscount') }}</dt>
@@ -463,6 +523,43 @@ function setCheckoutQuantity(nextQuantity) {
   justify-content: center;
 }
 
+.mello-checkout-promo-active {
+  background: linear-gradient(135deg, #eff9f3 0%, #ffffff 62%);
+  border: 1px solid rgba(0, 166, 80, 0.24);
+  border-radius: 12px;
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.mello-checkout-promo-active span {
+  background: rgba(0, 166, 80, 0.12);
+  border-radius: 999px;
+  color: #006b35;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+  margin-bottom: 9px;
+  padding: 7px 10px;
+  text-transform: uppercase;
+}
+
+.mello-checkout-promo-active h3 {
+  color: #173132;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.mello-checkout-promo-active p {
+  color: #425154;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 7px 0 0;
+  max-width: 62ch;
+}
+
 .mello-checkout-upsell {
   align-items: center;
   background: #173132;
@@ -504,7 +601,7 @@ function setCheckoutQuantity(nextQuantity) {
   max-width: 54ch;
 }
 
-.mello-checkout-upsell a {
+.mello-checkout-upsell button {
   align-items: center;
   appearance: none;
   background: #ffffff;
@@ -523,8 +620,8 @@ function setCheckoutQuantity(nextQuantity) {
   white-space: nowrap;
 }
 
-.mello-checkout-upsell a:hover,
-.mello-checkout-upsell a:focus-visible {
+.mello-checkout-upsell button:hover,
+.mello-checkout-upsell button:focus-visible {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
   outline: 0;
 }
@@ -900,7 +997,7 @@ function setCheckoutQuantity(nextQuantity) {
     grid-template-columns: 1fr;
   }
 
-  .mello-checkout-upsell a {
+  .mello-checkout-upsell button {
     width: 100%;
   }
 

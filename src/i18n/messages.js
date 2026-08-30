@@ -449,17 +449,28 @@ export const messages = {
       },
       quantity: {
         title: 'Cantidad',
-        current: '{count} unidad en tu pedido',
-        help: 'Ajusta cuántos frascos quieres antes de pagar.',
+        current: '{count} frascos pagados',
+        help: 'La promoción agrega frascos gratis sin aumentar el total cobrado.',
         unitPrice: '{price} por unidad',
         decrease: 'Disminuir cantidad',
         increase: 'Aumentar cantidad'
       },
+      promo: {
+        activeBadge: 'Promoción activa',
+        buyTwoTitle: 'Buy 2, Get 1 está aplicado',
+        buyTwoText: 'Pagas {paid} frascos y recibes {total} en total: {free} frasco gratis incluido en el pedido.',
+        buyThreeTitle: 'Buy 3, Get 2 está aplicado',
+        buyThreeText: 'Pagas {paid} frascos y recibes {total} en total: {free} frascos gratis incluidos en el pedido.'
+      },
       upsell: {
-        badge: 'Mejor valor',
-        title: 'Lleva 3 y paga 2',
-        text: 'Agrega el pack Buy 2 Get 1 para tener una rutina más completa y reducir el costo por frasco.',
-        action: 'Ver pack Buy 2 Get 1'
+        buyTwoBadge: 'Oferta recomendada',
+        buyTwoTitle: 'Compra 2 y recibe 1 gratis',
+        buyTwoText: 'Sube a 2 frascos pagados para recibir 3 en total y reducir el costo por frasco.',
+        buyTwoAction: 'Activar Buy 2 Get 1',
+        buyThreeBadge: 'Mejor ahorro',
+        buyThreeTitle: 'Compra 3 y recibe 2 gratis',
+        buyThreeText: 'Ya tienes Buy 2 Get 1. Sube a 3 frascos pagados para recibir 5 en total.',
+        buyThreeAction: 'Activar Buy 3 Get 2'
       },
       contact: {
         title: 'Email de compra',
@@ -486,6 +497,10 @@ export const messages = {
       summary: {
         title: 'Resumen de la compra',
         product: 'Producto',
+        freeBonus: 'Bonificación gratis',
+        freeBonusValue: '+{count} gratis',
+        delivered: 'Recibirás',
+        deliveredValue: '{count} frascos',
         productDiscount: 'Descuento del producto',
         total: 'Total',
         saved: 'Ahorraste {amount}',
@@ -950,17 +965,28 @@ export const messages = {
       },
       quantity: {
         title: 'Quantity',
-        current: '{count} item in your order',
-        help: 'Adjust how many bottles you want before payment.',
+        current: '{count} paid bottles',
+        help: 'Promotions add free bottles without increasing the charged total.',
         unitPrice: '{price} each',
         decrease: 'Decrease quantity',
         increase: 'Increase quantity'
       },
+      promo: {
+        activeBadge: 'Promotion active',
+        buyTwoTitle: 'Buy 2, Get 1 is applied',
+        buyTwoText: 'You pay for {paid} bottles and receive {total} total: {free} free bottle included in the order.',
+        buyThreeTitle: 'Buy 3, Get 2 is applied',
+        buyThreeText: 'You pay for {paid} bottles and receive {total} total: {free} free bottles included in the order.'
+      },
       upsell: {
-        badge: 'Best value',
-        title: 'Buy 2, get 1 free',
-        text: 'Upgrade to the Buy 2 Get 1 pack for a longer routine and a better cost per bottle.',
-        action: 'View Buy 2 Get 1 pack'
+        buyTwoBadge: 'Recommended offer',
+        buyTwoTitle: 'Buy 2, get 1 free',
+        buyTwoText: 'Move to 2 paid bottles to receive 3 total and lower the cost per bottle.',
+        buyTwoAction: 'Activate Buy 2 Get 1',
+        buyThreeBadge: 'Best savings',
+        buyThreeTitle: 'Buy 3, get 2 free',
+        buyThreeText: 'You already unlocked Buy 2 Get 1. Move to 3 paid bottles to receive 5 total.',
+        buyThreeAction: 'Activate Buy 3 Get 2'
       },
       contact: {
         title: 'Purchase email',
@@ -987,6 +1013,10 @@ export const messages = {
       summary: {
         title: 'Purchase summary',
         product: 'Product',
+        freeBonus: 'Free bonus',
+        freeBonusValue: '+{count} free',
+        delivered: 'You receive',
+        deliveredValue: '{count} bottles',
         productDiscount: 'Product discount',
         total: 'Total',
         saved: 'You saved {amount}',
