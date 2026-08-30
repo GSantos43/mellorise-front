@@ -8,6 +8,7 @@ import ContactPage from './pages/ContactPage.vue'
 import FaqPage from './pages/FaqPage.vue'
 import InstitutionalPage from './pages/InstitutionalPage.vue'
 import CheckoutPage from './pages/CheckoutPage.vue'
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
@@ -44,6 +45,7 @@ const currentProduct = computed(() => {
 
 const currentPage = computed(() => {
   if (route.value.startsWith('/products/')) return 'product'
+  if (route.value.startsWith('/checkout/success')) return 'checkout-success'
   if (route.value.startsWith('/checkout')) return 'checkout'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
   if (route.value === '/pages/faq' || route.value === '/pages/faqs') return 'faq'
@@ -277,6 +279,12 @@ function removeCartItem() {
   cartItem.value = null
 }
 
+function shouldClearCartAfterSuccessfulCheckout() {
+  if (currentPage.value !== 'checkout-success') return false
+
+  return new URLSearchParams(window.location.search).has('session_id')
+}
+
 async function goToStripeCheckout(options = {}) {
   if (!cartItem.value || isCheckoutLoading.value) return
 
@@ -333,7 +341,12 @@ async function scheduleStaticTranslation() {
 
 onMounted(async () => {
   scheduleStaticTranslation()
-  cartItem.value = readSavedCartItem()
+  if (shouldClearCartAfterSuccessfulCheckout()) {
+    persistCartItem(null)
+    cartItem.value = null
+  } else {
+    cartItem.value = readSavedCartItem()
+  }
   activeDiscount.value = readSavedDiscount()
   products.value = await fetchProducts({
     onUpdate: (freshProducts) => {
@@ -388,7 +401,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" @click="navigate">
-    <SiteHeader v-if="currentPage !== 'checkout'" :current-route="route" />
+    <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
@@ -435,6 +448,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
     </Teleport>
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
+    <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"
       :item="cartItem"
@@ -449,9 +463,9 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <FaqPage v-else-if="currentPage === 'faq'" />
     <InstitutionalPage v-else-if="currentPage === 'institutional'" :route="route" />
     <CollectionPage v-else :products="products" :is-loading="isLoading" @add-to-cart="addToCart" />
-    <StoreFooter v-if="currentPage !== 'checkout'" />
+    <StoreFooter v-if="!['checkout', 'checkout-success'].includes(currentPage)" />
     <button
-      v-if="currentPage !== 'checkout'"
+      v-if="!['checkout', 'checkout-success'].includes(currentPage)"
       class="mello-floating-cart"
       type="button"
       :aria-label="t('nav.cart')"

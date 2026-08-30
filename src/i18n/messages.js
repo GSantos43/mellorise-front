@@ -449,6 +449,13 @@ export const messages = {
       keep: 'Continuar mi compra',
       leave: 'Salir del checkout'
     },
+    checkoutSuccess: {
+      title: 'Pedido confirmado',
+      text: 'Tu pago fue recibido y estamos preparando el pedido para fulfillment.',
+      orderLabel: 'Pedido',
+      note: 'Cuando el tracking esté disponible, lo enviaremos por email y lo mostraremos en la página de seguimiento.',
+      action: 'Volver al producto'
+    },
     checkout: {
       eyebrow: 'Checkout seguro',
       title: 'Finaliza tu compra',
@@ -981,6 +988,13 @@ export const messages = {
       text: 'Your discount, selected bottles, and cart are ready. Stay here to finish your secure checkout.',
       keep: 'Continue my purchase',
       leave: 'Leave checkout'
+    },
+    checkoutSuccess: {
+      title: 'Order confirmed',
+      text: 'Your payment was received and the order is being prepared for fulfillment.',
+      orderLabel: 'Order',
+      note: 'When tracking is available, we will email it and show it on the order tracking page.',
+      action: 'Back to product'
     },
     checkout: {
       eyebrow: 'Secure checkout',
