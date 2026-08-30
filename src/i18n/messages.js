@@ -439,15 +439,19 @@ export const messages = {
     },
     checkout: {
       eyebrow: 'Checkout seguro',
-      title: 'Revisa tu pedido antes de pagar',
+      title: 'Finaliza tu compra',
       intro: 'Confirma tu email, cupón y opciones de entrega. El pago se abre en Stripe con el total final.',
       back: 'Volver al producto',
       secure: 'Pago protegido por Stripe',
+      product: {
+        label: 'Producto',
+        badge: 'Más vendido'
+      },
       contact: {
         title: 'Email de compra',
         email: 'Email',
         emailPlaceholder: 'Ingresa tu correo',
-        help: 'Usaremos este email para validar el cupón y vincular el pedido en WooCommerce.'
+        help: 'Lo usamos para validar cupones y enviar la confirmación del pedido.'
       },
       coupon: {
         title: 'Cupón',
@@ -457,10 +461,25 @@ export const messages = {
         help: 'Si tienes un cupón, insértalo aquí. Será validado antes del pago.'
       },
       delivery: {
-        title: 'Entrega',
+        title: 'Forma de entrega',
+        addressTitle: 'Dirección de entrega',
+        addressText: 'Completa la dirección en Stripe antes de pagar.',
+        fast: 'Llegará rápido',
+        fastText: 'La fecha exacta se confirma en Stripe.',
+        scheduled: 'Elegir otro día',
+        scheduledText: 'Opciones disponibles durante el pago seguro.',
         standard: 'Envío estándar',
         standardText: 'La tarifa final de envío se calcula en el checkout seguro.',
         calculated: 'Calculado'
+      },
+      payment: {
+        title: 'Medios de pago',
+        secure: 'Stripe seguro',
+        stripe: 'Tarjeta o wallet',
+        stripeText: 'Paga con tarjeta, Apple Pay, Google Pay u opciones disponibles en Stripe.'
+      },
+      billing: {
+        title: 'Facturación'
       },
       note: {
         title: 'Notas',
@@ -468,9 +487,12 @@ export const messages = {
         placeholder: 'Agrega una observación opcional'
       },
       summary: {
-        title: 'Resumen',
+        title: 'Resumen de la compra',
+        product: 'Producto',
+        productDiscount: 'Descuento del producto',
         total: 'Total',
-        pay: 'Continuar al pago seguro',
+        saved: 'Ahorraste {amount}',
+        pay: 'Pagar y finalizar',
         loading: 'Preparando pago...',
         foot: 'Revisarás los datos finales antes de confirmar el pago en Stripe.'
       },
@@ -921,15 +943,19 @@ export const messages = {
     },
     checkout: {
       eyebrow: 'Secure checkout',
-      title: 'Review your order before payment',
+      title: 'Finalize your purchase',
       intro: 'Confirm your email, coupon, and delivery options. Payment opens in Stripe with the final total.',
       back: 'Back to product',
       secure: 'Payment protected by Stripe',
+      product: {
+        label: 'Product',
+        badge: 'Best seller'
+      },
       contact: {
         title: 'Purchase email',
         email: 'Email',
         emailPlaceholder: 'Enter your email',
-        help: 'We use this email to validate the coupon and connect the order in WooCommerce.'
+        help: 'We use this email to validate coupons and send your order confirmation.'
       },
       coupon: {
         title: 'Coupon',
@@ -939,10 +965,25 @@ export const messages = {
         help: 'If you have a coupon, enter it here. It will be validated before payment.'
       },
       delivery: {
-        title: 'Delivery',
+        title: 'Delivery method',
+        addressTitle: 'Delivery address',
+        addressText: 'Complete the address in Stripe before paying.',
+        fast: 'Fast delivery',
+        fastText: 'The exact date is confirmed in Stripe.',
+        scheduled: 'Choose another day',
+        scheduledText: 'Options available during secure payment.',
         standard: 'Standard shipping',
         standardText: 'The final shipping rate is calculated in secure checkout.',
         calculated: 'Calculated'
+      },
+      payment: {
+        title: 'Payment methods',
+        secure: 'Secure Stripe',
+        stripe: 'Card or wallet',
+        stripeText: 'Pay with card, Apple Pay, Google Pay, or available Stripe options.'
+      },
+      billing: {
+        title: 'Billing'
       },
       note: {
         title: 'Notes',
@@ -950,9 +991,12 @@ export const messages = {
         placeholder: 'Add an optional note'
       },
       summary: {
-        title: 'Summary',
+        title: 'Purchase summary',
+        product: 'Product',
+        productDiscount: 'Product discount',
         total: 'Total',
-        pay: 'Continue to secure payment',
+        saved: 'You saved {amount}',
+        pay: 'Pay and finish',
         loading: 'Preparing payment...',
         foot: 'You will review final details before confirming payment in Stripe.'
       },

@@ -307,7 +307,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" @click="navigate">
-    <SiteHeader :current-route="route" />
+    <SiteHeader v-if="currentPage !== 'checkout'" :current-route="route" />
     <PageLoader :active="isPageLoading" />
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
