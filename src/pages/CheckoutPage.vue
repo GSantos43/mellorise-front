@@ -707,8 +707,8 @@ onUnmounted(() => {
 
 .mello-checkout-upsell {
   align-items: center;
-  background: #f5f8f7;
-  border: 1px solid rgba(10, 15, 15, 0.72);
+  background: #f8fbfb;
+  border: 1px solid rgba(10, 15, 15, 0.78);
   border-radius: 8px;
   color: #102829;
   display: grid;
@@ -718,10 +718,11 @@ onUnmounted(() => {
   overflow: hidden;
   padding: 18px;
   position: relative;
+  box-shadow: 0 10px 24px rgba(16, 49, 50, 0.05);
 }
 
 .mello-checkout-upsell::before {
-  background: linear-gradient(135deg, rgba(49, 214, 176, 0.16), rgba(119, 205, 250, 0));
+  background: linear-gradient(135deg, rgba(49, 214, 176, 0.055), rgba(119, 205, 250, 0) 54%);
   content: "";
   inset: 0;
   pointer-events: none;
