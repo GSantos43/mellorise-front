@@ -769,8 +769,11 @@ onUnmounted(() => {
 
 .mello-checkout-upsell {
   align-items: center;
-  background: #f8fbfb;
-  border: 1px solid rgba(10, 15, 15, 0.78);
+  animation: melloCheckoutUpsellGlow 3.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(119, 205, 250, 0.22), transparent 32%),
+    linear-gradient(135deg, #fbffff 0%, #eefcf9 56%, #f7fbff 100%);
+  border: 1px solid #1bd1bd;
   border-radius: 8px;
   color: #102829;
   display: grid;
@@ -780,15 +783,25 @@ onUnmounted(() => {
   overflow: hidden;
   padding: 18px;
   position: relative;
-  box-shadow: 0 10px 24px rgba(16, 49, 50, 0.05);
+  box-shadow: 0 16px 34px rgba(18, 179, 161, 0.18), 0 0 0 1px rgba(49, 214, 176, 0.2);
 }
 
 .mello-checkout-upsell::before {
-  background: linear-gradient(135deg, rgba(49, 214, 176, 0.055), rgba(119, 205, 250, 0) 54%);
+  background: linear-gradient(135deg, rgba(49, 214, 176, 0.12), rgba(119, 205, 250, 0) 54%);
   content: "";
   inset: 0;
   pointer-events: none;
   position: absolute;
+}
+
+.mello-checkout-upsell::after {
+  animation: melloCheckoutUpsellShine 5.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0) 34%, rgba(255, 255, 255, 0.82) 47%, rgba(119, 205, 250, 0.26) 52%, rgba(255, 255, 255, 0) 66%, transparent 100%);
+  content: "";
+  inset: -35% -22%;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-95%) rotate(2deg);
 }
 
 .mello-checkout-upsell span {
@@ -874,7 +887,7 @@ onUnmounted(() => {
 .mello-checkout-upsell button:hover,
 .mello-checkout-upsell button:focus-visible {
   background: #47e6c3;
-  box-shadow: 0 14px 28px rgba(20, 155, 128, 0.24);
+  box-shadow: 0 14px 28px rgba(20, 155, 128, 0.28), 0 0 0 4px rgba(49, 214, 176, 0.18);
   outline: 0;
   transform: translateY(-1px);
 }
@@ -1460,6 +1473,41 @@ onUnmounted(() => {
   }
 }
 
+@keyframes melloCheckoutUpsellGlow {
+  0%,
+  100% {
+    border-color: #1bd1bd;
+    box-shadow: 0 16px 34px rgba(18, 179, 161, 0.18), 0 0 0 1px rgba(49, 214, 176, 0.18);
+  }
+
+  50% {
+    border-color: #77cdfa;
+    box-shadow: 0 20px 42px rgba(18, 179, 161, 0.28), 0 0 0 4px rgba(119, 205, 250, 0.2);
+  }
+}
+
+@keyframes melloCheckoutUpsellShine {
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateX(-95%) rotate(2deg);
+  }
+
+  48% {
+    opacity: 0.9;
+  }
+
+  64% {
+    opacity: 0;
+    transform: translateX(95%) rotate(2deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(95%) rotate(2deg);
+  }
+}
+
 @keyframes melloCheckoutConfettiBurst {
   0% {
     opacity: 0;
@@ -1484,6 +1532,16 @@ onUnmounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .mello-checkout-confetti {
     display: none;
+  }
+
+  .mello-checkout-upsell {
+    animation: none;
+    box-shadow: 0 16px 34px rgba(18, 179, 161, 0.18), 0 0 0 2px rgba(49, 214, 176, 0.24);
+  }
+
+  .mello-checkout-upsell::after {
+    animation: none;
+    opacity: 0;
   }
 
   .mello-checkout-upsell button {
