@@ -124,17 +124,53 @@ function launchOfferConfetti() {
     return
   }
 
-  const colors = ['#31d6b0', '#77cdfa', '#fabd00', '#ff7733', '#173132']
+  const colors = ['#31d6b0', '#77cdfa', '#fabd00', '#ff7733', '#173132', '#ffffff']
   const timestamp = Date.now()
-  confettiPieces.value = Array.from({ length: 34 }, (_, index) => ({
+
+  const fallingPieces = Array.from({ length: 34 }, (_, index) => ({
     id: `${timestamp}-${index}`,
+    animation: 'melloCheckoutConfettiFall',
     color: colors[index % colors.length],
     left: `${12 + Math.random() * 76}%`,
+    top: `${10 + Math.random() * 12}vh`,
     drift: `${(Math.random() - 0.5) * 260}px`,
+    lift: '0px',
     rotation: `${Math.random() * 720 - 360}deg`,
-    delay: `${Math.random() * 120}ms`,
-    duration: `${780 + Math.random() * 520}ms`
+    delay: `${Math.random() * 220}ms`,
+    duration: `${1850 + Math.random() * 950}ms`,
+    width: `${5 + Math.random() * 5}px`,
+    height: `${10 + Math.random() * 8}px`,
+    radius: Math.random() > 0.68 ? '999px' : '2px'
   }))
+
+  const burstPieces = ['left', 'right'].flatMap((side) => (
+    Array.from({ length: 18 }, (_, index) => {
+      const direction = side === 'left' ? 1 : -1
+      const drift = direction * (120 + Math.random() * 280)
+      const lift = -120 + Math.random() * 250
+      const rotation = direction * (180 + Math.random() * 780)
+
+      return {
+        id: `${timestamp}-${side}-${index}`,
+        animation: 'melloCheckoutConfettiBurst',
+        color: colors[(index + (side === 'left' ? 0 : 3)) % colors.length],
+        left: side === 'left' ? '4vw' : '96vw',
+        top: `${34 + Math.random() * 24}vh`,
+        drift: `${drift}px`,
+        midDrift: `${drift * 0.72}px`,
+        lift: `${lift}px`,
+        rotation: `${rotation}deg`,
+        midRotation: `${rotation * 0.58}deg`,
+        delay: `${80 + Math.random() * 150}ms`,
+        duration: `${1250 + Math.random() * 650}ms`,
+        width: `${5 + Math.random() * 6}px`,
+        height: `${8 + Math.random() * 10}px`,
+        radius: Math.random() > 0.55 ? '999px' : '2px'
+      }
+    })
+  ))
+
+  confettiPieces.value = [...burstPieces, ...fallingPieces]
 
   if (confettiTimer) {
     window.clearTimeout(confettiTimer)
@@ -142,7 +178,7 @@ function launchOfferConfetti() {
 
   confettiTimer = window.setTimeout(() => {
     confettiPieces.value = []
-  }, 1450)
+  }, 3300)
 }
 
 onUnmounted(() => {
@@ -160,11 +196,19 @@ onUnmounted(() => {
         :key="piece.id"
         :style="{
           '--confetti-left': piece.left,
+          '--confetti-top': piece.top,
           '--confetti-drift': piece.drift,
+          '--confetti-mid-drift': piece.midDrift || piece.drift,
+          '--confetti-lift': piece.lift,
           '--confetti-rotation': piece.rotation,
+          '--confetti-mid-rotation': piece.midRotation || piece.rotation,
           '--confetti-delay': piece.delay,
           '--confetti-duration': piece.duration,
-          '--confetti-color': piece.color
+          '--confetti-color': piece.color,
+          '--confetti-width': piece.width,
+          '--confetti-height': piece.height,
+          '--confetti-radius': piece.radius,
+          '--confetti-animation': piece.animation
         }"
       ></span>
     </div>
@@ -376,16 +420,17 @@ onUnmounted(() => {
 }
 
 .mello-checkout-confetti span {
-  animation: melloCheckoutConfetti var(--confetti-duration) cubic-bezier(0.16, 1, 0.3, 1) var(--confetti-delay) forwards;
+  animation: var(--confetti-animation) var(--confetti-duration) cubic-bezier(0.16, 1, 0.3, 1) var(--confetti-delay) forwards;
   background: var(--confetti-color);
-  border-radius: 2px;
-  height: 12px;
+  border-radius: var(--confetti-radius);
+  height: var(--confetti-height);
   left: var(--confetti-left);
   opacity: 0;
   position: absolute;
-  top: 18vh;
+  top: var(--confetti-top);
   transform: translate3d(0, -18px, 0) rotate(0deg);
-  width: 7px;
+  width: var(--confetti-width);
+  will-change: opacity, transform;
 }
 
 .mello-checkout-top {
@@ -1248,19 +1293,44 @@ onUnmounted(() => {
   }
 }
 
-@keyframes melloCheckoutConfetti {
+@keyframes melloCheckoutConfettiFall {
   0% {
     opacity: 0;
-    transform: translate3d(0, -18px, 0) rotate(0deg) scale(0.8);
+    transform: translate3d(0, -28px, 0) rotate(0deg) scale(0.86);
   }
 
-  12% {
+  10% {
     opacity: 1;
+  }
+
+  62% {
+    opacity: 0.96;
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(var(--confetti-drift), 76vh, 0) rotate(var(--confetti-rotation)) scale(1);
+    transform: translate3d(var(--confetti-drift), 82vh, 0) rotate(var(--confetti-rotation)) scale(1);
+  }
+}
+
+@keyframes melloCheckoutConfettiBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.45);
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate3d(var(--confetti-mid-drift), var(--confetti-lift), 0) rotate(var(--confetti-mid-rotation)) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), calc(var(--confetti-lift) + 34vh), 0) rotate(var(--confetti-rotation)) scale(0.95);
   }
 }
 
