@@ -482,8 +482,11 @@ export const messages = {
         title: 'Cupón',
         label: 'Código de descuento',
         placeholder: 'MELLO10',
+        apply: 'Apply',
+        applying: 'Applying...',
         applied: '{percent}% reservado para este email',
-        help: 'Si tienes un cupón, insértalo aquí. Será validado antes del pago.'
+        invalid: 'Cupón inválido o expirado.',
+        help: 'Inserta tu cupón y aplícalo antes del pago.'
       },
       payment: {
         title: 'Medios de pago',
@@ -999,8 +1002,11 @@ export const messages = {
         title: 'Coupon',
         label: 'Discount code',
         placeholder: 'MELLO10',
+        apply: 'Apply',
+        applying: 'Applying...',
         applied: '{percent}% reserved for this email',
-        help: 'If you have a coupon, enter it here. It will be validated before payment.'
+        invalid: 'Coupon invalid or expired.',
+        help: 'Enter your coupon and apply it before payment.'
       },
       payment: {
         title: 'Payment methods',

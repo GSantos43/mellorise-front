@@ -26,6 +26,28 @@ export async function createWelcomeDiscount(email) {
   return data
 }
 
+export async function validateWelcomeDiscount({ code, email }) {
+  const response = await fetch(`${BFF_URL}/discounts/validate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      couponCode: code,
+      customerEmail: email
+    })
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const message = Array.isArray(data.message) ? data.message.join(' ') : data.message
+    throw new Error(message || 'Coupon is invalid or expired.')
+  }
+
+  return data
+}
+
 function getVisitorId() {
   if (typeof window === 'undefined') return ''
 

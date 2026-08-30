@@ -209,7 +209,9 @@ async function goToStripeCheckout(options = {}) {
   isCheckoutLoading.value = true
 
   try {
-    if (activeDiscount.value?.code) {
+    const couponWasProvidedByCheckout = Object.prototype.hasOwnProperty.call(options, 'couponCode')
+
+    if (!couponWasProvidedByCheckout && activeDiscount.value?.code) {
       options.couponCode = activeDiscount.value.code
       options.customerEmail = activeDiscount.value.email
     }
@@ -317,6 +319,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :discount="activeDiscount"
       :is-checkout-loading="isCheckoutLoading"
       @checkout="goToStripeCheckout"
+      @discount-applied="applyDiscount"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"
     />
