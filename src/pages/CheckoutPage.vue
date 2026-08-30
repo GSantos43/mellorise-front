@@ -15,10 +15,7 @@ const { t, locale } = useI18n({ useScope: 'global' })
 
 const customerEmail = ref(props.discount?.email || '')
 const couponCode = ref(props.discount?.code || '')
-const customerNote = ref('')
 const selectedPayment = ref('stripe')
-const isShippingProtectionEnabled = ref(false)
-const shippingProtectionPrice = 3.5
 
 const localeOptions = computed(() => supportedLocales.map((value) => ({
   value,
@@ -34,8 +31,7 @@ const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount
 const normalizedCoupon = computed(() => couponCode.value.trim().toUpperCase())
 const hasSavedDiscount = computed(() => Boolean(props.discount?.code && normalizedCoupon.value === props.discount.code))
 const discountTotal = computed(() => props.item && hasSavedDiscount.value ? subtotal.value * (discountPercent.value / 100) : 0)
-const shippingProtectionTotal = computed(() => props.item && isShippingProtectionEnabled.value ? shippingProtectionPrice : 0)
-const total = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingProtectionTotal.value)
+const total = computed(() => Math.max(0, subtotal.value - discountTotal.value))
 const totalSavings = computed(() => discountTotal.value)
 const canSubmit = computed(() => Boolean(props.item && customerEmail.value.trim() && !props.isCheckoutLoading))
 
@@ -54,12 +50,7 @@ function submitCheckout() {
 
   emit('checkout', {
     customerEmail: customerEmail.value.trim(),
-    customerNote: customerNote.value.trim(),
     couponCode: normalizedCoupon.value || undefined,
-    shippingProtection: {
-      enabled: isShippingProtectionEnabled.value,
-      amount: shippingProtectionPrice
-    }
   })
 }
 
@@ -181,10 +172,6 @@ function setCheckoutQuantity(nextQuantity) {
             <input v-model="customerEmail" type="email" autocomplete="email" :placeholder="t('checkout.contact.emailPlaceholder')" required>
           </label>
           <p class="mello-checkout-help">{{ t('checkout.contact.help') }}</p>
-          <label class="mello-checkout-field">
-            <span>{{ t('checkout.note.label') }}</span>
-            <textarea v-model="customerNote" rows="2" :placeholder="t('checkout.note.placeholder')"></textarea>
-          </label>
         </section>
 
         <section class="mello-checkout-section" aria-labelledby="checkout-coupon">
@@ -213,18 +200,6 @@ function setCheckoutQuantity(nextQuantity) {
             <div v-if="discountTotal">
               <dt>{{ t('checkout.summary.productDiscount') }}</dt>
               <dd class="is-saving">-{{ formatMoney(discountTotal) }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('cart.shippingProtection.title') }}</dt>
-              <dd>{{ shippingProtectionTotal ? formatMoney(shippingProtectionTotal) : formatMoney(0) }}</dd>
-            </div>
-            <div class="mello-checkout-protection-row">
-              <dt>
-                <button type="button" :class="{ 'is-active': isShippingProtectionEnabled }" :aria-pressed="isShippingProtectionEnabled" @click="isShippingProtectionEnabled = !isShippingProtectionEnabled">
-                  {{ t('cart.shippingProtection.title') }}
-                </button>
-              </dt>
-              <dd>{{ formatMoney(shippingProtectionPrice) }}</dd>
             </div>
           </dl>
 
@@ -686,8 +661,7 @@ function setCheckoutQuantity(nextQuantity) {
   font-weight: 650;
 }
 
-.mello-checkout-field input,
-.mello-checkout-field textarea {
+.mello-checkout-field input {
   appearance: none;
   background: #ffffff;
   border: 1px solid #d8d8d8;
@@ -701,15 +675,7 @@ function setCheckoutQuantity(nextQuantity) {
   width: 100%;
 }
 
-.mello-checkout-field textarea {
-  line-height: 1.38;
-  min-height: 74px;
-  padding-top: 10px;
-  resize: vertical;
-}
-
-.mello-checkout-field input:focus,
-.mello-checkout-field textarea:focus {
+.mello-checkout-field input:focus {
   border-color: var(--checkout-blue);
   box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.18);
 }
@@ -784,21 +750,6 @@ function setCheckoutQuantity(nextQuantity) {
 }
 
 .mello-checkout-totals .is-saving { color: var(--checkout-green); }
-
-.mello-checkout-protection-row button {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  color: var(--checkout-blue);
-  cursor: pointer;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 650;
-  padding: 0;
-  text-align: left;
-}
-
-.mello-checkout-protection-row button.is-active { color: var(--checkout-green); }
 
 .mello-checkout-total {
   border-top: 1px solid var(--checkout-line);

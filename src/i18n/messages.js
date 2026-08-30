@@ -474,18 +474,6 @@ export const messages = {
         applied: '{percent}% reservado para este email',
         help: 'Si tienes un cupón, insértalo aquí. Será validado antes del pago.'
       },
-      delivery: {
-        title: 'Forma de entrega',
-        addressTitle: 'Dirección de entrega',
-        addressText: 'Stripe solicitará la dirección, teléfono e impuestos en el pago seguro.',
-        fast: 'Llegará rápido',
-        fastText: 'La fecha exacta se confirma en Stripe.',
-        scheduled: 'Elegir otro día',
-        scheduledText: 'Opciones disponibles durante el pago seguro.',
-        standard: 'Envío estándar',
-        standardText: 'La tarifa final de envío se calcula en el checkout seguro.',
-        calculated: 'Calculado'
-      },
       payment: {
         title: 'Medios de pago',
         secure: 'Stripe seguro',
@@ -494,11 +482,6 @@ export const messages = {
       },
       billing: {
         title: 'Facturación'
-      },
-      note: {
-        title: 'Notas',
-        label: 'Instrucciones del pedido',
-        placeholder: 'Agrega una observación opcional'
       },
       summary: {
         title: 'Resumen de la compra',
@@ -992,18 +975,6 @@ export const messages = {
         applied: '{percent}% reserved for this email',
         help: 'If you have a coupon, enter it here. It will be validated before payment.'
       },
-      delivery: {
-        title: 'Delivery method',
-        addressTitle: 'Delivery address',
-        addressText: 'Stripe will collect address, phone, and taxes in secure payment.',
-        fast: 'Fast delivery',
-        fastText: 'The exact date is confirmed in Stripe.',
-        scheduled: 'Choose another day',
-        scheduledText: 'Options available during secure payment.',
-        standard: 'Standard shipping',
-        standardText: 'The final shipping rate is calculated in secure checkout.',
-        calculated: 'Calculated'
-      },
       payment: {
         title: 'Payment methods',
         secure: 'Secure Stripe',
@@ -1012,11 +983,6 @@ export const messages = {
       },
       billing: {
         title: 'Billing'
-      },
-      note: {
-        title: 'Notes',
-        label: 'Order instructions',
-        placeholder: 'Add an optional note'
       },
       summary: {
         title: 'Purchase summary',

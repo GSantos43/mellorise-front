@@ -26,9 +26,7 @@ export async function createCheckoutSession(item, options = {}) {
       successUrl: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${origin}/checkout`,
       customerEmail: options.customerEmail,
-      customerNote: options.customerNote,
-      couponCode: options.couponCode,
-      shippingProtection: options.shippingProtection
+      couponCode: options.couponCode
     })
   })
 
