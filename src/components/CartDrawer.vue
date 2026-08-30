@@ -36,14 +36,7 @@ const checkoutTotal = computed(() => Math.max(0, subtotal.value - discountTotal.
 const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') : t('cart.manyItems', { count: quantity.value }))
 
 function checkout() {
-  emit('checkout', {
-    shippingProtection: {
-      enabled: isShippingProtectionEnabled.value,
-      amount: shippingProtectionPrice
-    },
-    couponCode: props.discount?.code,
-    customerEmail: props.discount?.email
-  })
+  emit('checkout')
 }
 
 watch(
