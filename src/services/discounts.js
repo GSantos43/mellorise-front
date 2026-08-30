@@ -1,8 +1,6 @@
-const BFF_URL = (
-  import.meta.env.VITE_BFF_URL ||
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:3000'
-).replace(/\/$/, '')
+import { getBffUrl } from './bff'
+
+const BFF_URL = getBffUrl()
 
 const VISITOR_STORAGE_KEY = 'mellorise-visitor-id-v1'
 

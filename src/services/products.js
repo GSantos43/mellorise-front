@@ -1,8 +1,6 @@
-const BFF_URL = (
-  import.meta.env.VITE_BFF_URL ||
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:3000'
-).replace(/\/$/, '')
+import { getBffUrl } from './bff'
+
+const BFF_URL = getBffUrl()
 const API_URL = `${BFF_URL}/products`
 const PRODUCT_CACHE_KEY = 'mellorise-products-cache-v1'
 const PRODUCT_CACHE_TTL = 10 * 60 * 1000
