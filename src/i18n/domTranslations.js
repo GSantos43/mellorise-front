@@ -36,6 +36,8 @@ const staticTextMap = new Map(Object.entries({
   'Información editable': 'Editable information',
   'Textos preparados para ajustarse a la etiqueta real del producto antes de publicar.': 'Copy prepared to match the real product label before publishing.',
   'Proceso y cuidado': 'Process and care',
+  'Del origen a tu puerta.': 'From origin to your door.',
+  'Cada paso cuenta.': 'Every step matters.',
   'Del origen a tu puerta. Cada paso cuenta.': 'From origin to your door. Every step matters.',
   'Una vista simple del recorrido de MelloRise: desde la selección de ingredientes hasta la experiencia de compra, con información que puede ajustarse según la operación real de la marca.': 'A simple view of the MelloRise journey: from ingredient selection to the shopping experience, with information that can be adjusted to the brand real operation.',
   'Selección': 'Selection',
