@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale, supportedLocales } from '../i18n'
 import { formatMoney } from '../services/products'
@@ -16,6 +16,8 @@ const { t, locale } = useI18n({ useScope: 'global' })
 const customerEmail = ref(props.discount?.email || '')
 const couponCode = ref(props.discount?.code || '')
 const selectedPayment = ref('stripe')
+const confettiPieces = ref([])
+let confettiTimer = 0
 
 const localeOptions = computed(() => supportedLocales.map((value) => ({
   value,
@@ -107,10 +109,67 @@ function changeLocale(value) {
 function setCheckoutQuantity(nextQuantity) {
   emit('update-quantity', Math.max(1, Number(nextQuantity || 1)))
 }
+
+function activateCheckoutUpsell() {
+  if (!checkoutUpsell.value) return
+
+  setCheckoutQuantity(checkoutUpsell.value.quantity)
+  launchOfferConfetti()
+}
+
+function launchOfferConfetti() {
+  if (typeof window === 'undefined') return
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    confettiPieces.value = []
+    return
+  }
+
+  const colors = ['#31d6b0', '#77cdfa', '#fabd00', '#ff7733', '#173132']
+  const timestamp = Date.now()
+  confettiPieces.value = Array.from({ length: 34 }, (_, index) => ({
+    id: `${timestamp}-${index}`,
+    color: colors[index % colors.length],
+    left: `${12 + Math.random() * 76}%`,
+    drift: `${(Math.random() - 0.5) * 260}px`,
+    rotation: `${Math.random() * 720 - 360}deg`,
+    delay: `${Math.random() * 120}ms`,
+    duration: `${780 + Math.random() * 520}ms`
+  }))
+
+  if (confettiTimer) {
+    window.clearTimeout(confettiTimer)
+  }
+
+  confettiTimer = window.setTimeout(() => {
+    confettiPieces.value = []
+  }, 1450)
+}
+
+onUnmounted(() => {
+  if (confettiTimer) {
+    window.clearTimeout(confettiTimer)
+  }
+})
 </script>
 
 <template>
   <section class="mello-checkout" aria-labelledby="mello-checkout-title">
+    <div v-if="confettiPieces.length" class="mello-checkout-confetti" aria-hidden="true">
+      <span
+        v-for="piece in confettiPieces"
+        :key="piece.id"
+        :style="{
+          '--confetti-left': piece.left,
+          '--confetti-drift': piece.drift,
+          '--confetti-rotation': piece.rotation,
+          '--confetti-delay': piece.delay,
+          '--confetti-duration': piece.duration,
+          '--confetti-color': piece.color
+        }"
+      ></span>
+    </div>
+
     <header class="mello-checkout-top">
       <div class="mello-checkout-top__inner">
         <div class="mello-checkout-top__main">
@@ -195,7 +254,16 @@ function setCheckoutQuantity(nextQuantity) {
               <h3>{{ t(checkoutUpsell.title) }}</h3>
               <p>{{ t(checkoutUpsell.text) }}</p>
             </div>
-            <button type="button" @click="setCheckoutQuantity(checkoutUpsell.quantity)">{{ t(checkoutUpsell.action) }}</button>
+            <button type="button" @click="activateCheckoutUpsell">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M13.5 4.5c1.7-.9 3.5-1.3 5.4-1.2.1 1.9-.3 3.7-1.2 5.4a14.5 14.5 0 0 1-4.4 5.2l-3.2-3.2a14.5 14.5 0 0 1 3.4-6.2Z"/>
+                <path d="m10.1 10.7-4.4.8-1.4 3.4 4.5-.6"/>
+                <path d="m13.3 13.9-.6 4.5 3.4-1.4.8-4.4"/>
+                <path d="M8.6 15.4 7 17"/>
+                <path d="M15.6 6.8h.01"/>
+              </svg>
+              <span>{{ t(checkoutUpsell.action) }}</span>
+            </button>
           </article>
         </section>
 
@@ -298,6 +366,27 @@ function setCheckoutQuantity(nextQuantity) {
 }
 
 .mello-checkout * { box-sizing: border-box; letter-spacing: 0; }
+
+.mello-checkout-confetti {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 80;
+}
+
+.mello-checkout-confetti span {
+  animation: melloCheckoutConfetti var(--confetti-duration) cubic-bezier(0.16, 1, 0.3, 1) var(--confetti-delay) forwards;
+  background: var(--confetti-color);
+  border-radius: 2px;
+  height: 12px;
+  left: var(--confetti-left);
+  opacity: 0;
+  position: absolute;
+  top: 18vh;
+  transform: translate3d(0, -18px, 0) rotate(0deg);
+  width: 7px;
+}
 
 .mello-checkout-top {
   align-items: center;
@@ -573,14 +662,25 @@ function setCheckoutQuantity(nextQuantity) {
 
 .mello-checkout-upsell {
   align-items: center;
-  background: #173132;
-  border-radius: 12px;
-  color: #ffffff;
+  background: #f5f8f7;
+  border: 1px solid rgba(10, 15, 15, 0.72);
+  border-radius: 8px;
+  color: #102829;
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 1fr) auto;
   margin-top: 18px;
+  overflow: hidden;
   padding: 18px;
+  position: relative;
+}
+
+.mello-checkout-upsell::before {
+  background: linear-gradient(135deg, rgba(49, 214, 176, 0.16), rgba(119, 205, 250, 0));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 .mello-checkout-upsell span {
@@ -597,7 +697,7 @@ function setCheckoutQuantity(nextQuantity) {
 }
 
 .mello-checkout-upsell h3 {
-  color: #ffffff;
+  color: #102829;
   font-size: 20px;
   font-weight: 850;
   line-height: 1.15;
@@ -605,7 +705,7 @@ function setCheckoutQuantity(nextQuantity) {
 }
 
 .mello-checkout-upsell p {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(16, 40, 41, 0.74);
   font-size: 14px;
   line-height: 1.4;
   margin: 6px 0 0;
@@ -615,26 +715,64 @@ function setCheckoutQuantity(nextQuantity) {
 .mello-checkout-upsell button {
   align-items: center;
   appearance: none;
-  background: #ffffff;
+  background: #31d6b0;
   border: 0;
   border-radius: 999px;
-  color: #173132;
+  color: #062626;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
   font-size: 14px;
   font-weight: 850;
+  gap: 8px;
   justify-content: center;
   min-height: 44px;
-  padding: 0 18px;
+  padding: 0 20px;
+  position: relative;
   text-decoration: none;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
   white-space: nowrap;
+  z-index: 1;
+}
+
+.mello-checkout-upsell > div {
+  position: relative;
+  z-index: 1;
+}
+
+.mello-checkout-upsell button svg {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 18px;
+}
+
+.mello-checkout-upsell button span {
+  background: transparent;
+  border-radius: 0;
+  color: inherit;
+  display: inline;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+  text-transform: none;
 }
 
 .mello-checkout-upsell button:hover,
 .mello-checkout-upsell button:focus-visible {
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  background: #47e6c3;
+  box-shadow: 0 14px 28px rgba(20, 155, 128, 0.24);
   outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-checkout-upsell button:active {
+  transform: translateY(0) scale(0.99);
 }
 
 .mello-checkout-section__head {
@@ -1023,5 +1161,36 @@ function setCheckoutQuantity(nextQuantity) {
   .mello-checkout-section__head h2 { font-size: 21px; }
   .mello-checkout-radio { grid-template-columns: 26px minmax(0, 1fr) auto; }
   .mello-checkout-radio--payment { grid-template-columns: 26px 52px minmax(0, 1fr); }
+}
+
+@keyframes melloCheckoutConfetti {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -18px, 0) rotate(0deg) scale(0.8);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), 76vh, 0) rotate(var(--confetti-rotation)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mello-checkout-confetti {
+    display: none;
+  }
+
+  .mello-checkout-upsell button {
+    transition: background 160ms ease, box-shadow 160ms ease;
+  }
+
+  .mello-checkout-upsell button:hover,
+  .mello-checkout-upsell button:focus-visible {
+    transform: none;
+  }
 }
 </style>
