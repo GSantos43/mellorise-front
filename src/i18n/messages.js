@@ -492,6 +492,7 @@ export const messages = {
         title: 'Medios de pago',
         secure: 'Stripe seguro',
         secureTitle: 'Pago seguro con Stripe',
+        secureInline: 'Pago seguro vía',
         stripe: 'Tarjeta o wallet',
         stripeText: 'Tus datos de pago se procesan en Stripe con protección de tarjeta, wallet y checkout cifrado.'
       },
@@ -1012,6 +1013,7 @@ export const messages = {
         title: 'Payment methods',
         secure: 'Secure Stripe',
         secureTitle: 'Payment secure with Stripe',
+        secureInline: 'Secure payment via',
         stripe: 'Card or wallet',
         stripeText: 'Your payment details are processed by Stripe with encrypted card, wallet, and checkout protection.'
       },

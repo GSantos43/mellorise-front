@@ -355,26 +355,6 @@ onUnmounted(() => {
           </article>
         </section>
 
-        <section class="mello-checkout-section" aria-labelledby="checkout-payment">
-          <div class="mello-checkout-section__head">
-            <h2 id="checkout-payment">{{ t('checkout.payment.title') }}</h2>
-          </div>
-
-          <div class="mello-checkout-payment-secure">
-            <span class="mello-checkout-payment-secure__shield" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 3.2 19 6v5.4c0 4.5-2.8 8-7 9.4-4.2-1.4-7-4.9-7-9.4V6l7-2.8Z"/>
-                <path d="m8.8 12.1 2.1 2.1 4.5-4.8"/>
-              </svg>
-            </span>
-            <span class="mello-checkout-payment-secure__content">
-              <strong>{{ t('checkout.payment.secureTitle') }}</strong>
-              <small>{{ t('checkout.payment.stripeText') }}</small>
-            </span>
-            <img class="mello-checkout-payment-secure__logo" src="/assets/stripe-logo.png" alt="Stripe" width="1600" height="900" loading="eager">
-          </div>
-        </section>
-
         <section class="mello-checkout-section" aria-labelledby="checkout-billing">
           <div class="mello-checkout-section__head">
             <h2 id="checkout-billing">{{ t('checkout.billing.title') }}</h2>
@@ -450,6 +430,17 @@ onUnmounted(() => {
           <button class="mello-checkout-submit" type="submit" :disabled="!canSubmit">
             {{ isCheckoutLoading ? t('checkout.summary.loading') : t('checkout.summary.pay') }}
           </button>
+
+          <p class="mello-checkout-secure-note">
+            <span aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3.2 19 6v5.4c0 4.5-2.8 8-7 9.4-4.2-1.4-7-4.9-7-9.4V6l7-2.8Z"/>
+                <path d="m8.8 12.1 2.1 2.1 4.5-4.8"/>
+              </svg>
+            </span>
+            {{ t('checkout.payment.secureInline') }}
+            <img src="/assets/stripe.png" alt="Stripe" width="1600" height="900" loading="eager">
+          </p>
         </div>
       </aside>
 
@@ -918,8 +909,7 @@ onUnmounted(() => {
   font-weight: 650;
 }
 
-.mello-checkout-coupon-line svg,
-.mello-checkout-payment-secure__shield svg {
+.mello-checkout-coupon-line svg {
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -995,89 +985,6 @@ onUnmounted(() => {
   font-size: 15px;
   font-weight: 700;
   white-space: nowrap;
-}
-
-.mello-checkout-payment-secure {
-  align-items: center;
-  background:
-    radial-gradient(circle at 18% 20%, rgba(118, 91, 255, 0.16), rgba(118, 91, 255, 0) 36%),
-    radial-gradient(circle at 88% 22%, rgba(149, 76, 233, 0.13), rgba(149, 76, 233, 0) 32%),
-    #f7fbfa;
-  border: 1px solid rgba(16, 49, 50, 0.18);
-  border-radius: 10px;
-  box-shadow: 0 16px 38px rgba(16, 49, 50, 0.08);
-  display: grid;
-  gap: 14px;
-  grid-template-columns: 54px minmax(0, 1fr) auto;
-  min-height: 88px;
-  overflow: hidden;
-  padding: 16px;
-  position: relative;
-}
-
-.mello-checkout-payment-secure::after {
-  background: radial-gradient(circle, rgba(118, 91, 255, 0.16), rgba(118, 91, 255, 0) 64%);
-  content: "";
-  height: 120px;
-  pointer-events: none;
-  position: absolute;
-  right: -44px;
-  top: -48px;
-  width: 120px;
-}
-
-.mello-checkout-payment-secure__shield {
-  align-items: center;
-  background: #123d3d;
-  border: 1px solid rgba(49, 214, 176, 0.5);
-  border-radius: 50%;
-  box-shadow: 0 10px 22px rgba(18, 61, 61, 0.18);
-  color: #31d6b0;
-  display: inline-flex;
-  height: 54px;
-  justify-content: center;
-  position: relative;
-  width: 54px;
-  z-index: 1;
-}
-
-.mello-checkout-payment-secure__shield svg {
-  height: 28px;
-  width: 28px;
-}
-
-.mello-checkout-payment-secure__content {
-  display: block;
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.mello-checkout-payment-secure__content strong {
-  color: #102829;
-  display: block;
-  font-size: 17px;
-  font-weight: 850;
-  line-height: 1.18;
-}
-
-.mello-checkout-payment-secure__content small {
-  color: rgba(16, 40, 41, 0.72);
-  display: block;
-  font-size: 13px;
-  line-height: 1.35;
-  margin-top: 5px;
-}
-
-.mello-checkout-payment-secure__logo {
-  display: block;
-  height: auto;
-  max-height: 34px;
-  max-width: 116px;
-  object-fit: contain;
-  position: relative;
-  width: 116px;
-  z-index: 1;
 }
 
 .mello-checkout-field {
@@ -1317,6 +1224,49 @@ onUnmounted(() => {
   cursor: not-allowed;
   opacity: 1;
 }
+
+.mello-checkout-secure-note {
+  align-items: center;
+  color: rgba(29, 29, 31, 0.68);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 650;
+  gap: 6px;
+  justify-content: center;
+  line-height: 1.25;
+  margin: 13px 0 0;
+  text-align: center;
+}
+
+.mello-checkout-secure-note span {
+  align-items: center;
+  color: #168f78;
+  display: inline-flex;
+  height: 18px;
+  justify-content: center;
+  width: 18px;
+}
+
+.mello-checkout-secure-note svg {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 18px;
+}
+
+.mello-checkout-secure-note img {
+  display: inline-block;
+  height: 17px;
+  object-fit: contain;
+  opacity: 0.9;
+  transform: translateY(1px);
+  width: auto;
+}
+
 .mello-checkout-empty {
   align-items: center;
   display: flex;
@@ -1418,16 +1368,6 @@ onUnmounted(() => {
     width: 100%;
   }
 
-  .mello-checkout-payment-secure {
-    grid-template-columns: 52px minmax(0, 1fr);
-  }
-
-  .mello-checkout-payment-secure__logo {
-    grid-column: 2;
-    justify-self: start;
-    margin-top: -4px;
-  }
-
   .mello-checkout-summary {
     margin: 16px;
     position: static;
@@ -1438,19 +1378,6 @@ onUnmounted(() => {
   .mello-checkout-section h2,
   .mello-checkout-section__head h2 { font-size: 21px; }
   .mello-checkout-radio { grid-template-columns: 26px minmax(0, 1fr) auto; }
-  .mello-checkout-payment-secure {
-    gap: 12px;
-    padding: 14px;
-  }
-
-  .mello-checkout-payment-secure__content strong {
-    font-size: 16px;
-  }
-
-  .mello-checkout-payment-secure__logo {
-    max-width: 98px;
-    width: 98px;
-  }
 }
 
 @keyframes melloCheckoutConfettiFall {
