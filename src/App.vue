@@ -7,6 +7,7 @@ import CollectionPage from './pages/CollectionPage.vue'
 import ContactPage from './pages/ContactPage.vue'
 import FaqPage from './pages/FaqPage.vue'
 import InstitutionalPage from './pages/InstitutionalPage.vue'
+import CheckoutPage from './pages/CheckoutPage.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
@@ -39,6 +40,7 @@ const currentProduct = computed(() => {
 
 const currentPage = computed(() => {
   if (route.value.startsWith('/products/')) return 'product'
+  if (route.value.startsWith('/checkout')) return 'checkout'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
   if (route.value === '/pages/faq' || route.value === '/pages/faqs') return 'faq'
   // Tracking is hidden until MelloRise has a real order tracking flow.
@@ -181,6 +183,14 @@ function closeCart() {
   isCartOpen.value = false
 }
 
+function navigateToCheckout() {
+  if (!cartItem.value) return
+  closeCart()
+  window.history.pushState({}, '', '/checkout')
+  route.value = window.location.pathname
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 function updateCartQuantity(quantity) {
   if (!cartItem.value) return
   cartItem.value = {
@@ -301,12 +311,22 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <PageLoader :active="isPageLoading" />
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
+    <CheckoutPage
+      v-else-if="currentPage === 'checkout'"
+      :item="cartItem"
+      :discount="activeDiscount"
+      :is-checkout-loading="isCheckoutLoading"
+      @checkout="goToStripeCheckout"
+      @update-quantity="updateCartQuantity"
+      @remove="removeCartItem"
+    />
     <ContactPage v-else-if="currentPage === 'contact'" />
     <FaqPage v-else-if="currentPage === 'faq'" />
     <InstitutionalPage v-else-if="currentPage === 'institutional'" :route="route" />
     <CollectionPage v-else :products="products" :is-loading="isLoading" @add-to-cart="addToCart" />
     <StoreFooter />
     <button
+      v-if="currentPage !== 'checkout'"
       class="mello-floating-cart"
       type="button"
       :aria-label="t('nav.cart')"
@@ -323,7 +343,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       @close="closeCart"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"
-      @checkout="goToStripeCheckout"
+      @checkout="navigateToCheckout"
     />
   </main>
 </template>

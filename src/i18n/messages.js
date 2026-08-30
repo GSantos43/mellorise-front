@@ -436,6 +436,49 @@ export const messages = {
       discount: {
         label: 'Descuento aplicado'
       }
+    },
+    checkout: {
+      eyebrow: 'Checkout seguro',
+      title: 'Revisa tu pedido antes de pagar',
+      intro: 'Confirma tu email, cupón y opciones de entrega. El pago se abre en Stripe con el total final.',
+      back: 'Volver al producto',
+      secure: 'Pago protegido por Stripe',
+      contact: {
+        title: 'Email de compra',
+        email: 'Email',
+        emailPlaceholder: 'Ingresa tu correo',
+        help: 'Usaremos este email para validar el cupón y vincular el pedido en WooCommerce.'
+      },
+      coupon: {
+        title: 'Cupón',
+        label: 'Código de descuento',
+        placeholder: 'MELLO10',
+        applied: '{percent}% reservado para este email',
+        help: 'Si tienes un cupón, insértalo aquí. Será validado antes del pago.'
+      },
+      delivery: {
+        title: 'Entrega',
+        standard: 'Envío estándar',
+        standardText: 'La tarifa final de envío se calcula en el checkout seguro.',
+        calculated: 'Calculado'
+      },
+      note: {
+        title: 'Notas',
+        label: 'Instrucciones del pedido',
+        placeholder: 'Agrega una observación opcional'
+      },
+      summary: {
+        title: 'Resumen',
+        total: 'Total',
+        pay: 'Continuar al pago seguro',
+        loading: 'Preparando pago...',
+        foot: 'Revisarás los datos finales antes de confirmar el pago en Stripe.'
+      },
+      empty: {
+        title: 'Tu carrito está vacío',
+        text: 'Agrega MelloRise Gummies para revisar el checkout.',
+        action: 'Ver producto'
+      }
     }
   },
   en: {
@@ -874,6 +917,49 @@ export const messages = {
       },
       discount: {
         label: 'Discount applied'
+      }
+    },
+    checkout: {
+      eyebrow: 'Secure checkout',
+      title: 'Review your order before payment',
+      intro: 'Confirm your email, coupon, and delivery options. Payment opens in Stripe with the final total.',
+      back: 'Back to product',
+      secure: 'Payment protected by Stripe',
+      contact: {
+        title: 'Purchase email',
+        email: 'Email',
+        emailPlaceholder: 'Enter your email',
+        help: 'We use this email to validate the coupon and connect the order in WooCommerce.'
+      },
+      coupon: {
+        title: 'Coupon',
+        label: 'Discount code',
+        placeholder: 'MELLO10',
+        applied: '{percent}% reserved for this email',
+        help: 'If you have a coupon, enter it here. It will be validated before payment.'
+      },
+      delivery: {
+        title: 'Delivery',
+        standard: 'Standard shipping',
+        standardText: 'The final shipping rate is calculated in secure checkout.',
+        calculated: 'Calculated'
+      },
+      note: {
+        title: 'Notes',
+        label: 'Order instructions',
+        placeholder: 'Add an optional note'
+      },
+      summary: {
+        title: 'Summary',
+        total: 'Total',
+        pay: 'Continue to secure payment',
+        loading: 'Preparing payment...',
+        foot: 'You will review final details before confirming payment in Stripe.'
+      },
+      empty: {
+        title: 'Your cart is empty',
+        text: 'Add MelloRise Gummies to review checkout.',
+        action: 'View product'
       }
     }
   }
