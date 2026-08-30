@@ -161,6 +161,7 @@ export const messages = {
     },
     home: {
       offer: {
+        ariaLabel: 'Oferta de bienvenida',
         kicker: 'Oferta de bienvenida',
         title: '¿Te gustaría ahorrar en tu primera orden?',
         subtitle: 'En tu primera compra',
@@ -171,7 +172,16 @@ export const messages = {
         loading: 'Generando cupón...',
         error: 'No fue posible generar el cupón. Intenta de nuevo.',
         dismiss: 'No, prefiero continuar',
+        close: 'Cerrar oferta',
         shopWithDiscount: 'Comprar con descuento'
+      },
+      offerConfirm: {
+        ariaLabel: 'Confirmar pérdida del descuento',
+        loss: 'Última llamada para guardar 10%',
+        title: 'Si cierras ahora, este descuento de bienvenida se pierde.',
+        subtitle: 'Solo toma un email reservarlo. Puedes usarlo en el checkout de tu primera compra y seguir mirando sin compromiso.',
+        keep: 'Guardar mi 10%',
+        lose: 'Perder el descuento'
       },
       nutrients: {
         badge: 'All In One Nutrients',
@@ -590,6 +600,7 @@ export const messages = {
     },
     home: {
       offer: {
+        ariaLabel: 'Welcome offer',
         kicker: 'Welcome offer',
         title: 'Want to save on your first order?',
         subtitle: 'On your first purchase',
@@ -600,7 +611,16 @@ export const messages = {
         loading: 'Creating coupon...',
         error: 'We could not create the coupon. Please try again.',
         dismiss: 'No, I prefer to continue',
+        close: 'Close offer',
         shopWithDiscount: 'Shop with discount'
+      },
+      offerConfirm: {
+        ariaLabel: 'Confirm discount loss',
+        loss: 'Last chance to keep 10%',
+        title: 'Close this and your welcome discount is gone.',
+        subtitle: 'It only takes an email to reserve it. Use it at checkout on your first order and keep browsing with no commitment.',
+        keep: 'Keep my 10%',
+        lose: 'Lose the discount'
       },
       nutrients: {
         badge: 'All In One Nutrients',

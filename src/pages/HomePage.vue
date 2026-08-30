@@ -162,6 +162,7 @@ const comparisonNegative = [
 
 const OFFER_LOAD_COUNT_KEY = 'mellorise-offer-load-count'
 const isOfferVisible = ref(false)
+const isOfferExitConfirmVisible = ref(false)
 const offerEmail = ref('')
 const offerError = ref('')
 const isOfferSubmitting = ref(false)
@@ -244,6 +245,24 @@ function shouldShowOffer() {
 
 function closeOffer() {
   isOfferVisible.value = false
+  isOfferExitConfirmVisible.value = false
+}
+
+function requestCloseOffer() {
+  if (props.activeDiscount?.code) {
+    closeOffer()
+    return
+  }
+
+  isOfferExitConfirmVisible.value = true
+}
+
+function keepOffer() {
+  isOfferExitConfirmVisible.value = false
+}
+
+function confirmCloseOffer() {
+  closeOffer()
 }
 
 async function claimWelcomeOffer() {
@@ -325,10 +344,10 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="gh-offer is-visible" :hidden="!isOfferVisible" role="dialog" aria-modal="true" aria-label="Oferta de bienvenida">
-      <button class="gh-offer__shade" type="button" aria-label="Cerrar oferta" @click="closeOffer"></button>
-      <div class="gh-offer__card">
-        <button class="gh-offer__close" type="button" aria-label="Cerrar" @click="closeOffer">
+    <div class="gh-offer is-visible" :hidden="!isOfferVisible" role="dialog" aria-modal="true" :aria-label="isOfferExitConfirmVisible ? t('home.offerConfirm.ariaLabel') : t('home.offer.ariaLabel')">
+      <button class="gh-offer__shade" type="button" :aria-label="isOfferExitConfirmVisible ? t('home.offerConfirm.keep') : t('home.offer.close')" @click="isOfferExitConfirmVisible ? keepOffer() : requestCloseOffer()"></button>
+      <div v-if="!isOfferExitConfirmVisible" class="gh-offer__card">
+        <button class="gh-offer__close" type="button" :aria-label="t('home.offer.close')" @click="requestCloseOffer">
           <span></span>
         </button>
         <img class="gh-offer__logo" src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
@@ -353,7 +372,20 @@ onUnmounted(() => {
           </button>
         </form>
         <a v-else class="gh-offer__primary" href="/products/wondernest-heightener-gummies-2026" @click="closeOffer">{{ t('home.offer.shopWithDiscount') }}</a>
-        <button class="gh-offer__secondary" type="button" @click="closeOffer">{{ t('home.offer.dismiss') }}</button>
+        <button class="gh-offer__secondary" type="button" @click="requestCloseOffer">{{ t('home.offer.dismiss') }}</button>
+      </div>
+      <div v-else class="gh-offer__card gh-offer__card--confirm">
+        <button class="gh-offer__close" type="button" :aria-label="t('home.offerConfirm.keep')" @click="keepOffer">
+          <span></span>
+        </button>
+        <img class="gh-offer__logo" src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
+        <p class="gh-offer__loss">{{ t('home.offerConfirm.loss') }}</p>
+        <h2 class="gh-offer__title">{{ t('home.offerConfirm.title') }}</h2>
+        <p class="gh-offer__subtitle gh-offer__subtitle--confirm">{{ t('home.offerConfirm.subtitle') }}</p>
+        <div class="gh-offer__decision">
+          <button class="gh-offer__primary" type="button" @click="keepOffer">{{ t('home.offerConfirm.keep') }}</button>
+          <button class="gh-offer__secondary gh-offer__secondary--danger" type="button" @click="confirmCloseOffer">{{ t('home.offerConfirm.lose') }}</button>
+        </div>
       </div>
     </div>
 
