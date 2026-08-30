@@ -26,12 +26,14 @@ const isCartOpen = ref(false)
 const cartItem = ref(null)
 const activeDiscount = ref(null)
 const isCheckoutLoading = ref(false)
+const isCheckoutTransitionLoading = ref(false)
 const isPageLoading = ref(true)
 const { t, locale } = useI18n({ useScope: 'global' })
 let staticTranslationFrame = 0
 let staticTranslationTimeout = 0
 let staticTranslationObserver = null
 let pageLoaderTimer = 0
+let checkoutTransitionTimer = 0
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
@@ -183,8 +185,29 @@ function closeCart() {
   isCartOpen.value = false
 }
 
+function showCheckoutTransition(duration = 760) {
+  if (checkoutTransitionTimer) {
+    window.clearTimeout(checkoutTransitionTimer)
+  }
+
+  isCheckoutTransitionLoading.value = true
+  checkoutTransitionTimer = window.setTimeout(() => {
+    isCheckoutTransitionLoading.value = false
+  }, duration)
+}
+
+function hideCheckoutTransition() {
+  if (checkoutTransitionTimer) {
+    window.clearTimeout(checkoutTransitionTimer)
+    checkoutTransitionTimer = 0
+  }
+
+  isCheckoutTransitionLoading.value = false
+}
+
 function navigateToCheckout() {
   if (!cartItem.value) return
+  showCheckoutTransition()
   closeCart()
   window.history.pushState({}, '', '/checkout')
   route.value = window.location.pathname
@@ -207,6 +230,7 @@ async function goToStripeCheckout(options = {}) {
   if (!cartItem.value || isCheckoutLoading.value) return
 
   isCheckoutLoading.value = true
+  isCheckoutTransitionLoading.value = true
 
   try {
     const couponWasProvidedByCheckout = Object.prototype.hasOwnProperty.call(options, 'couponCode')
@@ -221,6 +245,7 @@ async function goToStripeCheckout(options = {}) {
   } catch (error) {
     console.error(error)
     isCheckoutLoading.value = false
+    hideCheckoutTransition()
   }
 }
 
@@ -283,6 +308,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  hideCheckoutTransition()
+
   if (pageLoaderTimer) {
     window.clearTimeout(pageLoaderTimer)
   }
@@ -311,6 +338,15 @@ watch(activeDiscount, persistDiscount, { deep: true })
   <main data-template="vue3-store" @click="navigate">
     <SiteHeader v-if="currentPage !== 'checkout'" :current-route="route" />
     <PageLoader :active="isPageLoading" />
+    <Teleport to="body">
+      <div v-if="isCheckoutTransitionLoading" class="mello-checkout-transition" role="status" aria-live="polite" aria-busy="true">
+        <div class="mello-checkout-transition__card">
+          <span class="mello-checkout-transition__spinner" aria-hidden="true"></span>
+          <strong>{{ t('checkoutTransition.title') }}</strong>
+          <small>{{ t('checkoutTransition.text') }}</small>
+        </div>
+      </div>
+    </Teleport>
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
     <CheckoutPage
@@ -352,6 +388,65 @@ watch(activeDiscount, persistDiscount, { deep: true })
 </template>
 
 <style>
+.mello-checkout-transition {
+  align-items: center;
+  background: rgba(7, 20, 21, 0.72);
+  backdrop-filter: blur(7px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  position: fixed;
+  z-index: 20000;
+}
+
+.mello-checkout-transition__card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 18px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+  color: #102829;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body-family);
+  gap: 10px;
+  max-width: 330px;
+  padding: 28px 26px 26px;
+  text-align: center;
+  width: min(100%, 330px);
+}
+
+.mello-checkout-transition__spinner {
+  animation: mello-checkout-spin 860ms linear infinite;
+  border: 4px solid rgba(119, 205, 250, 0.28);
+  border-top-color: #173132;
+  border-radius: 50%;
+  height: 48px;
+  margin-bottom: 4px;
+  width: 48px;
+}
+
+.mello-checkout-transition__card strong {
+  color: #102829;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.12;
+}
+
+.mello-checkout-transition__card small {
+  color: #5d6c70;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+@keyframes mello-checkout-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .mello-floating-cart {
   align-items: center;
   appearance: none;

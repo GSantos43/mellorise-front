@@ -437,6 +437,10 @@ export const messages = {
         label: 'Descuento aplicado'
       }
     },
+    checkoutTransition: {
+      title: 'Preparando tu checkout',
+      text: 'Estamos asegurando tu carrito y preparando el pago.'
+    },
     checkout: {
       eyebrow: 'Checkout seguro',
       title: 'Finaliza tu compra',
@@ -957,6 +961,10 @@ export const messages = {
       discount: {
         label: 'Discount applied'
       }
+    },
+    checkoutTransition: {
+      title: 'Preparing your checkout',
+      text: 'We are securing your cart and preparing payment.'
     },
     checkout: {
       eyebrow: 'Secure checkout',
