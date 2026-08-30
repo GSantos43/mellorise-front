@@ -173,6 +173,8 @@
 .gg-gallery {
   display: grid;
   gap: 22px;
+  align-self: start;
+  padding-top: 35px;
 }
 
 .gg-gallery__main,
@@ -296,16 +298,16 @@
 }
 
 .gg-gallery__main {
-  aspect-ratio: auto;
-  height: var(--gg-panel-height, auto);
+  aspect-ratio: 1 / 1;
+  height: auto;
   min-height: 0;
-  max-height: none;
+  max-height: min(680px, calc(100vh - 126px));
   display: grid;
   place-items: center;
   background: #fff;
   cursor: grab;
-  position: sticky;
-  top: 84px;
+  position: relative;
+  top: auto;
   touch-action: pan-y;
   user-select: none;
   z-index: 2;
@@ -360,7 +362,7 @@
   top: 0;
   touch-action: pan-y;
   transition: opacity 160ms ease;
-  width: clamp(58px, 16%, 96px);
+  width: 64px;
   z-index: 2;
 }
 
@@ -3234,9 +3236,12 @@ button.gg-image-card {
     aspect-ratio: 1 / 1;
     height: auto;
     min-height: 0;
-    position: relative;
-    top: auto;
+    max-height: none;
     z-index: auto;
+  }
+
+  .gg-gallery {
+    padding-top: 0;
   }
 
   .gg-product-panel {
@@ -3525,7 +3530,7 @@ button.gg-image-card {
   .gg-gallery-hit {
     display: block;
     opacity: 1;
-    width: 68px;
+    width: 52px;
   }
 
   .gg-gallery-hit span {

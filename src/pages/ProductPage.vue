@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
 
@@ -30,9 +30,7 @@ const selectedImageIndex = ref(0)
 const selectedBundle = ref(1)
 const quantity = ref(1)
 const isPastHero = ref(false)
-const productPanelRef = ref(null)
 const galleryMainRef = ref(null)
-const productPanelHeight = ref(null)
 const openAccordionIndexes = ref([])
 const isGalleryDragging = ref(false)
 const isGallerySettling = ref(false)
@@ -40,7 +38,6 @@ const galleryDragOffset = ref(0)
 const loadedGalleryImages = ref(new Set())
 const suppressGalleryClick = ref(false)
 const isGalleryLightboxOpen = ref(false)
-let productPanelObserver = null
 let galleryDragStartX = 0
 let galleryDragStartY = 0
 let galleryPointerId = null
@@ -382,12 +379,6 @@ function updateStickyState() {
   isPastHero.value = window.scrollY > 640
 }
 
-function syncProductPanelHeight() {
-  const panel = productPanelRef.value
-  const isDesktop = window.matchMedia('(min-width: 921px)').matches
-  productPanelHeight.value = panel && isDesktop ? `${Math.round(panel.getBoundingClientRect().height)}px` : null
-}
-
 function submitCart() {
   const bundle = selectedPack.value
   const formQuantity = Math.max(1, Number(quantity.value || 1))
@@ -405,32 +396,19 @@ function submitCart() {
 
 onMounted(() => {
   updateStickyState()
-  syncProductPanelHeight()
-  nextTick(syncProductPanelHeight)
   window.addEventListener('scroll', updateStickyState, { passive: true })
-  window.addEventListener('resize', syncProductPanelHeight)
   window.addEventListener('keydown', handleGalleryKeydown)
-
-  if ('ResizeObserver' in window) {
-    productPanelObserver = new ResizeObserver(syncProductPanelHeight)
-    if (productPanelRef.value) {
-      productPanelObserver.observe(productPanelRef.value)
-    }
-  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateStickyState)
-  window.removeEventListener('resize', syncProductPanelHeight)
   window.removeEventListener('keydown', handleGalleryKeydown)
   document.body.style.overflow = previousBodyOverflow
-  productPanelObserver?.disconnect()
 })
 
 watch(activeProduct, () => {
   selectedImageIndex.value = 0
   closeGalleryLightbox()
-  nextTick(syncProductPanelHeight)
 })
 
 watch(mainImage, (src) => {
@@ -469,7 +447,6 @@ watch(isGalleryLightboxOpen, (isOpen) => {
             ref="galleryMainRef"
             class="gg-gallery__main"
             :class="{ 'is-dragging': isGalleryDragging, 'is-settling': isGallerySettling }"
-            :style="{ '--gg-panel-height': productPanelHeight }"
             @pointerdown="startGalleryDrag"
             @pointermove="moveGalleryDrag"
             @pointerup="finishGalleryDrag"
@@ -492,10 +469,10 @@ watch(isGalleryLightboxOpen, (isOpen) => {
                 <span aria-hidden="true"></span>
               </span>
             </div>
-            <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @click.stop="handleGalleryPreviousClick">
+            <button class="gg-gallery-hit gg-gallery-hit--prev" type="button" :aria-label="t('product.gallery.previous')" @pointerdown.stop @pointermove.stop @pointerup.stop @pointercancel.stop @click.stop="handleGalleryPreviousClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></span>
             </button>
-            <button class="gg-gallery-hit gg-gallery-hit--next" type="button" :aria-label="t('product.gallery.next')" @click.stop="handleGalleryNextClick">
+            <button class="gg-gallery-hit gg-gallery-hit--next" type="button" :aria-label="t('product.gallery.next')" @pointerdown.stop @pointermove.stop @pointerup.stop @pointercancel.stop @click.stop="handleGalleryNextClick">
               <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
             </button>
           </div>
@@ -566,7 +543,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
           </div>
         </div>
 
-        <div ref="productPanelRef" class="gg-product-panel">
+        <div class="gg-product-panel">
           <div class="gg-rating">
             <span class="gg-stars" aria-hidden="true">
               <svg v-for="star in 5" :key="star" viewBox="0 0 24 24"><path d="m12 2.8 2.75 5.58 6.16.9-4.45 4.34 1.05 6.13L12 16.85l-5.51 2.9 1.05-6.13-4.45-4.34 6.16-.9L12 2.8Z"/></svg>
