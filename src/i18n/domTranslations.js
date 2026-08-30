@@ -56,6 +56,8 @@ const staticTextMap = new Map(Object.entries({
   'Elige tu rutina MelloRise': 'Choose your MelloRise routine',
   'Opciones pensadas para mantener una rutina familiar simple, clara y fácil de repetir.': 'Options designed to keep a family routine simple, clear, and easy to repeat.',
   'Cargando productos...': 'Loading products...',
+  '¿Tienes preguntas?': 'Have questions?',
+  'Tenemos respuestas': 'We have answers',
   '¿Tienes preguntas? Tenemos respuestas': 'Have questions? We have answers',
   'Respuestas claras sobre MelloRise, la rutina diaria y los detalles antes de comprar.': 'Clear answers about MelloRise, the daily routine, and the details before buying.',
   'Dale a tu hijo el apoyo nutricional que merece.': 'Give your child the nutritional support they deserve.',
