@@ -141,7 +141,7 @@ const bundles = computed(() => {
 
     return {
       ...pack,
-      title: variant?.title || pack.title,
+      title: pack.title,
       price: variant?.price ?? activeProduct.value.price,
       compareAtPrice: variant?.compareAtPrice ?? null,
       variationId: variant?.id ?? null,

@@ -1110,20 +1110,20 @@ export const messages = {
       },
       promo: {
         activeBadge: 'Promotion active',
-        buyTwoTitle: 'Buy 2, Get 1 is applied',
+        buyTwoTitle: 'Buy 2, Get 1 Free is applied',
         buyTwoText: 'You pay for {paid} bottles and receive {total} total: {free} free bottle included in the order.',
-        buyThreeTitle: 'Buy 3, Get 2 is applied',
+        buyThreeTitle: 'Buy 3, Get 2 Free is applied',
         buyThreeText: 'You pay for {paid} bottles and receive {total} total: {free} free bottles included in the order.'
       },
       upsell: {
         buyTwoBadge: 'Recommended offer',
         buyTwoTitle: 'Buy 2, get 1 free',
         buyTwoText: 'Move to 2 paid bottles to receive 3 total and lower the cost per bottle.',
-        buyTwoAction: 'Activate Buy 2 Get 1',
+        buyTwoAction: 'Activate Buy 2 Get 1 Free',
         buyThreeBadge: 'Best savings',
         buyThreeTitle: 'Buy 3, get 2 free',
-        buyThreeText: 'You already unlocked Buy 2 Get 1. Move to 3 paid bottles to receive 5 total.',
-        buyThreeAction: 'Activate Buy 3 Get 2'
+        buyThreeText: 'You already unlocked Buy 2 Get 1 Free. Move to 3 paid bottles to receive 5 total.',
+        buyThreeAction: 'Activate Buy 3 Get 2 Free'
       },
       contact: {
         title: 'Purchase email',

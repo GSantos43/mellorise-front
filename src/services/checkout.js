@@ -13,7 +13,7 @@ export async function createCheckoutSession(item, options = {}) {
   const promotion = freeQuantity
     ? {
         code: quantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
-        label: quantity >= 3 ? 'Buy 3 Get 2' : 'Buy 2 Get 1',
+        label: quantity >= 3 ? 'Buy 3 Get 2 Free' : 'Buy 2 Get 1 Free',
         paidQuantity: quantity,
         freeQuantity,
         deliveredQuantity: quantity + freeQuantity
