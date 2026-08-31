@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { setLocale, supportedLocales } from '../i18n'
 import { formatMoney } from '../services/products'
 import { validateWelcomeDiscount } from '../services/discounts'
+import { translateProductTitle } from '../i18n/productText'
 
 const props = defineProps({
   item: { type: Object, default: null },
@@ -29,6 +30,7 @@ const localeOptions = computed(() => supportedLocales.map((value) => ({
 })))
 
 const quantity = computed(() => Math.max(0, Number(props.item?.quantity || 0)))
+const localizedItemTitle = computed(() => translateProductTitle(props.item?.title, locale.value))
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
 const unitPrice = computed(() => Number(props.item?.unitPrice || props.item?.price || 0))
 const bonusBottleCount = computed(() => {
@@ -304,10 +306,10 @@ onUnmounted(() => {
         </section>
 
         <section class="mello-checkout-product" :aria-label="t('checkout.product.label')">
-          <img :src="item.image" :alt="item.title" width="76" height="76" loading="eager">
+          <img :src="item.image" :alt="localizedItemTitle" width="76" height="76" loading="eager">
           <div>
             <span>{{ t('checkout.product.badge') }}</span>
-            <h2>{{ item.title }}</h2>
+            <h2>{{ localizedItemTitle }}</h2>
             <p>{{ item.bundleLabel }}</p>
           </div>
           <strong>{{ formatMoney(subtotal) }}</strong>

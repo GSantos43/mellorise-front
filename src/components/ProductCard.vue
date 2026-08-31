@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
+import { translateProductTitle } from '../i18n/productText'
 
 const props = defineProps({
   product: {
@@ -15,11 +16,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['add-to-cart'])
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 const productUrl = computed(() => `/products/${props.product.handle}`)
 const price = computed(() => formatMoney(props.product.price))
 const compareAtPrice = computed(() => props.product.compareAtPrice ? formatMoney(props.product.compareAtPrice) : '')
 const productImage = computed(() => props.product.image || props.product.images?.[0] || '/assets/frasco.png')
+const localizedProductTitle = computed(() => translateProductTitle(props.product.title, locale.value))
 
 function addToCart() {
   emit('add-to-cart', props.product)
@@ -35,13 +37,13 @@ function addToCart() {
     <product-component>
       <div class="card-wrapper product-card-wrapper underline-links-hover mello-product-card">
         <article class="card card--standard card--media card--extend-height mello-product-card__shell" style="--ratio-percent: 100%;">
-          <a :href="productUrl" class="mello-product-card__image-link" :aria-label="product.title">
+          <a :href="productUrl" class="mello-product-card__image-link" :aria-label="localizedProductTitle">
             <div class="card__inner color-scheme-1 gradient ratio mello-product-card__media-frame" style="--ratio-percent: 100%;">
               <div class="card__media">
                 <div class="media media--transparent media--hover-effect">
                   <img
                     :src="productImage"
-                    :alt="product.title"
+                    :alt="localizedProductTitle"
                     class="motion-reduce"
                     loading="lazy"
                     width="533"
@@ -69,7 +71,7 @@ function addToCart() {
             <div class="card__information mello-product-card__information">
               <h3 class="card__heading h5 mello-product-card__title">
                 <a :href="productUrl" class="full-unstyled-link">
-                  {{ product.title }}
+                  {{ localizedProductTitle }}
                 </a>
               </h3>
 

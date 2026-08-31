@@ -2,6 +2,7 @@
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
+import { translateProductTitle } from '../i18n/productText'
 
 const props = defineProps({
   isOpen: {
@@ -23,7 +24,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'update-quantity', 'remove', 'checkout'])
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 
 const quantity = computed(() => props.item?.quantity || 0)
 const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
@@ -34,6 +35,7 @@ const shippingProtectionPrice = 3.5
 const shippingProtectionTotal = computed(() => props.item && isShippingProtectionEnabled.value ? shippingProtectionPrice : 0)
 const checkoutTotal = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingProtectionTotal.value)
 const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') : t('cart.manyItems', { count: quantity.value }))
+const localizedItemTitle = computed(() => translateProductTitle(props.item?.title, locale.value))
 
 function checkout() {
   emit('checkout')
@@ -70,11 +72,11 @@ onUnmounted(() => {
         <div v-if="item" class="mello-cart-drawer__body">
           <article class="mello-cart-item">
             <a class="mello-cart-item__media" :href="`/products/${item.handle}`" @click="emit('close')">
-              <img :src="item.image" :alt="item.title" width="76" height="76" loading="eager">
+              <img :src="item.image" :alt="localizedItemTitle" width="76" height="76" loading="eager">
             </a>
 
             <div class="mello-cart-item__details">
-              <a class="mello-cart-item__title" :href="`/products/${item.handle}`" @click="emit('close')">{{ item.title }}</a>
+              <a class="mello-cart-item__title" :href="`/products/${item.handle}`" @click="emit('close')">{{ localizedItemTitle }}</a>
               <span class="mello-cart-item__price">{{ formatMoney(item.unitPrice || item.price) }}</span>
               <span class="mello-cart-item__variant">{{ item.bundleLabel }}</span>
 

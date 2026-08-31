@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
+import { translateProductTitle } from '../i18n/productText'
 
 const props = defineProps({
   product: {
@@ -15,7 +16,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['add-to-cart'])
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
 
 const fallbackProduct = {
   title: '9-In-1 Natural Growth & Bone Support Gummies For Kids & Teens',
@@ -50,6 +51,7 @@ const packConfig = [
 const maxGalleryIndicators = 5
 
 const activeProduct = computed(() => props.product || fallbackProduct)
+const localizedProductTitle = computed(() => translateProductTitle(activeProduct.value.title, locale.value))
 const productImages = computed(() => activeProduct.value.images?.length ? activeProduct.value.images : [activeProduct.value.image])
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
 const isMainImageLoaded = computed(() => loadedGalleryImages.value.has(mainImage.value))
@@ -462,7 +464,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
                   class="gg-gallery__slide"
                   :class="`is-${slide.position}`"
                 >
-                  <img :data-gg-main-image="slide.position === 'current' ? true : null" :src="slide.src" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(slide.src)" @dragstart.prevent>
+                  <img :data-gg-main-image="slide.position === 'current' ? true : null" :src="slide.src" :alt="localizedProductTitle" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(slide.src)" @dragstart.prevent>
                 </div>
               </div>
               <span v-if="!isMainImageLoaded" class="gg-gallery__loader" role="status" :aria-label="t('product.gallery.loading')">
@@ -490,7 +492,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
                 data-gg-thumb
                 @click="selectThumbnailImage(indicator.index)"
               >
-                <img :src="indicator.src" :alt="activeProduct.title" width="260" height="260" loading="lazy" @load="markGalleryImageLoaded(indicator.src)">
+                <img :src="indicator.src" :alt="localizedProductTitle" width="260" height="260" loading="lazy" @load="markGalleryImageLoaded(indicator.src)">
                 <span v-if="!loadedGalleryImages.has(indicator.src)" class="gg-image-card__loader" role="status" :aria-label="t('product.gallery.loading')">
                   <span aria-hidden="true"></span>
                 </span>
@@ -506,7 +508,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
               <button class="gg-image-lightbox__close" type="button" :aria-label="t('product.gallery.close')" @click="closeGalleryLightbox">
                 <span></span>
               </button>
-              <img :src="mainImage" :alt="activeProduct.title" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(mainImage)">
+              <img :src="mainImage" :alt="localizedProductTitle" width="1946" height="1946" loading="eager" @load="markGalleryImageLoaded(mainImage)">
             </div>
           </Teleport>
 
@@ -550,7 +552,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
             </span>
             <span><strong>4.4/5</strong> stars rated by <strong>15,000+</strong> parents</span>
           </div>
-          <h1 class="gg-title">{{ activeProduct.title }}</h1>
+          <h1 class="gg-title">{{ localizedProductTitle }}</h1>
           <p class="gg-lede">{{ t('product.lede') }}</p>
 
           <div class="gg-proof-chips" :aria-label="t('product.highlightsLabel')">
@@ -1109,7 +1111,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
 
     <div class="gg-sticky" aria-label="Compra rapida">
       <div class="gg-sticky__text">
-        <strong>{{ activeProduct.title }}</strong>
+        <strong>{{ localizedProductTitle }}</strong>
         <span>{{ currentPrice }}</span>
       </div>
       <button class="gg-button gg-button--blue" type="button" @click="submitCart">{{ t('product.addToCart') }}</button>
