@@ -381,11 +381,11 @@ function updateStickyState() {
   isPastHero.value = window.scrollY > 640
 }
 
-function submitCart() {
+function buildSelectedCartPayload() {
   const bundle = selectedPack.value
   const formQuantity = Math.max(1, Number(quantity.value || 1))
 
-  emit('add-to-cart', {
+  return {
     product: activeProduct.value,
     variationId: bundle.variationId,
     price: Number(bundle.price || activeProduct.value.price || 0),
@@ -393,6 +393,17 @@ function submitCart() {
     quantity: formQuantity,
     image: bundle.image || activeProduct.value.image,
     bundleLabel: `${bundle.title} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`
+  }
+}
+
+function submitCart() {
+  emit('add-to-cart', buildSelectedCartPayload())
+}
+
+function buyNow() {
+  emit('add-to-cart', {
+    ...buildSelectedCartPayload(),
+    checkoutNow: true
   })
 }
 
@@ -664,7 +675,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
           </div>
 
           <div class="gg-dynamic-checkout">
-            <button class="gg-button gg-button--blue gg-button--wide" type="button" :disabled="!selectedPack?.isAvailable" @click="submitCart">{{ t('product.buyNow') }}</button>
+            <button class="gg-button gg-button--blue gg-button--wide" type="button" :disabled="!selectedPack?.isAvailable" @click="buyNow">{{ t('product.buyNow') }}</button>
           </div>
 
           <p class="gg-purchase-note">{{ t('product.purchaseNote') }}</p>

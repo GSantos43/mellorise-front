@@ -114,6 +114,12 @@ function addToCart(payload = {}) {
     quantity,
     bundleLabel: payload.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`
   }
+
+  if (payload.checkoutNow) {
+    navigateToCheckout()
+    return
+  }
+
   openCart()
 }
 
