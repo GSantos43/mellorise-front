@@ -5,6 +5,15 @@ export const messages = {
       es: 'ES',
       en: 'EN'
     },
+    meta: {
+      home: 'MelloRise',
+      collection: 'Productos',
+      contact: 'Contacto',
+      faq: 'Preguntas frecuentes',
+      tracking: 'Seguir pedido',
+      checkout: 'Checkout seguro',
+      checkoutSuccess: 'Pedido confirmado'
+    },
     loading: {
       label: 'Cargando'
     },
@@ -582,6 +591,15 @@ export const messages = {
       label: 'Language',
       es: 'ES',
       en: 'EN'
+    },
+    meta: {
+      home: 'MelloRise',
+      collection: 'Products',
+      contact: 'Contact',
+      faq: 'FAQ',
+      tracking: 'Track order',
+      checkout: 'Secure checkout',
+      checkoutSuccess: 'Order confirmed'
     },
     loading: {
       label: 'Loading'

@@ -17,6 +17,7 @@ import PageLoader from './components/PageLoader.vue'
 import { createCheckoutSession } from './services/checkout'
 import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
+import { translateProductTitle } from './i18n/productText'
 
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
 const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
@@ -61,6 +62,41 @@ const shouldConfirmCheckoutExit = computed(() => (
   Boolean(cartItem.value) &&
   !isCheckoutLoading.value
 ))
+const documentTitle = computed(() => {
+  if (currentPage.value === 'product' && currentProduct.value?.title) {
+    return `${translateProductTitle(currentProduct.value.title, locale.value)} | MelloRise`
+  }
+
+  const titles = {
+    home: t('meta.home'),
+    collection: t('meta.collection'),
+    contact: t('meta.contact'),
+    faq: t('meta.faq'),
+    tracking: t('meta.tracking'),
+    checkout: t('meta.checkout'),
+    'checkout-success': t('meta.checkoutSuccess'),
+    institutional: getInstitutionalTitle(),
+  }
+
+  const title = titles[currentPage.value]
+  return title && title !== 'MelloRise' ? `${title} | MelloRise` : 'MelloRise'
+})
+
+function getInstitutionalTitle() {
+  const policyTitles = {
+    '/policies/shipping-policy': t('institutional.shipping.title'),
+    '/policies/privacy-policy': t('institutional.privacy.title'),
+    '/policies/terms-of-service': t('institutional.terms.title'),
+    '/policies/refund-policy': t('institutional.refunds.title'),
+  }
+
+  const title = policyTitles[route.value] || t('institutional.default.title')
+  return `${title} | MelloRise`
+}
+
+function updateDocumentTitle() {
+  document.title = documentTitle.value
+}
 
 async function navigate(event) {
   const anchor = event.target.closest('a')
@@ -402,6 +438,7 @@ watch([route, locale], () => {
 }, { flush: 'sync' })
 
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
+watch(documentTitle, updateDocumentTitle, { immediate: true })
 watch(cartItem, persistCartItem, { deep: true })
 watch(activeDiscount, persistDiscount, { deep: true })
 </script>
