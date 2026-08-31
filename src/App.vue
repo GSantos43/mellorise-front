@@ -9,6 +9,7 @@ import FaqPage from './pages/FaqPage.vue'
 import InstitutionalPage from './pages/InstitutionalPage.vue'
 import CheckoutPage from './pages/CheckoutPage.vue'
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
+import TrackOrderPage from './pages/TrackOrderPage.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
@@ -47,9 +48,9 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/products/')) return 'product'
   if (route.value.startsWith('/checkout/success')) return 'checkout-success'
   if (route.value.startsWith('/checkout')) return 'checkout'
+  if (route.value.startsWith('/track-order') || route.value.startsWith('/apps/track123')) return 'tracking'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
   if (route.value === '/pages/faq' || route.value === '/pages/faqs') return 'faq'
-  // Tracking is hidden until MelloRise has a real order tracking flow.
   if (route.value.startsWith('/policies/')) return 'institutional'
   if (route.value.startsWith('/collections') || route.value === '/products') return 'collection'
   return 'home'
@@ -455,6 +456,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
     <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
+    <TrackOrderPage v-else-if="currentPage === 'tracking'" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"
       :item="cartItem"

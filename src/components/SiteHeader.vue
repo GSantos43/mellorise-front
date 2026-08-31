@@ -24,7 +24,8 @@ const links = [
   { key: 'nav.home', href: '/', matcher: (route) => route === '/' },
   { key: 'nav.products', href: '/collections/all', matcher: (route) => route.startsWith('/collections') || route === '/products' || route.startsWith('/products/') },
   { key: 'nav.contact', href: '/pages/contact-us', matcher: (route) => route === '/pages/contact-us' || route === '/pages/contact' },
-  { key: 'nav.faq', href: '/pages/faq', matcher: (route) => route === '/pages/faq' || route === '/pages/faqs' }
+  { key: 'nav.faq', href: '/pages/faq', matcher: (route) => route === '/pages/faq' || route === '/pages/faqs' },
+  { key: 'nav.tracking', href: '/track-order', matcher: (route) => route.startsWith('/track-order') || route.startsWith('/apps/track123') }
 ]
 
 const localeOptions = computed(() => supportedLocales.map((value) => ({

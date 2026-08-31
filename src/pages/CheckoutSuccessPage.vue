@@ -36,6 +36,9 @@ onMounted(() => {
         </div>
       </dl>
       <p class="mello-checkout-success__note">{{ t('checkoutSuccess.note') }}</p>
+      <a v-if="orderId" class="mello-checkout-success__button" :href="`/track-order?order=${encodeURIComponent(orderId)}`">
+        {{ t('checkoutSuccess.trackAction') }}
+      </a>
       <a class="mello-checkout-success__button" href="/products/wondernest-heightener-gummies-2026">
         {{ t('checkoutSuccess.action') }}
       </a>
@@ -171,6 +174,13 @@ onMounted(() => {
   padding: 0 24px;
   text-decoration: none;
   transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.mello-checkout-success__button + .mello-checkout-success__button {
+  background: transparent;
+  box-shadow: none;
+  color: #536468;
+  margin-left: 8px;
 }
 
 .mello-checkout-success__button:hover,

@@ -17,7 +17,8 @@ export const messages = {
       cart: 'Carrito',
       cta: 'Comprar gummies',
       menu: 'Abrir menu',
-      closeMenu: 'Cerrar menu'
+      closeMenu: 'Cerrar menu',
+      tracking: 'Seguir pedido'
     },
     catalog: {
       bannerAlt: 'Banner MelloRise Heightener Gummies con ingredientes naturales',
@@ -348,8 +349,7 @@ export const messages = {
       contact: 'Contacto',
       faq: 'Preguntas frecuentes',
       shipping: 'Envios y devoluciones',
-      // Tracking is hidden until MelloRise has a real order tracking flow.
-      // tracking: 'Seguir pedido',
+      tracking: 'Seguir pedido',
       privacy: 'Privacidad',
       payments: 'Metodos de pago',
       rights: 'Todos los derechos reservados.',
@@ -454,7 +454,45 @@ export const messages = {
       text: 'Tu pago fue recibido y estamos preparando el pedido para fulfillment.',
       orderLabel: 'Pedido',
       note: 'Cuando el tracking esté disponible, lo enviaremos por email y lo mostraremos en la página de seguimiento.',
+      trackAction: 'Seguir pedido',
       action: 'Volver al producto'
+    },
+    tracking: {
+      intro: 'Seguimiento de pedido',
+      title: 'Sigue tu pedido',
+      subtitle: 'Ingresa el email usado en la compra y tu numero de pedido o codigo de rastreo. Mostramos solo la informacion necesaria para proteger tus datos.',
+      form: {
+        title: 'Busca tu pedido',
+        text: 'No necesitas crear una cuenta. Usamos estos datos para confirmar que el pedido te pertenece.',
+        email: 'Email de compra',
+        emailPlaceholder: 'Correo electronico',
+        identifier: 'Numero de pedido o tracking',
+        identifierPlaceholder: 'Ej: 1042 o WIIO123456',
+        submit: 'Ver estado',
+        loading: 'Buscando...',
+        error: 'No encontramos un pedido con esos datos. Revisa el email y el numero e intenta de nuevo.'
+      },
+      empty: {
+        title: 'Tu estado aparecera aqui',
+        text: 'Cuando la Wiio envie el codigo de rastreo, tambien lo enviaremos por email y lo mostraremos en esta pagina.'
+      },
+      result: {
+        order: 'Pedido',
+        trackingCode: 'Codigo de rastreo',
+        openCarrier: 'Abrir rastreo',
+        pendingTitle: 'Aun estamos preparando el envio',
+        pendingText: 'Tu pago fue recibido. El codigo de rastreo aparecera aqui cuando el pedido sea despachado.'
+      },
+      steps: {
+        confirmed: 'Pedido confirmado',
+        confirmedText: 'Recibimos tu pedido y lo guardamos en WooCommerce.',
+        preparing: 'Preparacion',
+        preparingText: 'Estamos preparando los productos y datos para fulfillment.',
+        shipped: 'Enviado',
+        shippedText: 'El codigo de rastreo ya fue generado por fulfillment.',
+        delivered: 'Entregado',
+        deliveredText: 'El pedido llego al destino.'
+      }
     },
     checkout: {
       eyebrow: 'Checkout seguro',
@@ -557,7 +595,8 @@ export const messages = {
       cart: 'Cart',
       cta: 'Buy gummies',
       menu: 'Open menu',
-      closeMenu: 'Close menu'
+      closeMenu: 'Close menu',
+      tracking: 'Track order'
     },
     catalog: {
       bannerAlt: 'MelloRise Heightener Gummies banner with natural ingredients',
@@ -888,8 +927,7 @@ export const messages = {
       contact: 'Contact',
       faq: 'FAQs',
       shipping: 'Shipping and returns',
-      // Tracking is hidden until MelloRise has a real order tracking flow.
-      // tracking: 'Track order',
+      tracking: 'Track order',
       privacy: 'Privacy',
       payments: 'Payment methods',
       rights: 'All rights reserved.',
@@ -994,7 +1032,45 @@ export const messages = {
       text: 'Your payment was received and the order is being prepared for fulfillment.',
       orderLabel: 'Order',
       note: 'When tracking is available, we will email it and show it on the order tracking page.',
+      trackAction: 'Track order',
       action: 'Back to product'
+    },
+    tracking: {
+      intro: 'Order tracking',
+      title: 'Track your order',
+      subtitle: 'Enter the email used at checkout and your order number or tracking code. We only show the details needed to protect your information.',
+      form: {
+        title: 'Find your order',
+        text: 'No account is required. We use these details to confirm the order belongs to you.',
+        email: 'Purchase email',
+        emailPlaceholder: 'Email address',
+        identifier: 'Order number or tracking code',
+        identifierPlaceholder: 'Example: 1042 or WIIO123456',
+        submit: 'Check status',
+        loading: 'Checking...',
+        error: 'We could not find an order with those details. Check the email and number, then try again.'
+      },
+      empty: {
+        title: 'Your status will appear here',
+        text: 'When Wiio sends the tracking code, we will email it and show it on this page.'
+      },
+      result: {
+        order: 'Order',
+        trackingCode: 'Tracking code',
+        openCarrier: 'Open tracking',
+        pendingTitle: 'We are still preparing shipment',
+        pendingText: 'Your payment was received. The tracking code will appear here when fulfillment ships the order.'
+      },
+      steps: {
+        confirmed: 'Order confirmed',
+        confirmedText: 'We received your order and saved it in WooCommerce.',
+        preparing: 'Preparing',
+        preparingText: 'We are preparing products and details for fulfillment.',
+        shipped: 'Shipped',
+        shippedText: 'The tracking code was created by fulfillment.',
+        delivered: 'Delivered',
+        deliveredText: 'The order arrived at its destination.'
+      }
     },
     checkout: {
       eyebrow: 'Secure checkout',

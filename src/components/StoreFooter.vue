@@ -42,8 +42,7 @@ const { t } = useI18n({ useScope: 'global' })
             <a href="/pages/contact-us">{{ t('footer.contact') }}</a>
             <a href="/pages/faq">{{ t('footer.faq') }}</a>
             <a href="/policies/shipping-policy">{{ t('footer.shipping') }}</a>
-            <!-- Tracking is hidden until MelloRise has a real order tracking flow. -->
-            <!-- <a href="/apps/track123">{{ t('footer.tracking') }}</a> -->
+            <a href="/track-order">{{ t('footer.tracking') }}</a>
             <a href="/policies/privacy-policy">{{ t('footer.privacy') }}</a>
           </div>
         </nav>
