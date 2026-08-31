@@ -44,11 +44,27 @@ let galleryDragStartY = 0
 let galleryPointerId = null
 let previousBodyOverflow = ''
 const packConfig = [
-  { match: 'buy 1', title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
-  { match: 'buy 2 get 1 free', title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
-  { match: 'buy 3 get 2 free', title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', bottles: 5 }
+  { match: ['buy 1', '1 bottle', 'starter'], title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
+  { match: ['buy 2 get 1', 'buy 2 get 1 free', '2 get 1', '3 bottles', 'most popular'], title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
+  { match: ['buy 3 get 2', 'buy 3 get 2 free', '3 get 2', '5 bottles', 'best value'], title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', bottles: 5 }
 ]
 const maxGalleryIndicators = 5
+
+function normalizeBundleMatch(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function findBundleVariant(variants, pack) {
+  const matches = pack.match.map(normalizeBundleMatch)
+
+  return variants.find((variant) => {
+    const title = normalizeBundleMatch(variant.title)
+    return matches.some((match) => title === match || title.includes(match))
+  })
+}
 
 const activeProduct = computed(() => props.product || fallbackProduct)
 const localizedProductTitle = computed(() => translateProductTitle(activeProduct.value.title, locale.value))
@@ -121,7 +137,7 @@ const bundles = computed(() => {
   }
 
   return packConfig.map((pack) => {
-    const variant = variants.find((item) => item.title?.toLowerCase() === pack.match)
+    const variant = findBundleVariant(variants, pack)
 
     return {
       ...pack,
