@@ -44,9 +44,9 @@ let galleryDragStartY = 0
 let galleryPointerId = null
 let previousBodyOverflow = ''
 const packConfig = [
-  { match: ['buy 1', '1 bottle', 'starter'], title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', bottles: 1 },
-  { match: ['buy 2 get 1', 'buy 2 get 1 free', '2 get 1', '3 bottles', 'most popular'], title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', bottles: 3 },
-  { match: ['buy 3 get 2', 'buy 3 get 2 free', '3 get 2', '5 bottles', 'best value'], title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', bottles: 5 }
+  { match: ['buy 1', '1 bottle', 'starter'], title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', paidQuantity: 1, freeQuantity: 0, bottles: 1 },
+  { match: ['buy 2 get 1', 'buy 2 get 1 free', '2 get 1', '3 bottles', 'most popular'], title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', paidQuantity: 2, freeQuantity: 1, bottles: 3 },
+  { match: ['buy 3 get 2', 'buy 3 get 2 free', '3 get 2', '5 bottles', 'best value'], title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', paidQuantity: 3, freeQuantity: 2, bottles: 5 }
 ]
 const maxGalleryIndicators = 5
 
@@ -399,16 +399,28 @@ function updateStickyState() {
 
 function buildSelectedCartPayload() {
   const bundle = selectedPack.value
-  const formQuantity = Math.max(1, Number(quantity.value || 1))
+  const paidQuantity = Math.max(1, Number(bundle.paidQuantity || quantity.value || 1))
+  const bundlePrice = Number(bundle.price || activeProduct.value.price || 0)
+  const unitPrice = bundlePrice / paidQuantity
 
   return {
     product: activeProduct.value,
     variationId: bundle.variationId,
-    price: Number(bundle.price || activeProduct.value.price || 0),
-    unitPrice: Number(bundle.price || activeProduct.value.price || 0),
-    quantity: formQuantity,
+    price: unitPrice,
+    unitPrice,
+    quantity: paidQuantity,
+    checkoutQuantity: bundle.variationId ? 1 : paidQuantity,
     image: bundle.image || activeProduct.value.image,
-    bundleLabel: `${bundle.title} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`
+    bundleLabel: `${bundle.title} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`,
+    promotion: bundle.freeQuantity
+      ? {
+          code: bundle.paidQuantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
+          label: bundle.title,
+          paidQuantity: bundle.paidQuantity,
+          freeQuantity: bundle.freeQuantity,
+          deliveredQuantity: bundle.bottles
+        }
+      : undefined
   }
 }
 
@@ -422,6 +434,11 @@ function buyNow() {
     checkoutNow: true
   })
 }
+
+watch(selectedBundle, (bundleIndex) => {
+  const paidQuantity = Number(bundles.value[bundleIndex]?.paidQuantity || 1)
+  quantity.value = paidQuantity
+}, { immediate: true })
 
 onMounted(() => {
   updateStickyState()

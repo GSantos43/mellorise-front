@@ -149,7 +149,9 @@ function addToCart(payload = {}) {
     price: Number(payload.price ?? product.price ?? 0),
     unitPrice: Number(payload.unitPrice ?? payload.price ?? product.price ?? 0),
     quantity,
-    bundleLabel: payload.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`
+    checkoutQuantity: Number(payload.checkoutQuantity || quantity),
+    bundleLabel: payload.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`,
+    promotion: payload.promotion
   }
 
   if (payload.checkoutNow) {
@@ -183,7 +185,9 @@ function readSavedCartItem() {
       price,
       unitPrice: Number(savedCartItem.unitPrice ?? price),
       quantity,
-      bundleLabel: savedCartItem.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`
+      checkoutQuantity: Number(savedCartItem.checkoutQuantity || quantity),
+      bundleLabel: savedCartItem.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`,
+      promotion: savedCartItem.promotion
     }
   } catch (error) {
     console.warn(error)
@@ -312,10 +316,46 @@ function handleBeforeUnload(event) {
 
 function updateCartQuantity(quantity) {
   if (!cartItem.value) return
+  const nextQuantity = Math.max(1, Number(quantity || 1))
+  const nextPromotion = getQuantityPromotion(nextQuantity)
+  const keepsSelectedBundleVariation =
+    cartItem.value.variationId &&
+    cartItem.value.promotion?.paidQuantity === nextQuantity
+
   cartItem.value = {
     ...cartItem.value,
-    quantity
+    variationId: keepsSelectedBundleVariation ? cartItem.value.variationId : undefined,
+    quantity: nextQuantity,
+    checkoutQuantity: keepsSelectedBundleVariation ? 1 : nextQuantity,
+    bundleLabel: nextPromotion
+      ? `${nextPromotion.label} | ${nextPromotion.deliveredQuantity} frascos por pack`
+      : `${nextQuantity} frasco${nextQuantity === 1 ? '' : 's'}`,
+    promotion: nextPromotion
   }
+}
+
+function getQuantityPromotion(quantity) {
+  if (quantity >= 3) {
+    return {
+      code: 'BUY_3_GET_2',
+      label: 'Buy 3 Get 2 Free',
+      paidQuantity: quantity,
+      freeQuantity: 2,
+      deliveredQuantity: quantity + 2
+    }
+  }
+
+  if (quantity === 2) {
+    return {
+      code: 'BUY_2_GET_1',
+      label: 'Buy 2 Get 1 Free',
+      paidQuantity: 2,
+      freeQuantity: 1,
+      deliveredQuantity: 3
+    }
+  }
+
+  return undefined
 }
 
 function removeCartItem() {
