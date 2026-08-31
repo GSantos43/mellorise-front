@@ -214,11 +214,11 @@ watch(isMobileMenuOpen, (isOpen) => {
 .mello-page-header__inner {
   align-items: center;
   display: grid;
-  gap: 24px;
-  grid-template-columns: 1fr auto 1fr;
+  gap: clamp(16px, 2.2vw, 34px);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   margin: 0 auto;
   min-height: 78px;
-  width: min(1210px, calc(100% - 40px));
+  width: min(1360px, calc(100% - 40px));
 }
 
 .mello-page-header__logo {
@@ -247,6 +247,8 @@ watch(isMobileMenuOpen, (isOpen) => {
   font-weight: 520;
   gap: 4px;
   justify-content: center;
+  justify-self: center;
+  max-width: 100%;
   padding: 5px;
   position: relative;
 }
@@ -311,10 +313,10 @@ watch(isMobileMenuOpen, (isOpen) => {
 .mello-page-header__actions {
   align-items: center;
   display: flex;
-  gap: 12px;
+  gap: 14px;
   justify-content: flex-end;
   justify-self: end;
-  min-width: 380px;
+  min-width: 0;
 }
 
 .mello-page-header__cta {
@@ -326,12 +328,14 @@ watch(isMobileMenuOpen, (isOpen) => {
   font-size: 15px;
   font-weight: 820;
   justify-content: center;
-  min-width: 172px;
+  line-height: 1;
+  min-width: 188px;
   min-height: 48px;
   padding: 0 26px;
   box-shadow: 0 12px 24px rgba(119, 205, 250, 0.24);
   text-decoration: none;
   transition: box-shadow 180ms ease, transform 180ms ease;
+  white-space: nowrap;
 }
 
 .mello-page-header__cta:hover {
@@ -441,6 +445,32 @@ watch(isMobileMenuOpen, (isOpen) => {
 .mello-mobile-menu-lock,
 .mello-mobile-menu-lock body {
   overflow: hidden;
+}
+
+@media (max-width: 1120px) {
+  .mello-page-header__inner {
+    gap: 14px;
+    width: min(100% - 28px, 1360px);
+  }
+
+  .mello-page-header__links {
+    font-size: 13px;
+    gap: 2px;
+  }
+
+  .mello-page-header__links a {
+    padding: 0 10px;
+  }
+
+  .mello-page-header__cta {
+    min-width: 174px;
+    padding: 0 20px;
+  }
+
+  .mello-page-header__locale-option {
+    min-width: 62px;
+    padding: 0 10px;
+  }
 }
 
 @media (max-width: 820px) {
