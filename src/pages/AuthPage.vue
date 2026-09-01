@@ -54,13 +54,6 @@ const clerkAppearance = {
         </a>
         <h1>{{ t(isSignUp ? 'authPage.signUpTitle' : 'authPage.signInTitle') }}</h1>
         <p>{{ t(isSignUp ? 'authPage.signUpText' : 'authPage.signInText') }}</p>
-        <img
-          class="mello-auth-page__art"
-          src="/assets/mellorise-background.png"
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-        >
         <div class="mello-auth-page__trust" aria-label="Account benefits">
           <article>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -162,6 +155,15 @@ const clerkAppearance = {
   width: min(46vw, 620px);
 }
 
+.mello-auth-page::after {
+  background: url("/assets/mellorise-background.png") center / cover no-repeat;
+  content: "";
+  inset: 0;
+  opacity: 0.14;
+  pointer-events: none;
+  position: absolute;
+}
+
 .mello-auth-page * {
   box-sizing: border-box;
   letter-spacing: 0;
@@ -205,19 +207,6 @@ const clerkAppearance = {
   line-height: 1.48;
   margin: 18px 0 0;
   max-width: 43ch;
-}
-
-.mello-auth-page__art {
-  display: block;
-  filter: saturate(0.92);
-  margin: clamp(14px, 2.2vh, 20px) 0 0;
-  max-height: clamp(170px, 25vh, 245px);
-  object-fit: contain;
-  object-position: left center;
-  opacity: 0.2;
-  pointer-events: none;
-  user-select: none;
-  width: 100%;
 }
 
 .mello-auth-page__trust {
@@ -446,6 +435,11 @@ const clerkAppearance = {
     width: 100%;
   }
 
+  .mello-auth-page::after {
+    background-position: 24% center;
+    opacity: 0.12;
+  }
+
   .mello-auth-page__shell {
     gap: 28px;
     grid-template-columns: 1fr;
@@ -459,12 +453,6 @@ const clerkAppearance = {
   .mello-auth-page__copy h1 {
     font-size: clamp(38px, 10vw, 52px);
     max-width: 11.5ch;
-  }
-
-  .mello-auth-page__art {
-    max-height: 150px;
-    opacity: 0.18;
-    width: 100%;
   }
 
   .mello-auth-page__panel {
