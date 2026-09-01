@@ -19,13 +19,6 @@ const displayName = computed(() => (
 const avatarUrl = computed(() => user.value?.imageUrl || '')
 const initial = computed(() => displayName.value.trim().charAt(0).toUpperCase() || 'M')
 
-function openSignIn() {
-  clerk.value?.openSignIn({
-    fallbackRedirectUrl: '/account/orders',
-    signUpFallbackRedirectUrl: '/account/orders',
-  })
-}
-
 function openProfile() {
   isOpen.value = false
   clerk.value?.openUserProfile()
@@ -79,19 +72,22 @@ onUnmounted(() => {
       <span></span>
     </button>
 
-    <button
+    <div
       v-else-if="!isSignedIn"
-      class="mello-auth-menu__signin"
-      type="button"
-      @click="openSignIn"
+      class="mello-auth-menu__guest"
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-        <path d="m10 17 5-5-5-5" />
-        <path d="M15 12H3" />
-      </svg>
-      <span>{{ t('auth.signIn') }}</span>
-    </button>
+      <a class="mello-auth-menu__signin" href="/sign-in">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <path d="m10 17 5-5-5-5" />
+          <path d="M15 12H3" />
+        </svg>
+        <span>{{ t('auth.signIn') }}</span>
+      </a>
+      <a class="mello-auth-menu__signup" href="/sign-up">
+        <span>{{ t('auth.signUp') }}</span>
+      </a>
+    </div>
 
     <template v-else>
       <button
@@ -128,6 +124,20 @@ onUnmounted(() => {
             </svg>
             {{ t('auth.profile') }}
           </button>
+          <a href="/track-order" @click="closeMenu">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="M3.27 6.96 12 12.01l8.73-5.05" />
+              <path d="M12 22.08V12" />
+            </svg>
+            {{ t('auth.track') }}
+          </a>
+          <a href="/pages/contact-us" @click="closeMenu">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" />
+            </svg>
+            {{ t('auth.support') }}
+          </a>
           <button type="button" @click="signOut">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -148,7 +158,14 @@ onUnmounted(() => {
   position: relative;
 }
 
+.mello-auth-menu__guest {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
 .mello-auth-menu__signin,
+.mello-auth-menu__signup,
 .mello-auth-menu__trigger {
   align-items: center;
   appearance: none;
@@ -170,6 +187,26 @@ onUnmounted(() => {
 .mello-auth-menu__signin {
   gap: 7px;
   padding: 0 14px;
+  text-decoration: none;
+}
+
+.mello-auth-menu__signup {
+  background: #173132;
+  color: #ffffff;
+  min-height: 42px;
+  padding: 0 16px;
+  text-decoration: none;
+}
+
+.mello-auth-menu__signin:hover,
+.mello-auth-menu__signin:focus-visible,
+.mello-auth-menu__signup:hover,
+.mello-auth-menu__signup:focus-visible,
+.mello-auth-menu__trigger:hover,
+.mello-auth-menu__trigger:focus-visible {
+  box-shadow: 0 12px 26px rgba(23, 49, 50, 0.1);
+  outline: 0;
+  transform: translateY(-1px);
 }
 
 .mello-auth-menu__signin svg,
@@ -309,7 +346,8 @@ onUnmounted(() => {
 
 @media (max-width: 1120px) {
   .mello-auth-menu__trigger strong,
-  .mello-auth-menu__signin span {
+  .mello-auth-menu__signin span,
+  .mello-auth-menu__signup {
     display: none;
   }
 

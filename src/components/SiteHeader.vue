@@ -135,13 +135,16 @@ watch(isMobileMenuOpen, (isOpen) => {
       <div class="mello-page-header__actions">
         <a class="mello-page-header__cta" href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
         <AuthMenu v-if="clerkEnabled" />
-        <a v-else class="mello-page-header__account-fallback" href="/account/orders" :aria-label="t('auth.signIn')">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 21a8 8 0 0 0-16 0" />
-            <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
-          </svg>
-          <span>{{ t('auth.signIn') }}</span>
-        </a>
+        <div v-else class="mello-page-header__auth-fallback">
+          <a class="mello-page-header__account-fallback" href="/sign-in" :aria-label="t('auth.signIn')">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 21a8 8 0 0 0-16 0" />
+              <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
+            </svg>
+            <span>{{ t('auth.signIn') }}</span>
+          </a>
+          <a class="mello-page-header__signup-fallback" href="/sign-up">{{ t('auth.signUp') }}</a>
+        </div>
         <div class="mello-page-header__locale" :aria-label="t('language.label')" role="group">
           <span class="mello-page-header__locale-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3c2.2 2.5 3.3 5.5 3.3 9s-1.1 6.5-3.3 9c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z"/></svg>
@@ -198,13 +201,16 @@ watch(isMobileMenuOpen, (isOpen) => {
 
       <div class="mello-mobile-menu__actions">
         <AuthMenu v-if="clerkEnabled" />
-        <a v-else class="mello-mobile-menu__account" href="/account/orders" @click="closeMobileMenu">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 21a8 8 0 0 0-16 0" />
-            <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
-          </svg>
-          <span>{{ t('auth.signIn') }}</span>
-        </a>
+        <div v-else class="mello-mobile-menu__auth">
+          <a class="mello-mobile-menu__account" href="/sign-in" @click="closeMobileMenu">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 21a8 8 0 0 0-16 0" />
+              <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
+            </svg>
+            <span>{{ t('auth.signIn') }}</span>
+          </a>
+          <a class="mello-mobile-menu__signup" href="/sign-up" @click="closeMobileMenu">{{ t('auth.signUp') }}</a>
+        </div>
         <a class="mello-mobile-menu__cta" href="/products/wondernest-heightener-gummies-2026#comprar" @click="closeMobileMenu">{{ t('nav.cta') }}</a>
       </div>
     </aside>
@@ -364,7 +370,14 @@ watch(isMobileMenuOpen, (isOpen) => {
   transform: translateY(-1px);
 }
 
-.mello-page-header__account-fallback {
+.mello-page-header__auth-fallback {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.mello-page-header__account-fallback,
+.mello-page-header__signup-fallback {
   align-items: center;
   background: rgba(239, 249, 255, 0.95);
   border-radius: 999px;
@@ -381,10 +394,19 @@ watch(isMobileMenuOpen, (isOpen) => {
   white-space: nowrap;
 }
 
+.mello-page-header__signup-fallback {
+  background: #173132;
+  color: #ffffff;
+  padding: 0 16px;
+}
+
 .mello-page-header__account-fallback:hover,
-.mello-page-header__account-fallback:focus-visible {
+.mello-page-header__account-fallback:focus-visible,
+.mello-page-header__signup-fallback:hover,
+.mello-page-header__signup-fallback:focus-visible {
   background: #ffffff;
   box-shadow: 0 12px 26px rgba(23, 49, 50, 0.1);
+  color: #173132;
   outline: 0;
   transform: translateY(-1px);
 }
@@ -533,7 +555,8 @@ watch(isMobileMenuOpen, (isOpen) => {
     padding: 0 10px;
   }
 
-  .mello-page-header__account-fallback span {
+  .mello-page-header__account-fallback span,
+  .mello-page-header__signup-fallback {
     display: none;
   }
 
@@ -734,6 +757,7 @@ watch(isMobileMenuOpen, (isOpen) => {
 
   .mello-mobile-menu__actions .mello-auth-menu__signin,
   .mello-mobile-menu__actions .mello-auth-menu__trigger,
+  .mello-mobile-menu__actions .mello-auth-menu__signup,
   .mello-mobile-menu__account {
     align-items: center;
     background: #eff9ff;
@@ -751,8 +775,31 @@ watch(isMobileMenuOpen, (isOpen) => {
   }
 
   .mello-mobile-menu__actions .mello-auth-menu__signin span,
-  .mello-mobile-menu__actions .mello-auth-menu__trigger strong {
+  .mello-mobile-menu__actions .mello-auth-menu__trigger strong,
+  .mello-mobile-menu__actions .mello-auth-menu__signup {
     display: inline-block;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu__guest,
+  .mello-mobile-menu__auth {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu__signup,
+  .mello-mobile-menu__signup {
+    align-items: center;
+    background: #173132;
+    border-radius: 14px;
+    color: #ffffff;
+    display: flex;
+    font-size: 15px;
+    font-weight: 880;
+    justify-content: center;
+    min-height: 48px;
+    text-decoration: none;
+    width: 100%;
   }
 
   .mello-mobile-menu__actions .mello-auth-menu__panel {

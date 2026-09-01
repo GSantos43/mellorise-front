@@ -12,6 +12,7 @@ import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
 import TrackOrderPage from './pages/TrackOrderPage.vue'
 import AccountOrdersPage from './pages/AccountOrdersPage.vue'
 import AccountAuthUnavailablePage from './pages/AccountAuthUnavailablePage.vue'
+import AuthPage from './pages/AuthPage.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
@@ -58,6 +59,8 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/products/')) return 'product'
   if (route.value.startsWith('/checkout/success')) return 'checkout-success'
   if (route.value.startsWith('/checkout')) return 'checkout'
+  if (route.value.startsWith('/sign-up')) return 'sign-up'
+  if (route.value.startsWith('/sign-in')) return 'sign-in'
   if (route.value.startsWith('/account/orders')) return 'account-orders'
   if (route.value.startsWith('/track-order') || route.value.startsWith('/apps/track123')) return 'tracking'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
@@ -84,6 +87,8 @@ const documentTitle = computed(() => {
     faq: t('meta.faq'),
     tracking: t('meta.tracking'),
     'account-orders': t('meta.accountOrders'),
+    'sign-in': t('meta.signIn'),
+    'sign-up': t('meta.signUp'),
     checkout: t('meta.checkout'),
     'checkout-success': t('meta.checkoutSuccess'),
     institutional: getInstitutionalTitle(),
@@ -544,6 +549,9 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
     <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
+    <AuthPage v-else-if="currentPage === 'sign-in' && clerkEnabled" mode="sign-in" />
+    <AuthPage v-else-if="currentPage === 'sign-up' && clerkEnabled" mode="sign-up" />
+    <AccountAuthUnavailablePage v-else-if="currentPage === 'sign-in' || currentPage === 'sign-up'" />
     <AccountOrdersPage v-else-if="currentPage === 'account-orders' && clerkEnabled" />
     <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders'" />
     <TrackOrderPage v-else-if="currentPage === 'tracking'" />

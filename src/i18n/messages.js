@@ -12,6 +12,8 @@ export const messages = {
       faq: 'Preguntas frecuentes',
       tracking: 'Seguir pedido',
       accountOrders: 'Mis compras',
+      signIn: 'Entrar',
+      signUp: 'Crear cuenta',
       checkout: 'Checkout seguro',
       checkoutSuccess: 'Pedido confirmado'
     },
@@ -36,9 +38,26 @@ export const messages = {
       account: 'Cuenta',
       menu: 'Menu de cuenta',
       signIn: 'Entrar',
+      signUp: 'Crear cuenta',
       signOut: 'Salir',
       orders: 'Mis compras',
-      profile: 'Gestionar cuenta'
+      profile: 'Gestionar cuenta',
+      track: 'Seguir pedido',
+      support: 'Soporte'
+    },
+    authPage: {
+      signInBadge: 'Acceso seguro',
+      signInTitle: 'Entra a tu cuenta',
+      signInText: 'Consulta compras, rastreo y soporte con el mismo email usado en el checkout.',
+      signUpBadge: 'Cuenta MelloRise',
+      signUpTitle: 'Crea tu cuenta',
+      signUpText: 'Guarda tus compras, entra con Google y acompaña cada pedido en un lugar protegido.',
+      ordersTitle: 'Compras protegidas',
+      ordersText: 'Solo mostramos pedidos vinculados al email confirmado por Clerk.',
+      securityTitle: 'Login con Google',
+      securityText: 'Clerk cuida el acceso y el BFF valida cada pedido antes de mostrar datos.',
+      alreadySignedInTitle: 'Ya entraste, {name}',
+      alreadySignedInText: 'Tu sesión está activa. Puedes ir directo a tus compras.'
     },
     account: {
       eyebrow: 'Cuenta MelloRise',
@@ -652,6 +671,8 @@ export const messages = {
       faq: 'FAQ',
       tracking: 'Track order',
       accountOrders: 'My purchases',
+      signIn: 'Sign in',
+      signUp: 'Sign up',
       checkout: 'Secure checkout',
       checkoutSuccess: 'Order confirmed'
     },
@@ -676,9 +697,26 @@ export const messages = {
       account: 'Account',
       menu: 'Account menu',
       signIn: 'Sign in',
+      signUp: 'Sign up',
       signOut: 'Sign out',
       orders: 'My purchases',
-      profile: 'Manage account'
+      profile: 'Manage account',
+      track: 'Track order',
+      support: 'Support'
+    },
+    authPage: {
+      signInBadge: 'Secure access',
+      signInTitle: 'Sign in to your account',
+      signInText: 'See purchases, tracking, and support with the same email used at checkout.',
+      signUpBadge: 'MelloRise account',
+      signUpTitle: 'Create your account',
+      signUpText: 'Save your purchases, continue with Google, and follow every order in one protected place.',
+      ordersTitle: 'Protected purchases',
+      ordersText: 'We only show orders linked to the email verified by Clerk.',
+      securityTitle: 'Google sign-in',
+      securityText: 'Clerk protects access while the BFF validates every order before exposing details.',
+      alreadySignedInTitle: 'You are already in, {name}',
+      alreadySignedInText: 'Your session is active. You can go straight to your purchases.'
     },
     account: {
       eyebrow: 'MelloRise account',
