@@ -173,8 +173,8 @@ onMounted(() => {
     linear-gradient(180deg, #ffffff 0%, #f6fbfb 48%, #fff8eb 100%);
   color: #102829;
   font-family: var(--font-body-family);
-  min-height: calc(100vh - 78px);
-  padding: clamp(28px, 4.2vw, 58px) 20px clamp(44px, 6vw, 82px);
+  min-height: 0;
+  padding: clamp(28px, 4.2vw, 58px) 20px clamp(22px, 3vw, 36px);
 }
 
 .mello-track * {
@@ -567,8 +567,8 @@ onMounted(() => {
 
 @media (max-width: 820px) {
   .mello-track {
-    min-height: calc(100vh - 74px);
-    padding: 22px 14px 64px;
+    min-height: 0;
+    padding: 22px 14px 28px;
   }
 
   .mello-track__intro h1 {
