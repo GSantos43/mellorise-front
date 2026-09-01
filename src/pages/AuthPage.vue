@@ -208,17 +208,16 @@ const clerkAppearance = {
 }
 
 .mello-auth-page__art {
-  aspect-ratio: 1.45 / 1;
   display: block;
   filter: saturate(0.92);
-  margin: clamp(14px, 2.2vh, 20px) 0 0 -18px;
-  max-height: clamp(118px, 19vh, 172px);
-  object-fit: cover;
+  margin: clamp(14px, 2.2vh, 20px) 0 0;
+  max-height: clamp(170px, 25vh, 245px);
+  object-fit: contain;
   object-position: left center;
-  opacity: 0.24;
+  opacity: 0.2;
   pointer-events: none;
   user-select: none;
-  width: min(100%, 320px);
+  width: 100%;
 }
 
 .mello-auth-page__trust {
@@ -463,10 +462,9 @@ const clerkAppearance = {
   }
 
   .mello-auth-page__art {
-    margin-left: -10px;
-    max-height: 110px;
-    opacity: 0.2;
-    width: min(100%, 260px);
+    max-height: 150px;
+    opacity: 0.18;
+    width: 100%;
   }
 
   .mello-auth-page__panel {
