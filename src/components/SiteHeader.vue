@@ -2,11 +2,16 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale, supportedLocales } from '../i18n'
+import AuthMenu from './AuthMenu.vue'
 
 const props = defineProps({
   currentRoute: {
     type: String,
     default: '/'
+  },
+  clerkEnabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -129,6 +134,7 @@ watch(isMobileMenuOpen, (isOpen) => {
 
       <div class="mello-page-header__actions">
         <a class="mello-page-header__cta" href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
+        <AuthMenu v-if="clerkEnabled" />
         <div class="mello-page-header__locale" :aria-label="t('language.label')" role="group">
           <span class="mello-page-header__locale-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3c2.2 2.5 3.3 5.5 3.3 9s-1.1 6.5-3.3 9c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z"/></svg>

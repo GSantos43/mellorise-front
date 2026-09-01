@@ -10,6 +10,8 @@ import InstitutionalPage from './pages/InstitutionalPage.vue'
 import CheckoutPage from './pages/CheckoutPage.vue'
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
 import TrackOrderPage from './pages/TrackOrderPage.vue'
+import AccountOrdersPage from './pages/AccountOrdersPage.vue'
+import AccountAuthUnavailablePage from './pages/AccountAuthUnavailablePage.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
@@ -18,6 +20,13 @@ import { createCheckoutSession } from './services/checkout'
 import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 import { translateProductTitle } from './i18n/productText'
+
+defineProps({
+  clerkEnabled: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
 const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
@@ -49,6 +58,7 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/products/')) return 'product'
   if (route.value.startsWith('/checkout/success')) return 'checkout-success'
   if (route.value.startsWith('/checkout')) return 'checkout'
+  if (route.value.startsWith('/account/orders')) return 'account-orders'
   if (route.value.startsWith('/track-order') || route.value.startsWith('/apps/track123')) return 'tracking'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
   if (route.value === '/pages/faq' || route.value === '/pages/faqs') return 'faq'
@@ -73,6 +83,7 @@ const documentTitle = computed(() => {
     contact: t('meta.contact'),
     faq: t('meta.faq'),
     tracking: t('meta.tracking'),
+    'account-orders': t('meta.accountOrders'),
     checkout: t('meta.checkout'),
     'checkout-success': t('meta.checkoutSuccess'),
     institutional: getInstitutionalTitle(),
@@ -485,7 +496,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" @click="navigate">
-    <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" />
+    <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" :clerk-enabled="clerkEnabled" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
@@ -533,6 +544,8 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
     <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
     <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
+    <AccountOrdersPage v-else-if="currentPage === 'account-orders' && clerkEnabled" />
+    <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders'" />
     <TrackOrderPage v-else-if="currentPage === 'tracking'" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"

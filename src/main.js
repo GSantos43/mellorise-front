@@ -1,8 +1,24 @@
 import { createApp } from 'vue'
+import { clerkPlugin } from '@clerk/vue'
 import App from './App.vue'
 import { i18n } from './i18n'
 import './styles/theme-vars.css'
 import './styles/theme-imports.css'
 import './styles/vue-overrides.css'
 
-createApp(App).use(i18n).mount('#app')
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const app = createApp(App, {
+  clerkEnabled: Boolean(clerkPublishableKey)
+})
+
+app.use(i18n)
+
+if (clerkPublishableKey) {
+  app.use(clerkPlugin, {
+    publishableKey: clerkPublishableKey,
+    signInFallbackRedirectUrl: '/account/orders',
+    signUpFallbackRedirectUrl: '/account/orders',
+  })
+}
+
+app.mount('#app')
