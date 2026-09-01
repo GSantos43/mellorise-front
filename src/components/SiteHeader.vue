@@ -135,6 +135,13 @@ watch(isMobileMenuOpen, (isOpen) => {
       <div class="mello-page-header__actions">
         <a class="mello-page-header__cta" href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
         <AuthMenu v-if="clerkEnabled" />
+        <a v-else class="mello-page-header__account-fallback" href="/account/orders" :aria-label="t('auth.signIn')">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 21a8 8 0 0 0-16 0" />
+            <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
+          </svg>
+          <span>{{ t('auth.signIn') }}</span>
+        </a>
         <div class="mello-page-header__locale" :aria-label="t('language.label')" role="group">
           <span class="mello-page-header__locale-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3c2.2 2.5 3.3 5.5 3.3 9s-1.1 6.5-3.3 9c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z"/></svg>
@@ -190,6 +197,14 @@ watch(isMobileMenuOpen, (isOpen) => {
       </nav>
 
       <div class="mello-mobile-menu__actions">
+        <AuthMenu v-if="clerkEnabled" />
+        <a v-else class="mello-mobile-menu__account" href="/account/orders" @click="closeMobileMenu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 21a8 8 0 0 0-16 0" />
+            <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
+          </svg>
+          <span>{{ t('auth.signIn') }}</span>
+        </a>
         <a class="mello-mobile-menu__cta" href="/products/wondernest-heightener-gummies-2026#comprar" @click="closeMobileMenu">{{ t('nav.cta') }}</a>
       </div>
     </aside>
@@ -349,6 +364,46 @@ watch(isMobileMenuOpen, (isOpen) => {
   transform: translateY(-1px);
 }
 
+.mello-page-header__account-fallback {
+  align-items: center;
+  background: rgba(239, 249, 255, 0.95);
+  border-radius: 999px;
+  color: #173132;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  text-decoration: none;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  white-space: nowrap;
+}
+
+.mello-page-header__account-fallback:hover,
+.mello-page-header__account-fallback:focus-visible {
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(23, 49, 50, 0.1);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-page-header__account-fallback svg,
+.mello-mobile-menu__account svg {
+  fill: none;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.mello-page-header__account-fallback svg {
+  height: 17px;
+  width: 17px;
+}
+
 .mello-page-header__locale {
   align-items: center;
   background: rgba(239, 249, 255, 0.95);
@@ -476,6 +531,17 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-page-header__locale-option {
     min-width: 62px;
     padding: 0 10px;
+  }
+
+  .mello-page-header__account-fallback span {
+    display: none;
+  }
+
+  .mello-page-header__account-fallback {
+    height: 42px;
+    justify-content: center;
+    padding: 0;
+    width: 42px;
   }
 }
 
@@ -660,6 +726,46 @@ watch(isMobileMenuOpen, (isOpen) => {
     gap: 10px;
     grid-template-columns: 1fr;
     margin-top: 18px;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu {
+    width: 100%;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu__signin,
+  .mello-mobile-menu__actions .mello-auth-menu__trigger,
+  .mello-mobile-menu__account {
+    align-items: center;
+    background: #eff9ff;
+    border-radius: 14px;
+    color: #173132;
+    display: flex;
+    font-size: 15px;
+    font-weight: 860;
+    gap: 10px;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 16px;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu__signin span,
+  .mello-mobile-menu__actions .mello-auth-menu__trigger strong {
+    display: inline-block;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu__panel {
+    border-radius: 14px;
+    box-shadow: 0 18px 44px rgba(23, 49, 50, 0.14);
+    left: 0;
+    min-width: 100%;
+    right: auto;
+  }
+
+  .mello-mobile-menu__account svg {
+    height: 18px;
+    width: 18px;
   }
 
   .mello-mobile-menu__cta {
