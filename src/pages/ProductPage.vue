@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatMoney } from '../services/products'
 import { translateProductTitle } from '../i18n/productText'
+import { buildProductBundles } from '../services/bundles'
 
 const props = defineProps({
   product: {
@@ -43,28 +44,7 @@ let galleryDragStartX = 0
 let galleryDragStartY = 0
 let galleryPointerId = null
 let previousBodyOverflow = ''
-const packConfig = [
-  { match: ['buy 1', '1 bottle', 'starter'], title: 'Buy 1', meta: 'Starter routine', shippingKey: 'product.bundles.shipping.standard', image: '/assets/one1.png', badge: '', paidQuantity: 1, freeQuantity: 0, bottles: 1 },
-  { match: ['buy 2 get 1', 'buy 2 get 1 free', '2 get 1', '3 bottles', 'most popular'], title: 'Buy 2 Get 1 Free', meta: 'Most Popular', shippingKey: 'product.bundles.shipping.free', image: '/assets/three.png', badge: 'Most Popular', paidQuantity: 2, freeQuantity: 1, bottles: 3 },
-  { match: ['buy 3 get 2', 'buy 3 get 2 free', '3 get 2', '5 bottles', 'best value'], title: 'Buy 3 Get 2 Free', meta: 'Best Value', shippingKey: 'product.bundles.shipping.freePriority', image: '/assets/five5.png', badge: 'Best Value', paidQuantity: 3, freeQuantity: 2, bottles: 5 }
-]
 const maxGalleryIndicators = 5
-
-function normalizeBundleMatch(value) {
-  return String(value || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim()
-}
-
-function findBundleVariant(variants, pack) {
-  const matches = pack.match.map(normalizeBundleMatch)
-
-  return variants.find((variant) => {
-    const title = normalizeBundleMatch(variant.title)
-    return matches.some((match) => title === match || title.includes(match))
-  })
-}
 
 const activeProduct = computed(() => props.product || fallbackProduct)
 const localizedProductTitle = computed(() => translateProductTitle(activeProduct.value.title, locale.value))
@@ -123,32 +103,7 @@ const perBottlePrice = computed(() => {
   return formatMoney(price / bottles)
 })
 
-const bundles = computed(() => {
-  const variants = Array.isArray(activeProduct.value.variants) ? activeProduct.value.variants : []
-
-  if (!variants.length) {
-    return packConfig.map((pack, index) => ({
-      ...pack,
-      price: index === 0 ? activeProduct.value.price : Number(activeProduct.value.price) * (index + 1),
-      compareAtPrice: null,
-      variationId: null,
-      isAvailable: true
-    }))
-  }
-
-  return packConfig.map((pack) => {
-    const variant = findBundleVariant(variants, pack)
-
-    return {
-      ...pack,
-      title: pack.title,
-      price: variant?.price ?? activeProduct.value.price,
-      compareAtPrice: variant?.compareAtPrice ?? null,
-      variationId: variant?.id ?? null,
-      isAvailable: Boolean(variant?.id) && variant?.purchasable !== false && variant?.stockStatus !== 'outofstock'
-    }
-  })
-})
+const bundles = computed(() => buildProductBundles(activeProduct.value))
 
 const productAccordions = computed(() => [
   {
@@ -402,6 +357,7 @@ function buildSelectedCartPayload() {
   const paidQuantity = Math.max(1, Number(bundle.paidQuantity || quantity.value || 1))
   const bundlePrice = Number(bundle.price || activeProduct.value.price || 0)
   const unitPrice = bundlePrice / paidQuantity
+  const bundleTitle = t(bundle.titleKey)
 
   return {
     product: activeProduct.value,
@@ -411,11 +367,11 @@ function buildSelectedCartPayload() {
     quantity: paidQuantity,
     checkoutQuantity: bundle.variationId ? 1 : paidQuantity,
     image: bundle.image || activeProduct.value.image,
-    bundleLabel: `${bundle.title} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`,
+    bundleLabel: `${bundleTitle} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`,
     promotion: bundle.freeQuantity
       ? {
           code: bundle.paidQuantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
-          label: bundle.title,
+          label: bundleTitle,
           paidQuantity: bundle.paidQuantity,
           freeQuantity: bundle.freeQuantity,
           deliveredQuantity: bundle.bottles
@@ -435,12 +391,36 @@ function buyNow() {
   })
 }
 
+function getRequestedBundleIndex() {
+  if (typeof window === 'undefined') return -1
+
+  const bundleValue = new URLSearchParams(window.location.search).get('bundle')
+  if (!bundleValue) return -1
+
+  return bundles.value.findIndex((bundle, index) => (
+    String(bundle.queryValue) === bundleValue ||
+    String(bundle.paidQuantity) === bundleValue ||
+    String(index + 1) === bundleValue
+  ))
+}
+
+function applyRequestedBundle() {
+  const requestedBundleIndex = getRequestedBundleIndex()
+  if (requestedBundleIndex < 0) return
+
+  const requestedBundle = bundles.value[requestedBundleIndex]
+  if (!requestedBundle || requestedBundle.isAvailable === false) return
+
+  selectedBundle.value = requestedBundleIndex
+}
+
 watch(selectedBundle, (bundleIndex) => {
   const paidQuantity = Number(bundles.value[bundleIndex]?.paidQuantity || 1)
   quantity.value = paidQuantity
 }, { immediate: true })
 
 onMounted(() => {
+  applyRequestedBundle()
   updateStickyState()
   window.addEventListener('scroll', updateStickyState, { passive: true })
   window.addEventListener('keydown', handleGalleryKeydown)
@@ -454,6 +434,7 @@ onUnmounted(() => {
 
 watch(activeProduct, () => {
   selectedImageIndex.value = 0
+  applyRequestedBundle()
   closeGalleryLightbox()
 })
 
@@ -628,15 +609,15 @@ watch(isGalleryLightboxOpen, (isOpen) => {
                 class="gg-promo"
                 :class="{ 'is-active': selectedBundle === index, 'gg-promo--featured': index === 1, 'is-disabled': !bundle.isAvailable }"
               >
-                <span v-if="bundle.badge" class="gg-promo__badge">{{ bundle.badge }}</span>
+                <span v-if="bundle.badgeKey" class="gg-promo__badge">{{ t(bundle.badgeKey) }}</span>
                 <input type="radio" name="id" :value="index" :checked="selectedBundle === index" :disabled="!bundle.isAvailable" @change="selectedBundle = index">
                 <span class="gg-promo__selector" aria-hidden="true"></span>
                 <span class="gg-promo__image gg-promo__image--offer" aria-hidden="true">
                   <img :src="bundle.image" alt="" width="180" height="120" loading="lazy">
                 </span>
                 <span class="gg-promo__body">
-                  <strong>{{ bundle.title }}</strong>
-                  <small class="gg-promo__meta">{{ bundle.meta }}</small>
+                  <strong>{{ t(bundle.titleKey) }}</strong>
+                  <small class="gg-promo__meta">{{ t(bundle.metaKey) }}</small>
                   <small class="gg-promo__shipping">{{ t(bundle.shippingKey) }}</small>
                 </span>
                 <span class="gg-promo__price">

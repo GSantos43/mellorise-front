@@ -38,6 +38,8 @@ export const messages = {
       loadingProducts: 'Cargando productos...',
       productAvailable: '{count} producto disponible',
       productsAvailable: '{count} productos disponibles',
+      bundleProductsAvailable: '{count} ofertas disponibles',
+      bundleAction: 'Elegir oferta',
       chips: {
         routine: 'Rutina diaria',
         gummy: 'Formato gummy',
@@ -83,6 +85,22 @@ export const messages = {
           standard: 'Envío estándar disponible',
           free: 'Envío gratis incluido',
           freePriority: 'Envío gratis con prioridad'
+        }
+      },
+      bundleCards: {
+        buyOne: {
+          title: 'Buy 1',
+          meta: 'Rutina inicial'
+        },
+        buyTwo: {
+          title: 'Buy 2 Get 1 Free',
+          meta: 'Más popular',
+          badge: 'Más popular'
+        },
+        buyThree: {
+          title: 'Buy 3 Get 2 Free',
+          meta: 'Mejor valor',
+          badge: 'Mejor valor'
         }
       },
       quantity: {
@@ -627,6 +645,8 @@ export const messages = {
       loadingProducts: 'Loading products...',
       productAvailable: '{count} product available',
       productsAvailable: '{count} products available',
+      bundleProductsAvailable: '{count} offers available',
+      bundleAction: 'Choose offer',
       chips: {
         routine: 'Daily routine',
         gummy: 'Gummy format',
@@ -672,6 +692,22 @@ export const messages = {
           standard: 'Ships with standard delivery',
           free: 'Free shipping included',
           freePriority: 'Free priority-style shipping'
+        }
+      },
+      bundleCards: {
+        buyOne: {
+          title: 'Buy 1',
+          meta: 'Starter routine'
+        },
+        buyTwo: {
+          title: 'Buy 2 Get 1 Free',
+          meta: 'Most popular',
+          badge: 'Most popular'
+        },
+        buyThree: {
+          title: 'Buy 3 Get 2 Free',
+          meta: 'Best value',
+          badge: 'Best value'
         }
       },
       quantity: {

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CatalogGrid from '../components/CatalogGrid.vue'
+import { buildProductBundles } from '../services/bundles'
 
 const props = defineProps({
   products: {
@@ -17,13 +18,42 @@ const props = defineProps({
 const emit = defineEmits(['add-to-cart'])
 const productCount = computed(() => props.products.length)
 const { t } = useI18n({ useScope: 'global' })
+const featuredProduct = computed(() => props.products[0])
+const bundleProducts = computed(() => {
+  const product = featuredProduct.value
+  if (!product) return []
+
+  return buildProductBundles(product).map((bundle) => ({
+    ...product,
+    id: `${product.id}-${bundle.key}`,
+    title: t(bundle.titleKey),
+    vendor: product.vendor || 'MelloRise',
+    price: bundle.price,
+    compareAtPrice: bundle.compareAtPrice,
+    image: bundle.image,
+    images: [bundle.image],
+    productUrl: `/products/${product.handle}?bundle=${bundle.queryValue}#comprar`,
+    actionLabel: t('catalog.bundleAction'),
+    bundleCard: true,
+    bundleBadge: bundle.badgeKey ? t(bundle.badgeKey) : '',
+    bundleMeta: t(bundle.metaKey),
+    bundleShipping: t(bundle.shippingKey),
+    paidQuantity: bundle.paidQuantity,
+    deliveredQuantity: bundle.bottles
+  }))
+})
 const productCountLabel = computed(() => {
   if (props.isLoading) return t('catalog.loadingProducts')
-  const key = productCount.value === 1 ? 'catalog.productAvailable' : 'catalog.productsAvailable'
-  return t(key, { count: productCount.value })
+  return t('catalog.bundleProductsAvailable', { count: bundleProducts.value.length || productCount.value })
 })
 
 function addProductToCart(product) {
+  if (product.productUrl) {
+    window.history.pushState({}, '', product.productUrl)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+    return
+  }
+
   emit('add-to-cart', {
     product,
     price: Number(product.price || 0),
@@ -64,7 +94,7 @@ function addProductToCart(product) {
 
       <CatalogGrid
         v-else
-        :products="products"
+        :products="bundleProducts"
         @add-to-cart="addProductToCart"
       />
     </div>

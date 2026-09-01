@@ -17,11 +17,13 @@ const props = defineProps({
 
 const emit = defineEmits(['add-to-cart'])
 const { t, locale } = useI18n({ useScope: 'global' })
-const productUrl = computed(() => `/products/${props.product.handle}`)
+const productUrl = computed(() => props.product.productUrl || `/products/${props.product.handle}`)
 const price = computed(() => formatMoney(props.product.price))
 const compareAtPrice = computed(() => props.product.compareAtPrice ? formatMoney(props.product.compareAtPrice) : '')
 const productImage = computed(() => props.product.image || props.product.images?.[0] || '/assets/frasco.png')
-const localizedProductTitle = computed(() => translateProductTitle(props.product.title, locale.value))
+const localizedProductTitle = computed(() => (
+  props.product.bundleCard ? props.product.title : translateProductTitle(props.product.title, locale.value)
+))
 
 function addToCart() {
   emit('add-to-cart', props.product)
@@ -75,6 +77,12 @@ function addToCart() {
                 </a>
               </h3>
 
+              <div v-if="product.bundleCard" class="mello-product-card__bundle-details">
+                <span v-if="product.bundleBadge">{{ product.bundleBadge }}</span>
+                <p>{{ product.bundleMeta }}</p>
+                <small>{{ product.bundleShipping }}</small>
+              </div>
+
               <div class="card-information mello-product-card__meta">
                 <span class="visually-hidden">Vendor:</span>
                 <div class="caption-with-letter-spacing light">{{ product.vendor }}</div>
@@ -99,7 +107,10 @@ function addToCart() {
             </div>
 
             <div class="mello-product-card__actions">
-              <button class="mello-product-card__button" type="button" @click="addToCart">
+              <a v-if="product.bundleCard" class="mello-product-card__button" :href="productUrl">
+                {{ product.actionLabel || t('catalog.bundleAction') }}
+              </a>
+              <button v-else class="mello-product-card__button" type="button" @click="addToCart">
                 {{ t('product.addToCart') }}
               </button>
             </div>
@@ -252,6 +263,41 @@ function addToCart() {
   -webkit-line-clamp: 3;
 }
 
+.mello-product-card__bundle-details {
+  display: grid;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.mello-product-card__bundle-details span {
+  align-self: start;
+  background: #ff7c45;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 900;
+  justify-self: start;
+  line-height: 1;
+  padding: 7px 9px;
+  text-transform: uppercase;
+}
+
+.mello-product-card__bundle-details p {
+  color: #173132;
+  font-size: 14px;
+  font-weight: 820;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.mello-product-card__bundle-details small {
+  color: #3f9180;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
 .mello-product-card .full-unstyled-link::after {
   content: none;
   display: none;
@@ -326,6 +372,7 @@ function addToCart() {
   line-height: 1;
   min-height: 48px;
   padding: 0 22px;
+  text-decoration: none;
   transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   width: 100%;
 }
