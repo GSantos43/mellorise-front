@@ -6,7 +6,9 @@ import './styles/theme-vars.css'
 import './styles/theme-imports.css'
 import './styles/vue-overrides.css'
 
-const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const clerkPublishableKey =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  'pk_test_dG91Y2hlZC1iYXJuYWNsZS0xNzMuY2xlcmsuYWNjb3VudHMuZGV2JA'
 const app = createApp(App, {
   clerkEnabled: Boolean(clerkPublishableKey)
 })
