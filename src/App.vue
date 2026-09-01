@@ -571,7 +571,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <CollectionPage v-else :products="products" :is-loading="isLoading" @add-to-cart="addToCart" />
     <StoreFooter v-if="!['checkout', 'checkout-success'].includes(currentPage)" />
     <button
-      v-if="!['checkout', 'checkout-success'].includes(currentPage)"
+      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'account-orders'].includes(currentPage)"
       class="mello-floating-cart"
       type="button"
       :aria-label="t('nav.cart')"
