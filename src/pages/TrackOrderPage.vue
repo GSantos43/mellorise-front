@@ -162,8 +162,8 @@ onMounted(() => {
     linear-gradient(180deg, #ffffff 0%, #f6fbfb 48%, #fff8eb 100%);
   color: #102829;
   font-family: var(--font-body-family);
-  min-height: 78vh;
-  padding: clamp(46px, 7vw, 96px) 20px clamp(58px, 8vw, 110px);
+  min-height: calc(100vh - 78px);
+  padding: clamp(28px, 4.2vw, 58px) 20px clamp(44px, 6vw, 82px);
 }
 
 .mello-track * {
@@ -177,36 +177,36 @@ onMounted(() => {
 }
 
 .mello-track__intro {
-  max-width: 760px;
+  max-width: 860px;
 }
 
 .mello-track__intro p {
   color: #2093d7;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
   line-height: 1.2;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   text-transform: uppercase;
 }
 
 .mello-track__intro h1 {
   color: #102829;
-  font-size: clamp(44px, 8vw, 86px);
+  font-size: clamp(42px, 5.2vw, 68px);
   font-weight: 950;
-  letter-spacing: -0.035em;
-  line-height: 0.95;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
   margin: 0;
-  max-width: 10ch;
+  max-width: 13ch;
   text-wrap: balance;
 }
 
 .mello-track__intro span {
   color: #5f7073;
   display: block;
-  font-size: clamp(17px, 2vw, 22px);
+  font-size: clamp(16px, 1.45vw, 20px);
   font-weight: 560;
   line-height: 1.45;
-  margin-top: 18px;
+  margin-top: 12px;
   max-width: 56ch;
 }
 
@@ -215,7 +215,7 @@ onMounted(() => {
   display: grid;
   gap: 24px;
   grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
-  margin-top: clamp(32px, 5vw, 54px);
+  margin-top: clamp(22px, 3.2vw, 36px);
 }
 
 .mello-track__lookup,
@@ -229,8 +229,8 @@ onMounted(() => {
 
 .mello-track__lookup {
   display: grid;
-  gap: 24px;
-  padding: clamp(22px, 3vw, 34px);
+  gap: 20px;
+  padding: clamp(20px, 2.4vw, 30px);
 }
 
 .mello-track__lookup h2,
@@ -483,8 +483,8 @@ onMounted(() => {
   display: grid;
   gap: 20px;
   grid-template-columns: 120px 1fr;
-  min-height: 360px;
-  padding: clamp(24px, 4vw, 40px);
+  min-height: 300px;
+  padding: clamp(22px, 3vw, 34px);
 }
 
 .mello-track__empty img {
@@ -503,12 +503,23 @@ onMounted(() => {
 
 @media (max-width: 820px) {
   .mello-track {
-    padding: 34px 14px 70px;
+    min-height: calc(100vh - 74px);
+    padding: 22px 14px 64px;
   }
 
   .mello-track__intro h1 {
-    font-size: clamp(42px, 14vw, 60px);
-    max-width: 9ch;
+    font-size: clamp(38px, 11vw, 50px);
+    max-width: 12ch;
+  }
+
+  .mello-track__intro span {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .mello-track__grid {
+    gap: 16px;
+    margin-top: 20px;
   }
 
   .mello-track__grid,
