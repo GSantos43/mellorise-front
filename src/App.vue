@@ -602,7 +602,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :purchase-eligibility="purchaseEligibility"
       @add-to-cart="addToCart"
     />
-    <StoreFooter v-if="!['checkout', 'checkout-success'].includes(currentPage)" />
+    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up'].includes(currentPage)" />
     <button
       v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'account-orders'].includes(currentPage)"
       class="mello-floating-cart"

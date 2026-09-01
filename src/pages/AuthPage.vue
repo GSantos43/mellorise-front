@@ -130,23 +130,29 @@ const clerkAppearance = {
 <style>
 .mello-auth-page {
   background:
-    linear-gradient(115deg, rgba(229, 248, 255, 0.92) 0%, rgba(247, 253, 252, 0.96) 34%, rgba(255, 251, 242, 0.88) 100%);
+    radial-gradient(circle at 20% 15%, rgba(119, 205, 250, 0.22), transparent 30%),
+    linear-gradient(115deg, rgba(240, 251, 255, 0.94) 0%, rgba(250, 254, 253, 0.98) 46%, rgba(255, 252, 246, 0.92) 100%);
+  box-sizing: border-box;
   color: #102829;
+  display: flex;
   font-family: var(--font-body-family);
   min-height: calc(100vh - 82px);
-  overflow: hidden;
-  padding: clamp(36px, 6vw, 86px) 20px clamp(42px, 6vw, 78px);
+  min-height: calc(100svh - 82px);
+  overflow: clip;
+  padding: clamp(22px, 4vh, 44px) 20px;
   position: relative;
 }
 
 .mello-auth-page::before {
   background:
-    linear-gradient(135deg, rgba(24, 107, 255, 0.08), rgba(63, 209, 185, 0.1)),
-    rgba(255, 255, 255, 0.48);
+    linear-gradient(135deg, rgba(24, 107, 255, 0.055), rgba(63, 209, 185, 0.075)),
+    rgba(255, 255, 255, 0.34);
   content: "";
-  inset: 0 auto 0 0;
+  inset: 0 auto 0 -8vw;
   position: absolute;
-  width: min(45vw, 560px);
+  transform: skewX(-7deg);
+  transform-origin: top;
+  width: min(46vw, 620px);
 }
 
 .mello-auth-page * {
@@ -157,10 +163,10 @@ const clerkAppearance = {
 .mello-auth-page__shell {
   align-items: center;
   display: grid;
-  gap: clamp(34px, 6vw, 88px);
-  grid-template-columns: minmax(0, 0.92fr) minmax(380px, 0.72fr);
+  gap: clamp(34px, 5vw, 76px);
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.68fr);
   margin: 0 auto;
-  max-width: 1080px;
+  max-width: 1070px;
   position: relative;
   z-index: 1;
 }
@@ -170,16 +176,16 @@ const clerkAppearance = {
   display: inline-flex;
   font-size: 15px;
   font-weight: 850;
-  margin-bottom: clamp(28px, 5vw, 52px);
+  margin-bottom: clamp(26px, 3.6vh, 42px);
   text-decoration: none;
 }
 
 .mello-auth-page__copy h1 {
   color: #102829;
-  font-size: clamp(42px, 5.4vw, 68px);
+  font-size: clamp(42px, 5vw, 64px);
   font-weight: 860;
-  letter-spacing: -0.032em;
-  line-height: 0.98;
+  letter-spacing: -0.03em;
+  line-height: 0.99;
   margin: 0;
   max-width: 11.5ch;
   text-wrap: balance;
@@ -187,18 +193,18 @@ const clerkAppearance = {
 
 .mello-auth-page__copy p {
   color: #53686b;
-  font-size: clamp(16px, 1.35vw, 19px);
+  font-size: clamp(16px, 1.24vw, 18px);
   font-weight: 560;
-  line-height: 1.55;
-  margin: 20px 0 0;
+  line-height: 1.48;
+  margin: 18px 0 0;
   max-width: 43ch;
 }
 
 .mello-auth-page__trust {
   display: grid;
   gap: 0;
-  margin-top: 34px;
-  max-width: 500px;
+  margin-top: clamp(24px, 3.6vh, 32px);
+  max-width: 492px;
 }
 
 .mello-auth-page__trust article {
@@ -207,7 +213,7 @@ const clerkAppearance = {
   display: grid;
   gap: 14px;
   grid-template-columns: 28px 1fr;
-  padding: 18px 0;
+  padding: 15px 0;
 }
 
 .mello-auth-page__trust article:last-child {
@@ -245,7 +251,7 @@ const clerkAppearance = {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 28px;
+  margin-top: clamp(20px, 3vh, 26px);
 }
 
 .mello-auth-page__switch a {
@@ -279,18 +285,18 @@ const clerkAppearance = {
   align-items: center;
   display: flex;
   justify-content: center;
-  min-height: 560px;
+  min-height: 0;
 }
 
 .mello-auth-page__card {
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 24px;
-  box-shadow: 0 32px 90px rgba(23, 49, 50, 0.14);
+  border-radius: 22px;
+  box-shadow: 0 26px 72px rgba(23, 49, 50, 0.13);
   display: grid;
-  gap: 18px;
+  gap: 14px;
   overflow: hidden;
-  padding: 18px;
-  width: min(100%, 452px);
+  padding: 14px;
+  width: min(100%, 434px);
 }
 
 .mello-auth-page__panel-head {
@@ -299,7 +305,7 @@ const clerkAppearance = {
   border-radius: 16px;
   display: flex;
   justify-content: space-between;
-  min-height: 58px;
+  min-height: 54px;
   padding: 0 16px;
 }
 
@@ -408,23 +414,26 @@ const clerkAppearance = {
 
 @media (max-width: 820px) {
   .mello-auth-page {
-    min-height: auto;
-    padding: 24px 14px 56px;
+    min-height: calc(100svh - 72px);
+    overflow: visible;
+    padding: 22px 14px 32px;
   }
 
   .mello-auth-page::before {
-    height: 42%;
+    height: 44%;
     inset: 0 0 auto;
+    transform: none;
     width: 100%;
   }
 
   .mello-auth-page__shell {
     gap: 28px;
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 
   .mello-auth-page__brand {
-    margin-bottom: 28px;
+    margin-bottom: 22px;
   }
 
   .mello-auth-page__copy h1 {
