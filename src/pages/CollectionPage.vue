@@ -12,6 +12,14 @@ const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false
+  },
+  purchaseEligibility: {
+    type: Object,
+    default: () => ({
+      allowed: true,
+      countryCode: null,
+      allowedCountries: ['US', 'BR']
+    })
   }
 })
 
@@ -19,6 +27,7 @@ const emit = defineEmits(['add-to-cart'])
 const productCount = computed(() => props.products.length)
 const { t } = useI18n({ useScope: 'global' })
 const featuredProduct = computed(() => props.products[0])
+const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
 const bundleProducts = computed(() => {
   const product = featuredProduct.value
   if (!product) return []
@@ -48,6 +57,8 @@ const productCountLabel = computed(() => {
 })
 
 function addProductToCart(product) {
+  if (!isPurchaseAllowed.value) return
+
   if (product.productUrl) {
     window.history.pushState({}, '', product.productUrl)
     window.dispatchEvent(new PopStateEvent('popstate'))
@@ -95,6 +106,7 @@ function addProductToCart(product) {
       <CatalogGrid
         v-else
         :products="bundleProducts"
+        :purchase-eligibility="purchaseEligibility"
         @add-to-cart="addProductToCart"
       />
     </div>

@@ -18,6 +18,7 @@ import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
 import PageLoader from './components/PageLoader.vue'
 import { createCheckoutSession } from './services/checkout'
+import { fetchCheckoutEligibility } from './services/geo'
 import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 import { translateProductTitle } from './i18n/productText'
@@ -42,6 +43,12 @@ const isCheckoutLoading = ref(false)
 const isCheckoutTransitionLoading = ref(false)
 const isCheckoutExitConfirmVisible = ref(false)
 const isPageLoading = ref(true)
+const purchaseEligibility = ref({
+  allowed: true,
+  countryCode: null,
+  allowedCountries: ['US', 'BR'],
+  reason: 'loading'
+})
 const { t, locale } = useI18n({ useScope: 'global' })
 let staticTranslationFrame = 0
 let staticTranslationTimeout = 0
@@ -70,6 +77,7 @@ const currentPage = computed(() => {
   return 'home'
 })
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
+const isPurchaseAllowed = computed(() => purchaseEligibility.value?.allowed !== false)
 const shouldConfirmCheckoutExit = computed(() => (
   currentPage.value === 'checkout' &&
   Boolean(cartItem.value) &&
@@ -152,6 +160,8 @@ async function navigate(event) {
 }
 
 function addToCart(payload = {}) {
+  if (!isPurchaseAllowed.value) return
+
   const product = payload.product || currentProduct.value
   if (!product) return
 
@@ -284,7 +294,7 @@ function hideCheckoutTransition() {
 }
 
 function navigateToCheckout() {
-  if (!cartItem.value) return
+  if (!cartItem.value || !isPurchaseAllowed.value) return
   showCheckoutTransition()
   closeCart()
   window.history.pushState({}, '', '/checkout')
@@ -385,7 +395,7 @@ function shouldClearCartAfterSuccessfulCheckout() {
 }
 
 async function goToStripeCheckout(options = {}) {
-  if (!cartItem.value || isCheckoutLoading.value) return
+  if (!cartItem.value || isCheckoutLoading.value || !isPurchaseAllowed.value) return
 
   isCheckoutLoading.value = true
   isCheckoutTransitionLoading.value = true
@@ -447,6 +457,17 @@ onMounted(async () => {
     cartItem.value = readSavedCartItem()
   }
   activeDiscount.value = readSavedDiscount()
+  try {
+    purchaseEligibility.value = await fetchCheckoutEligibility()
+  } catch (error) {
+    console.warn(error)
+    purchaseEligibility.value = {
+      allowed: false,
+      countryCode: null,
+      allowedCountries: ['US', 'BR'],
+      reason: 'country_unavailable'
+    }
+  }
   products.value = await fetchProducts({
     onUpdate: (freshProducts) => {
       products.value = freshProducts
@@ -547,7 +568,13 @@ watch(activeDiscount, persistDiscount, { deep: true })
       </Transition>
     </Teleport>
     <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
-    <ProductPage v-else-if="currentPage === 'product'" :product="currentProduct" :products="products" @add-to-cart="addToCart" />
+    <ProductPage
+      v-else-if="currentPage === 'product'"
+      :product="currentProduct"
+      :products="products"
+      :purchase-eligibility="purchaseEligibility"
+      @add-to-cart="addToCart"
+    />
     <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
     <AuthPage v-else-if="currentPage === 'sign-in' && clerkEnabled" mode="sign-in" />
     <AuthPage v-else-if="currentPage === 'sign-up' && clerkEnabled" mode="sign-up" />
@@ -568,7 +595,13 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <ContactPage v-else-if="currentPage === 'contact'" />
     <FaqPage v-else-if="currentPage === 'faq'" />
     <InstitutionalPage v-else-if="currentPage === 'institutional'" :route="route" />
-    <CollectionPage v-else :products="products" :is-loading="isLoading" @add-to-cart="addToCart" />
+    <CollectionPage
+      v-else
+      :products="products"
+      :is-loading="isLoading"
+      :purchase-eligibility="purchaseEligibility"
+      @add-to-cart="addToCart"
+    />
     <StoreFooter v-if="!['checkout', 'checkout-success'].includes(currentPage)" />
     <button
       v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'account-orders'].includes(currentPage)"
@@ -585,6 +618,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :item="cartItem"
       :discount="activeDiscount"
       :is-checkout-loading="isCheckoutLoading"
+      :purchase-eligibility="purchaseEligibility"
       @close="closeCart"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"

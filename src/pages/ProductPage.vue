@@ -13,6 +13,14 @@ const props = defineProps({
   products: {
     type: Array,
     default: () => []
+  },
+  purchaseEligibility: {
+    type: Object,
+    default: () => ({
+      allowed: true,
+      countryCode: null,
+      allowedCountries: ['US', 'BR']
+    })
   }
 })
 
@@ -93,6 +101,8 @@ const galleryTrackStyle = computed(() => ({
     : `translate3d(calc(-100% + ${galleryDragOffset.value}px), 0, 0)`,
 }))
 const selectedPack = computed(() => bundles.value[selectedBundle.value] || bundles.value[0])
+const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
+const canPurchaseSelectedPack = computed(() => Boolean(selectedPack.value?.isAvailable) && isPurchaseAllowed.value)
 const currentPrice = computed(() => formatMoney(selectedPack.value?.price ?? activeProduct.value.price))
 const compareAtPrice = computed(() => selectedPack.value?.compareAtPrice ? formatMoney(selectedPack.value.compareAtPrice) : '')
 const perBottlePrice = computed(() => {
@@ -381,10 +391,12 @@ function buildSelectedCartPayload() {
 }
 
 function submitCart() {
+  if (!canPurchaseSelectedPack.value) return
   emit('add-to-cart', buildSelectedCartPayload())
 }
 
 function buyNow() {
+  if (!canPurchaseSelectedPack.value) return
   emit('add-to-cart', {
     ...buildSelectedCartPayload(),
     checkoutNow: true
@@ -633,7 +645,11 @@ watch(isGalleryLightboxOpen, (isOpen) => {
               <button type="button" data-gg-qty-plus :aria-label="t('product.quantity.increase')" @click="quantity += 1">+</button>
             </div>
 
-            <button class="gg-button gg-button--wide" type="button" :disabled="!selectedPack?.isAvailable" @click="submitCart">{{ t('product.addToCart') }}</button>
+            <p v-if="!isPurchaseAllowed" class="gg-region-lock" role="status">
+              {{ t('product.regionLock') }}
+            </p>
+
+            <button class="gg-button gg-button--wide" type="button" :disabled="!canPurchaseSelectedPack" @click="submitCart">{{ t('product.addToCart') }}</button>
           </form>
 
           <div class="gg-post-cart-trust" :aria-label="t('product.trust.label')">
@@ -689,7 +705,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
           </div>
 
           <div class="gg-dynamic-checkout">
-            <button class="gg-button gg-button--blue gg-button--wide" type="button" :disabled="!selectedPack?.isAvailable" @click="buyNow">{{ t('product.buyNow') }}</button>
+            <button class="gg-button gg-button--blue gg-button--wide" type="button" :disabled="!canPurchaseSelectedPack" @click="buyNow">{{ t('product.buyNow') }}</button>
           </div>
 
           <p class="gg-purchase-note">{{ t('product.purchaseNote') }}</p>
@@ -1139,7 +1155,7 @@ watch(isGalleryLightboxOpen, (isOpen) => {
         <strong>{{ localizedProductTitle }}</strong>
         <span>{{ currentPrice }}</span>
       </div>
-      <button class="gg-button gg-button--blue" type="button" @click="submitCart">{{ t('product.addToCart') }}</button>
+      <button class="gg-button gg-button--blue" type="button" :disabled="!canPurchaseSelectedPack" @click="submitCart">{{ t('product.addToCart') }}</button>
     </div>
   </section>
 </template>

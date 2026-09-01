@@ -20,6 +20,14 @@ const props = defineProps({
   isCheckoutLoading: {
     type: Boolean,
     default: false
+  },
+  purchaseEligibility: {
+    type: Object,
+    default: () => ({
+      allowed: true,
+      countryCode: null,
+      allowedCountries: ['US', 'BR']
+    })
   }
 })
 
@@ -36,8 +44,12 @@ const shippingProtectionTotal = computed(() => props.item && isShippingProtectio
 const checkoutTotal = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingProtectionTotal.value)
 const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') : t('cart.manyItems', { count: quantity.value }))
 const localizedItemTitle = computed(() => translateProductTitle(props.item?.title, locale.value))
+const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
+const checkoutDisabled = computed(() => !props.item || props.isCheckoutLoading || !isPurchaseAllowed.value)
 
 function checkout() {
+  if (checkoutDisabled.value) return
+
   emit('checkout')
 }
 
@@ -144,7 +156,11 @@ onUnmounted(() => {
             <b>-{{ formatMoney(discountTotal) }}</b>
           </div>
 
-          <button class="mello-cart-checkout" type="button" :disabled="!item || isCheckoutLoading" @click="checkout">
+          <p v-if="item && !isPurchaseAllowed" class="mello-cart-region-lock" role="status">
+            {{ t('cart.regionLock') }}
+          </p>
+
+          <button class="mello-cart-checkout" type="button" :disabled="checkoutDisabled" @click="checkout">
             {{ isCheckoutLoading ? t('cart.checkoutLoading') : `${t('cart.checkout')} • ${formatMoney(checkoutTotal)}` }}
           </button>
 
@@ -620,6 +636,18 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 950;
   white-space: nowrap;
+}
+
+.mello-cart-region-lock {
+  background: #fff6df;
+  border: 1px solid rgba(199, 133, 0, 0.22);
+  border-radius: 6px;
+  color: #755000;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0 0 10px;
+  padding: 9px 11px;
 }
 
 .mello-cart-checkout {

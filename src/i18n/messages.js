@@ -171,6 +171,8 @@ export const messages = {
       addToCart: 'Agregar al carrito',
       buyNow: 'Buy Now',
       purchaseNote: 'Compra segura. Revisa siempre ingredientes, dosis y uso conforme a la etiqueta real del producto.',
+      regionLock: 'Por ahora, MelloRise solo acepta compras desde Estados Unidos. Brasil esta habilitado temporalmente durante el desarrollo.',
+      regionShortLock: 'No disponible en tu region',
       trust: {
         label: 'Informacion de confianza y entrega',
         freeShipping: 'Free Shipping',
@@ -507,6 +509,7 @@ export const messages = {
       subtotal: 'Subtotal',
       checkout: 'Check out',
       checkoutLoading: 'Preparando checkout...',
+      regionLock: 'Checkout disponible solo para Estados Unidos por ahora. Brasil esta habilitado temporalmente durante el desarrollo.',
       shippingProtection: {
         title: 'Protección de envío',
         text: 'Protege tu pedido contra daños, pérdidas o robo durante el envío.',
@@ -830,6 +833,8 @@ export const messages = {
       addToCart: 'Add to cart',
       buyNow: 'Buy Now',
       purchaseNote: 'Secure purchase. Always review ingredients, dosage, and use according to the real product label.',
+      regionLock: 'MelloRise checkout is currently available only in the United States. Brazil is enabled temporarily during development.',
+      regionShortLock: 'Not available in your region',
       trust: {
         label: 'Trust and delivery information',
         freeShipping: 'Free Shipping',
@@ -1166,6 +1171,7 @@ export const messages = {
       subtotal: 'Subtotal',
       checkout: 'Check out',
       checkoutLoading: 'Preparing checkout...',
+      regionLock: 'Checkout is currently available only in the United States. Brazil is enabled temporarily during development.',
       shippingProtection: {
         title: 'Shipping protection',
         text: 'Protect your order against damage, loss, or theft during shipping.',

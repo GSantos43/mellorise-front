@@ -5,6 +5,14 @@ defineProps({
   products: {
     type: Array,
     default: () => []
+  },
+  purchaseEligibility: {
+    type: Object,
+    default: () => ({
+      allowed: true,
+      countryCode: null,
+      allowedCountries: ['US', 'BR']
+    })
   }
 })
 
@@ -22,6 +30,7 @@ const emit = defineEmits(['add-to-cart'])
       :key="product.id"
       :product="product"
       :index="index"
+      :purchase-eligibility="purchaseEligibility"
       @add-to-cart="emit('add-to-cart', $event)"
     />
   </ul>

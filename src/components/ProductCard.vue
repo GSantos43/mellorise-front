@@ -12,6 +12,14 @@ const props = defineProps({
   index: {
     type: Number,
     default: 0
+  },
+  purchaseEligibility: {
+    type: Object,
+    default: () => ({
+      allowed: true,
+      countryCode: null,
+      allowedCountries: ['US', 'BR']
+    })
   }
 })
 
@@ -24,8 +32,14 @@ const productImage = computed(() => props.product.image || props.product.images?
 const localizedProductTitle = computed(() => (
   props.product.bundleCard ? props.product.title : translateProductTitle(props.product.title, locale.value)
 ))
+const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
+const actionLabel = computed(() => (
+  isPurchaseAllowed.value ? (props.product.actionLabel || t('catalog.bundleAction')) : t('product.regionShortLock')
+))
 
 function addToCart() {
+  if (!isPurchaseAllowed.value) return
+
   emit('add-to-cart', props.product)
 }
 </script>
@@ -107,10 +121,13 @@ function addToCart() {
             </div>
 
             <div class="mello-product-card__actions">
-              <a v-if="product.bundleCard" class="mello-product-card__button" :href="productUrl">
-                {{ product.actionLabel || t('catalog.bundleAction') }}
+              <a v-if="product.bundleCard && isPurchaseAllowed" class="mello-product-card__button" :href="productUrl">
+                {{ actionLabel }}
               </a>
-              <button v-else class="mello-product-card__button" type="button" @click="addToCart">
+              <span v-else-if="product.bundleCard" class="mello-product-card__button is-disabled" aria-disabled="true">
+                {{ actionLabel }}
+              </span>
+              <button v-else class="mello-product-card__button" type="button" :disabled="!isPurchaseAllowed" @click="addToCart">
                 {{ t('product.addToCart') }}
               </button>
             </div>
@@ -381,6 +398,16 @@ function addToCart() {
   background: #5a9091;
   box-shadow: 0 12px 26px rgba(90, 144, 145, 0.22);
   transform: translateY(-1px);
+}
+
+.mello-product-card__button:disabled,
+.mello-product-card__button.is-disabled {
+  background: #d8e1e1;
+  box-shadow: none;
+  color: #687777;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
 }
 
 .mello-product-card__button:focus-visible {
