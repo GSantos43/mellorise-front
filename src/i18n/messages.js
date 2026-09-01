@@ -469,38 +469,40 @@ export const messages = {
     tracking: {
       intro: 'Seguimiento de pedido',
       title: 'Sigue tu pedido',
-      subtitle: 'Ingresa el email usado en la compra y tu numero de pedido o codigo de rastreo. Mostramos solo la informacion necesaria para proteger tus datos.',
+      subtitle: 'Ingresa el email usado en la compra y tu número de pedido o código de rastreo. Mostramos solo la información necesaria para proteger tus datos.',
       form: {
         title: 'Busca tu pedido',
         text: 'No necesitas crear una cuenta. Usamos estos datos para confirmar que el pedido te pertenece.',
         email: 'Email de compra',
-        emailPlaceholder: 'Correo electronico',
-        identifier: 'Numero de pedido o tracking',
+        emailPlaceholder: 'Correo electrónico',
+        identifier: 'Número de pedido o código de rastreo',
         identifierPlaceholder: 'Ej: 1042 o WIIO123456',
         submit: 'Ver estado',
         loading: 'Buscando...',
-        error: 'No encontramos un pedido con esos datos. Revisa el email y el numero e intenta de nuevo.'
+        error: 'No encontramos un pedido con esos datos. Revisa el email y el número e intenta de nuevo.'
       },
       empty: {
-        title: 'Tu estado aparecera aqui',
-        text: 'Cuando la Wiio envie el codigo de rastreo, tambien lo enviaremos por email y lo mostraremos en esta pagina.'
+        title: 'Tu estado aparecerá aquí',
+        text: 'Cuando Wiio envíe el código de rastreo, también lo enviaremos por email y lo mostraremos en esta página.',
+        codeTitle: 'Informa el código de rastreo para localizar tu entrega',
+        codeText: 'Si aún no tienes el código, vuelve cuando lo recibas por email. Así protegemos los datos del pedido sin exigir una cuenta.'
       },
       result: {
         order: 'Pedido',
-        trackingCode: 'Codigo de rastreo',
+        trackingCode: 'Código de rastreo',
         openCarrier: 'Abrir rastreo',
-        pendingTitle: 'Aun estamos preparando el envio',
-        pendingText: 'Tu pago fue recibido. El codigo de rastreo aparecera aqui cuando el pedido sea despachado.'
+        pendingTitle: 'Aún estamos preparando el envío',
+        pendingText: 'Tu pago fue recibido. El código de rastreo aparecerá aquí cuando el pedido sea despachado.'
       },
       steps: {
         confirmed: 'Pedido confirmado',
         confirmedText: 'Recibimos tu pedido y lo guardamos en WooCommerce.',
-        preparing: 'Preparacion',
+        preparing: 'Preparación',
         preparingText: 'Estamos preparando los productos y datos para fulfillment.',
         shipped: 'Enviado',
-        shippedText: 'El codigo de rastreo ya fue generado por fulfillment.',
+        shippedText: 'El código de rastreo ya fue generado por fulfillment.',
         delivered: 'Entregado',
-        deliveredText: 'El pedido llego al destino.'
+        deliveredText: 'El pedido llegó al destino.'
       }
     },
     checkout: {
@@ -1070,7 +1072,9 @@ export const messages = {
       },
       empty: {
         title: 'Your status will appear here',
-        text: 'When Wiio sends the tracking code, we will email it and show it on this page.'
+        text: 'When Wiio sends the tracking code, we will email it and show it on this page.',
+        codeTitle: 'Enter the tracking code to locate your delivery',
+        codeText: 'If you do not have the code yet, come back when it arrives by email. This protects order details without requiring an account.'
       },
       result: {
         order: 'Order',

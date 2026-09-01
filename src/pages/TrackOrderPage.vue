@@ -142,10 +142,21 @@ onMounted(() => {
           </div>
 
           <div v-else class="mello-track__empty">
-            <img src="/assets/frasco.png" alt="" loading="lazy">
-            <div>
+            <div class="mello-track__empty-head">
               <h2>{{ t('tracking.empty.title') }}</h2>
               <p>{{ t('tracking.empty.text') }}</p>
+            </div>
+
+            <div class="mello-track__empty-body">
+              <img src="/assets/frasco.png" alt="" loading="lazy">
+              <div class="mello-track__empty-timeline" aria-hidden="true">
+                <span></span>
+                <span></span>
+              </div>
+              <div class="mello-track__empty-copy">
+                <strong>{{ t('tracking.empty.codeTitle') }}</strong>
+                <p>{{ t('tracking.empty.codeText') }}</p>
+              </div>
             </div>
           </div>
         </section>
@@ -234,7 +245,7 @@ onMounted(() => {
 }
 
 .mello-track__lookup h2,
-.mello-track__empty h2 {
+.mello-track__empty-head h2 {
   font-size: 28px;
   font-weight: 900;
   letter-spacing: -0.02em;
@@ -243,7 +254,8 @@ onMounted(() => {
 }
 
 .mello-track__lookup p,
-.mello-track__empty p {
+.mello-track__empty-head p,
+.mello-track__empty-copy p {
   color: #5f7073;
   font-size: 15px;
   font-weight: 560;
@@ -479,20 +491,72 @@ onMounted(() => {
 }
 
 .mello-track__empty {
-  align-items: center;
   display: grid;
-  gap: 20px;
-  grid-template-columns: 120px 1fr;
+  gap: 24px;
   min-height: 300px;
   padding: clamp(22px, 3vw, 34px);
+}
+
+.mello-track__empty-body {
+  align-items: center;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 104px 36px 1fr;
 }
 
 .mello-track__empty img {
   display: block;
   filter: drop-shadow(0 20px 34px rgba(23, 49, 50, 0.16));
   height: auto;
-  max-width: 120px;
+  max-width: 104px;
   width: 100%;
+}
+
+.mello-track__empty-timeline {
+  align-items: center;
+  display: grid;
+  gap: 0;
+  justify-items: center;
+  min-height: 122px;
+  position: relative;
+}
+
+.mello-track__empty-timeline::before {
+  background: linear-gradient(180deg, rgba(119, 205, 250, 0.72), rgba(49, 214, 176, 0.72));
+  bottom: 22px;
+  content: "";
+  position: absolute;
+  top: 22px;
+  width: 2px;
+}
+
+.mello-track__empty-timeline span {
+  background: #ffffff;
+  border: 3px solid #77cdfa;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(119, 205, 250, 0.14);
+  height: 18px;
+  position: relative;
+  width: 18px;
+  z-index: 1;
+}
+
+.mello-track__empty-timeline span:last-child {
+  border-color: #31d6b0;
+  box-shadow: 0 0 0 6px rgba(49, 214, 176, 0.15);
+}
+
+.mello-track__empty-copy strong {
+  color: #102829;
+  display: block;
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 930;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.mello-track__empty-copy p {
+  max-width: 38ch;
 }
 
 @keyframes mello-track-spin {
@@ -522,19 +586,39 @@ onMounted(() => {
     margin-top: 20px;
   }
 
-  .mello-track__grid,
-  .mello-track__empty {
+  .mello-track__grid {
     grid-template-columns: 1fr;
   }
 
   .mello-track__empty {
+    gap: 16px;
     min-height: 0;
-    text-align: center;
+  }
+
+  .mello-track__empty-body {
+    grid-template-columns: 72px 24px 1fr;
+    gap: 12px;
   }
 
   .mello-track__empty img {
-    justify-self: center;
-    max-width: 96px;
+    max-width: 72px;
+  }
+
+  .mello-track__empty-timeline {
+    min-height: 102px;
+  }
+
+  .mello-track__empty-head h2 {
+    font-size: 26px;
+  }
+
+  .mello-track__empty-head p,
+  .mello-track__empty-copy p {
+    font-size: 14px;
+  }
+
+  .mello-track__empty-copy strong {
+    font-size: 20px;
   }
 
   .mello-track__result-head {
