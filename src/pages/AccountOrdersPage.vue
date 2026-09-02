@@ -3,6 +3,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useAuth, useClerk } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import { fetchAccountOrders } from '../services/account'
+import { mockPaidAccountOrder } from '../mocks/accountOrder'
+
+const MOCK_ORDER_PREVIEW_KEY = 'mellorise:show-mock-order'
 
 const { t } = useI18n({ useScope: 'global' })
 const clerk = useClerk()
@@ -10,11 +13,28 @@ const { isLoaded, isSignedIn, getToken } = useAuth()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const orders = ref([])
+const showMockOrder = ref(false)
+
+const displayedOrders = computed(() => {
+  if (!showMockOrder.value) return orders.value
+
+  const hasMockOrder = orders.value.some((order) => order.id === mockPaidAccountOrder.id)
+  return hasMockOrder ? orders.value : [mockPaidAccountOrder, ...orders.value]
+})
 
 const orderCountLabel = computed(() => {
-  if (!orders.value.length) return ''
-  return orders.value.length === 1 ? t('account.oneOrder') : t('account.manyOrders', { count: orders.value.length })
+  if (!displayedOrders.value.length) return ''
+  return displayedOrders.value.length === 1 ? t('account.oneOrder') : t('account.manyOrders', { count: displayedOrders.value.length })
 })
+
+function hydrateMockOrderPreview() {
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('mock') === '1') {
+    window.localStorage.setItem(MOCK_ORDER_PREVIEW_KEY, '1')
+  }
+
+  showMockOrder.value = window.localStorage.getItem(MOCK_ORDER_PREVIEW_KEY) === '1'
+}
 
 async function loadOrders() {
   if (!isLoaded.value || !isSignedIn.value || isLoading.value) return
@@ -64,7 +84,10 @@ function getOrderHref(order) {
   return `/account/orders/${encodeURIComponent(order.id)}`
 }
 
-onMounted(loadOrders)
+onMounted(() => {
+  hydrateMockOrderPreview()
+  loadOrders()
+})
 watch([isLoaded, isSignedIn], loadOrders)
 </script>
 
@@ -111,12 +134,12 @@ watch([isLoaded, isSignedIn], loadOrders)
           <button type="button" @click="loadOrders">{{ t('account.tryAgain') }}</button>
         </div>
 
-        <div v-else-if="!orders.length" class="mello-account__empty">
+        <div v-else-if="!displayedOrders.length" class="mello-account__empty">
           <h2>{{ t('account.emptyTitle') }}</h2>
         </div>
 
         <div v-else class="mello-account__orders">
-          <a v-for="order in orders" :key="order.id" class="mello-account-order" :href="getOrderHref(order)">
+          <a v-for="order in displayedOrders" :key="order.id" class="mello-account-order" :href="getOrderHref(order)">
             <header class="mello-account-order__head">
               <div>
                 <span>{{ t('account.order') }} #{{ order.number }}</span>
