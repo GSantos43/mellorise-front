@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useAuth, useClerk } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import { fetchAccountOrder } from '../services/account'
+import { mockPaidAccountOrder } from '../mocks/accountOrder'
 
 const props = defineProps({
   orderId: {
@@ -29,6 +30,12 @@ const hasDiscount = computed(() => Number(order.value?.discountTotal || 0) > 0)
 
 async function loadOrder() {
   if (!isLoaded.value || !isSignedIn.value || isLoading.value || !props.orderId) return
+
+  if (props.orderId === 'mock-paid') {
+    order.value = mockPaidAccountOrder
+    errorMessage.value = ''
+    return
+  }
 
   isLoading.value = true
   errorMessage.value = ''

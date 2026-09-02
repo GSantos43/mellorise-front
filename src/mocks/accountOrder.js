@@ -1,0 +1,45 @@
+export const mockPaidAccountOrder = {
+  id: 'mock-paid',
+  number: 'MOCK-1027',
+  status: 'processing',
+  statusLabel: 'Preparing order',
+  subtotal: '89.97',
+  discountTotal: '9.00',
+  shippingTotal: '0.00',
+  total: '80.97',
+  currency: 'USD',
+  placedAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  coupon: {
+    code: 'WELCOME10',
+    discount: '9.00',
+  },
+  promotion: {
+    code: 'BUY_2_GET_1',
+    label: 'Buy 2 Get 1',
+    paidQuantity: '2',
+    freeQuantity: '1',
+    deliveredQuantity: '3',
+  },
+  tracking: {
+    code: 'WIIO-MOCK-784512',
+    carrier: 'Wiio fulfillment',
+    url: 'https://www.17track.net/en',
+    status: 'shipped',
+    updatedAt: new Date().toISOString(),
+  },
+  items: [
+    {
+      name: 'MelloRise Heightener Gummies',
+      quantity: 2,
+      total: '89.97',
+      image: '/assets/frasco.png',
+    },
+    {
+      name: 'Free bonus bottle',
+      quantity: 1,
+      total: '0.00',
+      image: '/assets/frasco.png',
+    },
+  ],
+}
