@@ -181,10 +181,10 @@ onUnmounted(() => {
 }
 
 .mello-cart-drawer {
-  --mcart-ink: #071415;
+  --mcart-ink: var(--mello-ink);
   --mcart-teal: #5f9690;
-  --mcart-line: rgba(7, 20, 21, 0.14);
-  --mcart-muted: #667374;
+  --mcart-line: rgba(16, 40, 41, 0.12);
+  --mcart-muted: var(--mello-muted);
   font-family: var(--font-body-family);
   inset: 0;
   opacity: 0;
@@ -251,8 +251,9 @@ onUnmounted(() => {
 
 .mello-cart-drawer__header h2 {
   color: #071415;
-  font-size: 31px;
-  font-weight: 900;
+  font-family: var(--font-heading-family);
+  font-size: 29px;
+  font-weight: 740;
   line-height: 1.08;
   margin: 0;
 }
@@ -294,7 +295,7 @@ onUnmounted(() => {
   color: #ffffff;
   display: flex;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 720;
   justify-content: center;
   min-height: 48px;
   text-align: center;
@@ -341,7 +342,8 @@ onUnmounted(() => {
   color: #071415;
   display: block;
   font-size: 18px;
-  font-weight: 900;
+  font-family: var(--font-heading-family);
+  font-weight: 700;
   line-height: 1.04;
   max-width: 236px;
   text-decoration: none;
@@ -392,7 +394,7 @@ onUnmounted(() => {
 .mello-cart-quantity span {
   color: #071415;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -419,7 +421,7 @@ onUnmounted(() => {
 .mello-cart-item__total {
   color: #071415;
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 760;
   line-height: 1.1;
   position: absolute;
   right: 0;
@@ -442,13 +444,13 @@ onUnmounted(() => {
 
 .mello-cart-drawer__empty p {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 680;
   margin: 0;
 }
 
 .mello-cart-drawer__empty a {
   color: var(--mcart-teal);
-  font-weight: 900;
+  font-weight: 720;
   text-decoration: none;
 }
 
@@ -511,7 +513,7 @@ onUnmounted(() => {
   color: #071415;
   display: flex;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 720;
   justify-content: space-between;
   line-height: 1.1;
   padding: 17px 0 15px;
@@ -519,13 +521,14 @@ onUnmounted(() => {
 
 .mello-cart-subtotal strong {
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 760;
 }
 
 .mello-shipping-protection {
   align-items: center;
-  background: #f4f4f4;
-  border-radius: 0;
+  background: #f6fbfb;
+  border: 1px solid rgba(16, 40, 41, 0.07);
+  border-radius: 12px;
   display: grid;
   gap: 9px;
   grid-template-columns: 62px minmax(0, 1fr) 42px;
@@ -558,7 +561,7 @@ onUnmounted(() => {
 .mello-shipping-protection__heading span {
   color: #050505;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 720;
   white-space: nowrap;
 }
 
@@ -618,7 +621,7 @@ onUnmounted(() => {
   color: #12312a;
   display: flex;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 680;
   gap: 12px;
   justify-content: space-between;
   margin: 0 -7px 12px;
@@ -628,13 +631,13 @@ onUnmounted(() => {
 
 .mello-cart-discount strong {
   color: #006f12;
-  font-weight: 950;
+  font-weight: 760;
 }
 
 .mello-cart-discount b {
   color: #006f12;
   font-size: 14px;
-  font-weight: 950;
+  font-weight: 760;
   white-space: nowrap;
 }
 
@@ -644,7 +647,7 @@ onUnmounted(() => {
   border-radius: 6px;
   color: #755000;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 680;
   line-height: 1.35;
   margin: 0 0 10px;
   padding: 9px 11px;
@@ -655,13 +658,13 @@ onUnmounted(() => {
   appearance: none;
   background: #006f12;
   border: 0;
-  border-radius: 4px;
+  border-radius: 12px;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 720;
   justify-content: center;
   letter-spacing: 0;
   line-height: 1;
@@ -692,7 +695,7 @@ onUnmounted(() => {
   color: #003087;
   display: inline-flex;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 760;
   height: 24px;
   justify-content: center;
   width: 38px;

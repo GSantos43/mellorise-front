@@ -230,14 +230,12 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 
 <style>
 .mello-order-detail {
-  background:
-    radial-gradient(circle at 12% 10%, rgba(119, 205, 250, 0.18), transparent 30%),
-    linear-gradient(180deg, #f7fcff 0%, #f7fbfa 48%, #fffaf1 100%);
-  color: #102829;
+  background: linear-gradient(180deg, #f6fcff 0%, #f8fbf8 52%, #fffaf2 100%);
+  color: var(--mello-ink);
   font-family: var(--font-body-family);
   min-height: calc(100vh - 78px);
   min-height: calc(100svh - 78px);
-  padding: clamp(24px, 4vw, 48px) 20px clamp(42px, 6vw, 72px);
+  padding: clamp(22px, 4vw, 44px) 20px clamp(38px, 6vw, 68px);
 }
 
 .mello-order-detail * {
@@ -246,15 +244,16 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 }
 
 .mello-order-detail__card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 18px 54px rgba(23, 49, 50, 0.08);
+  background: var(--mello-surface);
+  border: 1px solid var(--mello-line);
+  border-radius: var(--mello-radius);
+  box-shadow: var(--mello-shadow);
   display: grid;
-  gap: 24px;
+  gap: 20px;
   margin: 0 auto;
-  max-width: 1040px;
-  min-height: min(520px, calc(100svh - 150px));
-  padding: clamp(22px, 3.4vw, 40px);
+  max-width: 980px;
+  min-height: min(460px, calc(100svh - 150px));
+  padding: clamp(20px, 3vw, 34px);
 }
 
 .mello-order-detail__back,
@@ -268,7 +267,7 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
-  font: 900 14px/1 var(--font-body-family);
+  font: 720 14px/1 var(--font-body-family);
   justify-content: center;
   justify-self: start;
   min-height: 44px;
@@ -278,8 +277,8 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 }
 
 .mello-order-detail__back {
-  background: #eff9ff;
-  color: #173132;
+  background: var(--mello-blue-soft);
+  color: var(--mello-ink);
 }
 
 .mello-order-detail__back:hover,
@@ -288,8 +287,8 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 .mello-order-detail__state button:focus-visible,
 .mello-order-detail__tracking a:hover,
 .mello-order-detail__tracking a:focus-visible {
-  background: #102829;
-  box-shadow: 0 16px 36px rgba(23, 49, 50, 0.16);
+  background: var(--mello-ink);
+  box-shadow: 0 14px 30px rgba(16, 40, 41, 0.14);
   color: #ffffff;
   outline: 0;
   transform: translateY(-1px);
@@ -308,28 +307,29 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
   color: #5f7073;
   display: block;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.2;
   text-transform: uppercase;
 }
 
 .mello-order-detail__header h1 {
-  color: #102829;
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  color: var(--mello-ink);
+  font-family: var(--font-heading-family);
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 760;
+  letter-spacing: -0.018em;
+  line-height: 1.03;
   margin: 4px 0 0;
 }
 
 .mello-order-detail__header > strong {
-  background: #e7fbf6;
+  background: var(--mello-mint-soft);
   border-radius: 999px;
   color: #0c6757;
   flex: 0 0 auto;
   font-size: 14px;
-  font-weight: 900;
-  padding: 12px 16px;
+  font-weight: 760;
+  padding: 10px 15px;
 }
 
 .mello-order-detail__summary,
@@ -342,17 +342,18 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 .mello-order-detail__summary div,
 .mello-order-detail__panel,
 .mello-order-detail__tracking {
-  background: #f7fbfb;
-  border-radius: 14px;
-  padding: 18px;
+  background: var(--mello-panel);
+  border: 1px solid rgba(16, 40, 41, 0.055);
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .mello-order-detail__summary strong {
   display: block;
   font-size: 18px;
-  font-weight: 920;
+  font-weight: 760;
   line-height: 1.2;
-  margin-top: 8px;
+  margin-top: 6px;
   overflow-wrap: anywhere;
 }
 
@@ -366,10 +367,11 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 .mello-order-detail__panel h2,
 .mello-order-detail__tracking h2 {
   color: #102829;
-  font-size: 22px;
-  font-weight: 930;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-family: var(--font-heading-family);
+  font-size: 21px;
+  font-weight: 720;
+  letter-spacing: -0.012em;
+  line-height: 1.12;
   margin: 0;
 }
 
@@ -380,7 +382,8 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 
 .mello-order-detail__item {
   align-items: center;
-  background: #f6fbfb;
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.07);
   border-radius: 12px;
   display: grid;
   gap: 12px;
@@ -396,7 +399,7 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 
 .mello-order-detail__item p {
   font-size: 15px;
-  font-weight: 850;
+  font-weight: 720;
   line-height: 1.2;
   margin: 0;
 }
@@ -405,13 +408,13 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
   color: #5f7073;
   display: block;
   font-size: 14px;
-  font-weight: 850;
+  font-weight: 650;
   margin-top: 4px;
 }
 
 .mello-order-detail__item strong {
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 760;
   text-align: right;
 }
 
@@ -435,12 +438,12 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 .mello-order-detail__panel dt {
   color: #5f7073;
   font-size: 14px;
-  font-weight: 760;
+  font-weight: 650;
 }
 
 .mello-order-detail__panel dd {
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 760;
   margin: 0;
   overflow-wrap: anywhere;
   text-align: right;
@@ -455,7 +458,7 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 }
 
 .mello-order-detail__tracking.is-ready {
-  background: #e7fbf6;
+  background: var(--mello-mint-soft);
 }
 
 .mello-order-detail__tracking h2 {
@@ -466,7 +469,7 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 .mello-order-detail__tracking p {
   color: #53686b;
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 520;
   line-height: 1.4;
   margin: 8px 0 0;
 }
@@ -481,10 +484,10 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 }
 
 .mello-order-detail__state h1 {
-  color: #102829;
+  color: var(--mello-ink);
   font-size: clamp(28px, 4vw, 42px);
-  font-weight: 930;
-  letter-spacing: -0.02em;
+  font-weight: 760;
+  letter-spacing: -0.012em;
   line-height: 1.1;
   margin: 0;
 }
@@ -492,7 +495,7 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 .mello-order-detail__state p {
   color: #53686b;
   font-size: 16px;
-  font-weight: 580;
+  font-weight: 500;
   line-height: 1.5;
   margin: 12px auto 0;
   max-width: 45ch;
@@ -525,13 +528,13 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 @media (max-width: 820px) {
   .mello-order-detail {
     min-height: calc(100svh - 74px);
-    padding: 16px 12px 44px;
+    padding: 14px 10px 34px;
   }
 
   .mello-order-detail__card {
-    gap: 18px;
+    gap: 14px;
     min-height: 0;
-    padding: 22px 18px;
+    padding: 18px;
   }
 
   .mello-order-detail__header,
@@ -539,8 +542,40 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
     display: grid;
   }
 
-  .mello-order-detail__summary,
+  .mello-order-detail__header {
+    gap: 12px;
+  }
+
+  .mello-order-detail__header h1 {
+    font-size: 30px;
+    max-width: 11ch;
+  }
+
+  .mello-order-detail__header > strong {
+    justify-self: start;
+    padding: 9px 13px;
+  }
+
+  .mello-order-detail__summary {
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mello-order-detail__summary div {
+    min-height: 74px;
+    padding: 13px 14px;
+  }
+
+  .mello-order-detail__summary span {
+    font-size: 10px;
+  }
+
+  .mello-order-detail__summary strong {
+    font-size: 16px;
+  }
+
   .mello-order-detail__grid {
+    gap: 10px;
     grid-template-columns: 1fr;
   }
 
@@ -560,6 +595,16 @@ watch([isLoaded, isSignedIn, () => props.orderId], loadOrder)
 
   .mello-order-detail__tracking a {
     justify-self: start;
+  }
+}
+
+@media (max-width: 380px) {
+  .mello-order-detail__card {
+    padding: 16px;
+  }
+
+  .mello-order-detail__summary {
+    grid-template-columns: 1fr;
   }
 }
 </style>

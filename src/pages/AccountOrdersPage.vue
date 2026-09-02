@@ -179,14 +179,12 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 <style>
 .mello-account {
-  background:
-    radial-gradient(circle at 14% 16%, rgba(119, 205, 250, 0.18), transparent 30%),
-    linear-gradient(180deg, #f7fcff 0%, #f7fbfa 48%, #fffaf1 100%);
-  color: #102829;
+  background: linear-gradient(180deg, #f6fcff 0%, #f8fbf8 52%, #fffaf2 100%);
+  color: var(--mello-ink);
   font-family: var(--font-body-family);
   min-height: calc(100vh - 78px);
   min-height: calc(100svh - 78px);
-  padding: clamp(24px, 4vw, 48px) 20px clamp(40px, 6vw, 72px);
+  padding: clamp(22px, 4vw, 44px) 20px clamp(38px, 6vw, 68px);
 }
 
 .mello-account * {
@@ -195,16 +193,17 @@ watch([isLoaded, isSignedIn], loadOrders)
 }
 
 .mello-account__card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 18px 54px rgba(23, 49, 50, 0.08);
+  background: var(--mello-surface);
+  border: 1px solid var(--mello-line);
+  border-radius: var(--mello-radius);
+  box-shadow: var(--mello-shadow);
   display: grid;
-  gap: clamp(18px, 2.4vw, 28px);
+  gap: clamp(16px, 2.2vw, 24px);
   margin: 0 auto;
-  max-width: 1040px;
-  min-height: min(520px, calc(100svh - 150px));
+  max-width: 980px;
+  min-height: min(430px, calc(100svh - 150px));
   overflow: hidden;
-  padding: clamp(24px, 3.4vw, 40px);
+  padding: clamp(20px, 3vw, 34px);
 }
 
 .mello-account__header {
@@ -219,24 +218,25 @@ watch([isLoaded, isSignedIn], loadOrders)
   color: #5f7073;
   display: block;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.2;
   text-transform: uppercase;
 }
 
 .mello-account__header h1 {
-  color: #102829;
-  font-size: clamp(34px, 4.4vw, 56px);
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  color: var(--mello-ink);
+  font-family: var(--font-heading-family);
+  font-size: clamp(32px, 4.2vw, 50px);
+  font-weight: 760;
+  letter-spacing: -0.018em;
+  line-height: 1.03;
   margin: 0;
 }
 
 .mello-account__header p {
   color: #53686b;
   font-size: 14px;
-  font-weight: 720;
+  font-weight: 520;
   line-height: 1.35;
   margin: 8px 0 0;
 }
@@ -253,7 +253,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
-  font: 900 14px/1 var(--font-body-family);
+  font: 720 14px/1 var(--font-body-family);
   justify-content: center;
   min-height: 46px;
   padding: 0 20px;
@@ -281,7 +281,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account-order:hover .mello-account-order__tracking span:last-child,
 .mello-account-order:focus-visible .mello-account-order__tracking span:last-child {
   background: #102829;
-  box-shadow: 0 16px 36px rgba(23, 49, 50, 0.18);
+  box-shadow: 0 14px 30px rgba(16, 40, 41, 0.14);
   color: #ffffff;
   outline: 0;
   transform: translateY(-1px);
@@ -298,7 +298,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   display: grid;
   justify-items: center;
   min-height: 220px;
-  padding: clamp(24px, 4vw, 46px) 18px;
+  padding: clamp(22px, 4vw, 40px) 18px;
   text-align: center;
 }
 
@@ -308,10 +308,11 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account__state h2,
 .mello-account__empty h2 {
-  color: #102829;
+  color: var(--mello-ink);
   font-size: clamp(24px, 3vw, 34px);
-  font-weight: 930;
-  letter-spacing: -0.02em;
+  font-family: var(--font-heading-family);
+  font-weight: 760;
+  letter-spacing: -0.012em;
   line-height: 1.12;
   margin: 0;
   max-width: 18ch;
@@ -321,7 +322,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account__empty p {
   color: #53686b;
   font-size: 16px;
-  font-weight: 580;
+  font-weight: 500;
   line-height: 1.5;
   margin: 12px auto 0;
   max-width: 45ch;
@@ -355,8 +356,8 @@ watch([isLoaded, isSignedIn], loadOrders)
   border-bottom: 1px solid rgba(23, 49, 50, 0.1);
   color: inherit;
   display: grid;
-  gap: 16px;
-  padding: 24px 0;
+  gap: 14px;
+  padding: 20px 0;
   text-decoration: none;
   transition: background 180ms ease, box-shadow 180ms ease;
 }
@@ -364,7 +365,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account-order:hover,
 .mello-account-order:focus-visible {
   background: #f7fbfb;
-  box-shadow: 0 0 0 14px #f7fbfb;
+  box-shadow: 0 0 0 12px #f7fbfb;
   outline: 0;
 }
 
@@ -380,12 +381,21 @@ watch([isLoaded, isSignedIn], loadOrders)
   justify-content: space-between;
 }
 
+.mello-account-order__head > div {
+  min-width: 0;
+}
+
+.mello-account-order__head > div:last-child {
+  flex: 0 0 auto;
+}
+
 .mello-account-order__head strong {
   display: block;
-  font-size: 24px;
-  font-weight: 930;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
+  font-family: var(--font-heading-family);
+  font-size: 22px;
+  font-weight: 760;
+  letter-spacing: -0.012em;
+  line-height: 1.1;
   margin-top: 4px;
 }
 
@@ -393,7 +403,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   color: #102829;
   display: block;
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 760;
   text-align: right;
 }
 
@@ -401,7 +411,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   color: #53686b;
   display: block;
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 520;
   margin-top: 3px;
 }
 
@@ -412,7 +422,8 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account-order__items div {
   align-items: center;
-  background: #f6fbfb;
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.07);
   border-radius: 12px;
   display: grid;
   gap: 12px;
@@ -428,7 +439,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account-order__items p {
   font-size: 15px;
-  font-weight: 820;
+  font-weight: 720;
   line-height: 1.2;
   margin: 0;
 }
@@ -436,7 +447,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account-order__items span {
   color: #5f7073;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .mello-account-order__tracking,
@@ -447,7 +458,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account-order__tracking {
   align-items: center;
-  background: #e7fbf6;
+  background: var(--mello-mint-soft);
   display: flex;
   gap: 16px;
   justify-content: space-between;
@@ -457,7 +468,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   color: #102829;
   display: block;
   font-size: 22px;
-  font-weight: 930;
+  font-weight: 760;
   margin-top: 4px;
 }
 
@@ -470,7 +481,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   background: #fff8eb;
   color: #5f7073;
   font-size: 15px;
-  font-weight: 760;
+  font-weight: 620;
 }
 
 @keyframes mello-account-spin {
@@ -482,14 +493,14 @@ watch([isLoaded, isSignedIn], loadOrders)
 @media (max-width: 820px) {
   .mello-account {
     min-height: calc(100svh - 74px);
-    padding: 16px 12px 44px;
+    padding: 14px 10px 34px;
   }
 
   .mello-account__card {
     border-radius: 16px;
-    gap: 18px;
+    gap: 14px;
     min-height: 0;
-    padding: 22px 18px;
+    padding: 18px;
   }
 
   .mello-account__header {
@@ -498,7 +509,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   }
 
   .mello-account__header h1 {
-    font-size: clamp(32px, 10vw, 44px);
+    font-size: 34px;
   }
 
   .mello-account__refresh {
@@ -507,11 +518,17 @@ watch([isLoaded, isSignedIn], loadOrders)
   }
 
   .mello-account-order__head {
-    display: grid;
+    display: flex;
+    gap: 12px;
+  }
+
+  .mello-account-order__head strong {
+    font-size: 19px;
   }
 
   .mello-account-order__head b {
     text-align: left;
+    font-size: 20px;
   }
 
   .mello-account-order__items div {

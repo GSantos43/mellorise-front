@@ -151,8 +151,8 @@ function addToCart() {
 
 .mello-product-card {
   background: #ffffff;
-  border: 1px solid rgba(23, 49, 50, 0.11);
-  border-radius: 14px;
+  border: 1px solid rgba(16, 40, 41, 0.09);
+  border-radius: 12px;
   display: flex;
   min-height: 508px;
   overflow: hidden;
@@ -164,8 +164,8 @@ function addToCart() {
 .mello-product-card:hover,
 .mello-product-card:focus-within {
   border-color: rgba(90, 144, 145, 0.24);
-  box-shadow: 0 16px 38px rgba(23, 49, 50, 0.11);
-  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(16, 40, 41, 0.09);
+  transform: translateY(-2px);
 }
 
 .mello-product-card__shell {
@@ -270,7 +270,8 @@ function addToCart() {
 .mello-product-card .mello-product-card__title.card__heading {
   display: -webkit-box;
   font-size: 19px;
-  font-weight: 780;
+  font-family: var(--font-heading-family);
+  font-weight: 700;
   line-height: 1.18;
   max-width: none;
   min-height: 46px;
@@ -293,7 +294,7 @@ function addToCart() {
   color: #ffffff;
   display: inline-flex;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 760;
   justify-self: start;
   line-height: 1;
   padding: 7px 9px;
@@ -303,7 +304,7 @@ function addToCart() {
 .mello-product-card__bundle-details p {
   color: #173132;
   font-size: 14px;
-  font-weight: 820;
+  font-weight: 650;
   line-height: 1.25;
   margin: 0;
 }
@@ -311,7 +312,7 @@ function addToCart() {
 .mello-product-card__bundle-details small {
   color: #3f9180;
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -332,7 +333,7 @@ function addToCart() {
 .mello-product-card .caption-with-letter-spacing {
   color: #6f7f7f;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 650;
   letter-spacing: 0.15em;
   line-height: 1.2;
   margin-bottom: 16px;
@@ -384,7 +385,7 @@ function addToCart() {
   display: inline-flex;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 850;
+  font-weight: 720;
   justify-content: center;
   line-height: 1;
   min-height: 48px;

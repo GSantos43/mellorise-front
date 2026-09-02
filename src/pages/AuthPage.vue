@@ -60,7 +60,7 @@ const clerkAppearance = {
     colorTextSecondary: '#5f7073',
     colorBackground: '#ffffff',
     borderRadius: '12px',
-    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    fontFamily: '"Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
   },
   elements: {
     rootBox: 'mello-auth-page__clerk-root',
@@ -251,7 +251,7 @@ onUnmounted(() => {
 .mello-auth-loading strong {
   color: #ffffff;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 720;
   line-height: 1.2;
 }
 
@@ -354,7 +354,7 @@ onUnmounted(() => {
   color: #173132;
   display: inline-flex;
   font-size: 15px;
-  font-weight: 850;
+  font-weight: 720;
   margin-bottom: clamp(14px, 2.2vh, 22px);
   user-select: none;
 }
@@ -362,8 +362,9 @@ onUnmounted(() => {
 .mello-auth-page__copy h1 {
   color: #102829;
   font-size: clamp(44px, 5vw, 64px);
-  font-weight: 860;
-  letter-spacing: -0.03em;
+  font-family: var(--font-heading-family);
+  font-weight: 740;
+  letter-spacing: -0.018em;
   line-height: 1;
   margin: 0;
   max-width: 11ch;
@@ -373,7 +374,7 @@ onUnmounted(() => {
 .mello-auth-page__copy p {
   color: #53686b;
   font-size: clamp(15px, 1.1vw, 17px);
-  font-weight: 620;
+  font-weight: 500;
   line-height: 1.42;
   margin: 12px 0 0;
   max-width: 40ch;
@@ -415,7 +416,7 @@ onUnmounted(() => {
 .mello-auth-page__trust strong {
   display: block;
   font-size: 14px;
-  font-weight: 780;
+  font-weight: 700;
 }
 
 .mello-auth-page__trust small {
@@ -495,8 +496,9 @@ onUnmounted(() => {
 }
 
 .mello-auth-page__clerk-title {
-  font-weight: 820;
-  letter-spacing: -0.025em;
+  font-family: var(--font-heading-family);
+  font-weight: 720;
+  letter-spacing: -0.012em;
 }
 
 .mello-auth-page__clerk-subtitle {
@@ -505,7 +507,7 @@ onUnmounted(() => {
 
 .mello-auth-page__clerk-primary {
   background: #173132;
-  font-weight: 820;
+  font-weight: 720;
   min-height: 44px;
 }
 
@@ -585,13 +587,14 @@ onUnmounted(() => {
 
 .mello-auth-page__avatar b {
   font-size: 22px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .mello-auth-page__signed-in h2 {
   font-size: 28px;
-  font-weight: 930;
-  letter-spacing: -0.02em;
+  font-family: var(--font-heading-family);
+  font-weight: 720;
+  letter-spacing: -0.012em;
   line-height: 1.08;
   margin: 18px 0 0;
 }
@@ -611,7 +614,7 @@ onUnmounted(() => {
   color: #ffffff;
   display: inline-flex;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 720;
   justify-content: center;
   margin-top: 20px;
   min-height: 44px;
@@ -764,7 +767,7 @@ onUnmounted(() => {
     display: inline-flex;
     font: inherit;
     font-size: 14px;
-    font-weight: 820;
+    font-weight: 720;
     gap: 7px;
     left: max(14px, env(safe-area-inset-left));
     min-height: 44px;

@@ -219,13 +219,13 @@ watch(isMobileMenuOpen, (isOpen) => {
 
 <style>
 .mello-page-header {
-  --mph-ink: #173132;
-  --mph-blue: #77cdfa;
-  --mph-line: rgba(23, 49, 50, 0.12);
-  --mph-muted: rgba(23, 49, 50, 0.68);
+  --mph-ink: var(--mello-ink);
+  --mph-blue: var(--mello-blue);
+  --mph-line: var(--mello-line);
+  --mph-muted: rgba(16, 40, 41, 0.66);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: saturate(1.16) blur(18px);
-  box-shadow: 0 1px 0 rgba(23, 49, 50, 0.08), 0 18px 36px rgba(23, 49, 50, 0.04);
+  box-shadow: 0 1px 0 rgba(16, 40, 41, 0.08), 0 16px 34px rgba(16, 40, 41, 0.035);
   color: var(--mph-ink);
   font-family: var(--font-body-family);
   position: sticky;
@@ -271,7 +271,7 @@ watch(isMobileMenuOpen, (isOpen) => {
   border-radius: 999px;
   display: flex;
   font-size: 14px;
-  font-weight: 520;
+  font-weight: 560;
   gap: 4px;
   justify-content: center;
   justify-self: center;
@@ -324,7 +324,7 @@ watch(isMobileMenuOpen, (isOpen) => {
 
 .mello-page-header__links a.is-active {
   color: #102829;
-  font-weight: 850;
+  font-weight: 720;
 }
 
 .mello-page-header__links a.is-active::after,
@@ -353,13 +353,13 @@ watch(isMobileMenuOpen, (isOpen) => {
   color: #102829;
   display: inline-flex;
   font-size: 15px;
-  font-weight: 820;
+  font-weight: 720;
   justify-content: center;
   line-height: 1;
   min-width: 188px;
   min-height: 48px;
   padding: 0 26px;
-  box-shadow: 0 12px 24px rgba(119, 205, 250, 0.24);
+  box-shadow: 0 10px 22px rgba(119, 205, 250, 0.22);
   text-decoration: none;
   transition: box-shadow 180ms ease, transform 180ms ease;
   white-space: nowrap;
@@ -385,7 +385,7 @@ watch(isMobileMenuOpen, (isOpen) => {
   display: inline-flex;
   flex: 0 0 auto;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 720;
   gap: 8px;
   min-height: 42px;
   padding: 0 14px;
@@ -493,7 +493,7 @@ watch(isMobileMenuOpen, (isOpen) => {
   background: #ffffff;
   box-shadow: 0 8px 20px rgba(23, 49, 50, 0.1);
   color: #102829;
-  font-weight: 850;
+  font-weight: 720;
 }
 
 .mello-page-header__menu-button {
@@ -645,8 +645,8 @@ watch(isMobileMenuOpen, (isOpen) => {
 
   .mello-mobile-menu__panel {
     background: #ffffff;
-    border-radius: 0 0 22px 22px;
-    box-shadow: 0 24px 60px rgba(23, 49, 50, 0.18);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 22px 54px rgba(16, 40, 41, 0.16);
     color: #173132;
     left: 0;
     max-width: 100vw;
@@ -717,7 +717,7 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-mobile-menu__links a {
     align-items: center;
     background: #ffffff;
-    border-radius: 14px;
+    border-radius: 12px;
     box-shadow: inset 0 0 0 1px rgba(23, 49, 50, 0.1);
     color: rgba(23, 49, 50, 0.74);
     display: flex;
@@ -733,7 +733,7 @@ watch(isMobileMenuOpen, (isOpen) => {
     background: #e8f7ff;
     box-shadow: inset 0 0 0 1px rgba(119, 205, 250, 0.48);
     color: #102829;
-    font-weight: 850;
+    font-weight: 720;
   }
 
   .mello-mobile-menu__links a::after {
@@ -751,6 +751,7 @@ watch(isMobileMenuOpen, (isOpen) => {
   }
 
   .mello-mobile-menu__actions {
+    align-items: stretch;
     display: grid;
     gap: 10px;
     grid-template-columns: 1fr;
@@ -762,11 +763,11 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-mobile-menu__account {
     align-items: center;
     background: #eff9ff;
-    border-radius: 14px;
+    border-radius: 12px;
     color: #173132;
     display: flex;
     font-size: 15px;
-    font-weight: 860;
+    font-weight: 720;
     gap: 10px;
     justify-content: center;
     min-height: 48px;
@@ -788,11 +789,11 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-mobile-menu__signup {
     align-items: center;
     background: #173132;
-    border-radius: 14px;
+    border-radius: 12px;
     color: #ffffff;
     display: flex;
     font-size: 15px;
-    font-weight: 880;
+    font-weight: 720;
     justify-content: center;
     min-height: 48px;
     min-width: 0;
@@ -814,7 +815,7 @@ watch(isMobileMenuOpen, (isOpen) => {
     border-radius: 999px;
     display: inline-flex;
     font-size: 15px;
-    font-weight: 820;
+    font-weight: 720;
     justify-content: center;
     max-width: 100%;
     min-height: 48px;

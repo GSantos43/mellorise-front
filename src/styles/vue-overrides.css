@@ -108,6 +108,126 @@
   margin-top: 8px;
 }
 
+[data-template="vue3-store"] {
+  color: var(--mello-ink);
+  font-family: var(--font-body-family);
+  font-weight: 400;
+}
+
+[data-template="vue3-store"] ::selection {
+  background: rgba(119, 205, 250, 0.38);
+  color: var(--mello-ink);
+}
+
+[data-template="vue3-store"] :is(h1, h2, h3, .gh-title, .gh-heading, .gg-title, .gg-heading) {
+  font-family: var(--font-heading-family);
+  font-weight: 720;
+}
+
+[data-template="vue3-store"] :is(button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-template="vue3-store"] :is(.gh-button, .gg-button, .mello-product-card__button, .mello-cart-checkout, .mello-page-header__cta, .mello-mobile-menu__cta) {
+  font-weight: 720;
+}
+
+[data-template="vue3-store"] :is(
+  .gh-title,
+  .gh-heading,
+  .gg-title,
+  .gg-heading,
+  .gg-ritual h2,
+  .gg-compare__copy h2,
+  .gg-proof h2,
+  .gg-matrix__head h2,
+  .gg-difference__head h2,
+  .gg-photo-reviews__head h2,
+  .mello-home-cta__title,
+  .mello-compare__title,
+  .mello-testimonials__title,
+  .mello-home-faq__title
+) {
+  font-family: var(--font-heading-family);
+  font-weight: 720;
+  letter-spacing: -0.012em;
+}
+
+[data-template="vue3-store"] :is(
+  .gh-subhead,
+  .gh-copy,
+  .gg-lede,
+  .mello-home-cta__text,
+  .mello-compare__text,
+  .mello-testimonials__summary p,
+  .mello-home-faq__subheading
+) {
+  color: var(--mello-muted);
+  font-weight: 500;
+  line-height: 1.48;
+}
+
+[data-template="vue3-store"] :is(
+  .gh-pill,
+  .gh-eyebrow,
+  .gg-photo-reviews__eyebrow,
+  .gg-ritual__eyebrow,
+  .gg-compare__eyebrow,
+  .gg-proof__eyebrow,
+  .gg-matrix__eyebrow,
+  .gg-difference__eyebrow,
+  .mello-testimonials__eyebrow,
+  .mello-compare__badge
+) {
+  font-weight: 680;
+}
+
+[data-template="vue3-store"] :is(
+  .gh-button,
+  .gg-button,
+  .gh-offer__primary,
+  .gg-photo-reviews__button,
+  .gg-review-modal__submit,
+  .mello-home-cta__button,
+  .mello-compare__cta,
+  .gg-proof__cta,
+  .gg-school__cta,
+  .gg-nutrition-cta__button
+) {
+  border-radius: 12px;
+  font-weight: 720;
+  box-shadow: 0 12px 28px rgba(16, 40, 41, 0.1);
+}
+
+[data-template="vue3-store"] :is(
+  .gh-ingredient-card,
+  .gh-science-card,
+  .gh-density,
+  .gg-product-panel,
+  .gg-photo-reviews__summary,
+  .gg-photo-review-card,
+  .mello-testimonials__card,
+  .mello-compare__card,
+  .mello-home-cta__card
+) {
+  border-color: rgba(16, 40, 41, 0.08);
+  box-shadow: 0 16px 40px rgba(16, 40, 41, 0.07);
+}
+
+[data-template="vue3-store"] :is(.mello-account__refresh, .mello-order-detail__back, .mello-order-detail__state button, .mello-order-detail__tracking a, .mello-auth-page__signed-in a) {
+  font-weight: 720;
+  letter-spacing: 0;
+}
+
+[data-template="vue3-store"] :is(input, textarea, select) {
+  font-weight: 500;
+}
+
+.mello-route-account-orders,
+.mello-route-account-order-detail {
+  background: linear-gradient(180deg, #f6fcff 0%, #f9fbf8 54%, #fffaf2 100%);
+}
+
 @media screen and (max-width: 749px) {
   .gg-post-cart-trust {
     gap: 8px;

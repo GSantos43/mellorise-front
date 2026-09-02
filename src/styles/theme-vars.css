@@ -1,11 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap");
 
 :root {
-  --font-body-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --font-body-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   --font-body-style: normal;
   --font-body-weight: 400;
   --font-body-weight-bold: 700;
-  --font-heading-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --font-heading-family: "Sora", "Nunito Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
   --font-heading-style: normal;
   --font-heading-weight: 700;
   --font-body-scale: 1;
@@ -71,6 +71,22 @@
   --grid-desktop-horizontal-spacing: 32px;
   --grid-mobile-vertical-spacing: 16px;
   --grid-mobile-horizontal-spacing: 16px;
+  --mello-ink: #102829;
+  --mello-ink-soft: #244345;
+  --mello-muted: #607476;
+  --mello-muted-strong: #4b6264;
+  --mello-blue: #77cdfa;
+  --mello-blue-soft: #eef9ff;
+  --mello-mint-soft: #e8fbf6;
+  --mello-cream: #fffaf0;
+  --mello-surface: rgba(255, 255, 255, 0.92);
+  --mello-panel: #f6fbfb;
+  --mello-line: rgba(16, 40, 41, 0.1);
+  --mello-radius: 14px;
+  --mello-radius-sm: 10px;
+  --mello-shadow: 0 18px 46px rgba(16, 40, 41, 0.08);
+  --mello-shadow-strong: 0 22px 58px rgba(16, 40, 41, 0.13);
+  --mello-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html,
@@ -85,6 +101,8 @@ body {
   color: rgba(var(--color-foreground), 0.75);
   background-color: rgb(var(--color-background));
   font-family: var(--font-body-family);
+  font-weight: 400;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

@@ -19,11 +19,11 @@ const { t } = useI18n({ useScope: 'global' })
 .mello-account-unavailable {
   align-items: center;
   background: linear-gradient(180deg, #ffffff 0%, #f6fbfb 58%, #fff8eb 100%);
-  color: #102829;
+  color: var(--mello-ink);
   display: flex;
   font-family: var(--font-body-family);
-  min-height: 56vh;
-  padding: 54px 20px;
+  min-height: 58vh;
+  padding: 48px 20px;
 }
 
 .mello-account-unavailable div {
@@ -35,21 +35,22 @@ const { t } = useI18n({ useScope: 'global' })
 .mello-account-unavailable p {
   color: #2093d7;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   margin: 0 0 8px;
   text-transform: uppercase;
 }
 
 .mello-account-unavailable h1 {
-  font-size: clamp(40px, 6vw, 68px);
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  line-height: 0.98;
+  font-family: var(--font-heading-family);
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 740;
+  letter-spacing: -0.016em;
+  line-height: 1.06;
   margin: 0;
 }
 
 .mello-account-unavailable span {
-  color: #5f7073;
+  color: var(--mello-muted);
   display: block;
   font-size: 18px;
   font-weight: 560;
@@ -61,11 +62,11 @@ const { t } = useI18n({ useScope: 'global' })
 .mello-account-unavailable a {
   align-items: center;
   background: #173132;
-  border-radius: 999px;
+  border-radius: 12px;
   color: #ffffff;
   display: inline-flex;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 720;
   justify-content: center;
   margin-top: 24px;
   min-height: 48px;

@@ -184,7 +184,7 @@ onUnmounted(() => {
   display: inline-flex;
   font-family: var(--font-body-family);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 720;
   gap: 8px;
   min-height: 42px;
   padding: 4px 12px 4px 5px;
@@ -211,7 +211,7 @@ onUnmounted(() => {
 .mello-auth-menu__signup:focus-visible,
 .mello-auth-menu__trigger:hover,
 .mello-auth-menu__trigger:focus-visible {
-  box-shadow: 0 12px 26px rgba(23, 49, 50, 0.1);
+  box-shadow: 0 10px 24px rgba(16, 40, 41, 0.1);
   outline: 0;
   transform: translateY(-1px);
 }
@@ -260,7 +260,7 @@ onUnmounted(() => {
 .mello-auth-menu__avatar span {
   color: #173132;
   font-size: 13px;
-  font-weight: 950;
+  font-weight: 800;
 }
 
 .mello-auth-menu__trigger strong {
@@ -287,11 +287,11 @@ onUnmounted(() => {
 .mello-auth-menu__panel {
   background: #ffffff;
   border: 1px solid rgba(23, 49, 50, 0.1);
-  border-radius: 14px;
-  box-shadow: 0 22px 54px rgba(23, 49, 50, 0.16);
+  border-radius: 12px;
+  box-shadow: 0 20px 48px rgba(16, 40, 41, 0.14);
   display: grid;
   gap: 4px;
-  min-width: 210px;
+  min-width: 220px;
   padding: 8px;
   position: absolute;
   right: 0;
@@ -311,7 +311,7 @@ onUnmounted(() => {
   display: flex;
   font-family: var(--font-body-family);
   font-size: 14px;
-  font-weight: 820;
+  font-weight: 700;
   gap: 10px;
   min-height: 42px;
   padding: 0 10px;
@@ -384,7 +384,7 @@ onUnmounted(() => {
 
   .mello-mobile-menu__auth-menu .mello-auth-menu__trigger {
     background: rgba(239, 249, 255, 0.95);
-    border-radius: 14px;
+    border-radius: 12px;
     display: flex;
     gap: 10px;
     height: auto;
@@ -420,7 +420,7 @@ onUnmounted(() => {
 
   .mello-mobile-menu__auth-menu .mello-auth-menu__signin,
   .mello-mobile-menu__auth-menu .mello-auth-menu__signup {
-    border-radius: 14px;
+    border-radius: 12px;
     box-sizing: border-box;
     display: flex;
     font-size: 15px;
@@ -459,6 +459,5 @@ onUnmounted(() => {
     width: 100%;
     z-index: 140;
   }
-
 }
 </style>

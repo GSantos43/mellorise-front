@@ -146,7 +146,8 @@ function addProductToCart(product) {
 }
 
 .mello-catalog__toolbar {
-  background: #eef9ff;
+  background: rgba(238, 249, 255, 0.74);
+  border-block: 1px solid rgba(16, 40, 41, 0.06);
 }
 
 .mello-catalog__toolbar-inner {
@@ -162,7 +163,7 @@ function addProductToCart(product) {
 .mello-catalog__toolbar p {
   color: #173132;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 680;
   margin: 0;
 }
 
@@ -178,7 +179,7 @@ function addProductToCart(product) {
   border-radius: 999px;
   color: #5a9091;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 680;
   padding: 8px 13px;
 }
 
@@ -190,7 +191,8 @@ function addProductToCart(product) {
 
 .mello-catalog__state {
   background: var(--catalog-cream);
-  border-radius: 18px;
+  border: 1px solid rgba(16, 40, 41, 0.08);
+  border-radius: 14px;
   color: #173132;
   padding: 46px 24px;
   text-align: center;
@@ -198,7 +200,8 @@ function addProductToCart(product) {
 
 .mello-catalog__state h2 {
   font-size: 28px;
-  font-weight: 900;
+  font-family: var(--font-heading-family);
+  font-weight: 720;
   margin: 0 0 8px;
 }
 
