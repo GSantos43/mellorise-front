@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useAuth } from '@clerk/vue'
+import { useAuth, useUser } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import HomePage from './pages/HomePage.vue'
 import ProductPage from './pages/ProductPage.vue'
@@ -59,8 +59,10 @@ const authState = props.clerkEnabled
     isLoaded: ref(true),
     isSignedIn: ref(false)
   }
+const userState = props.clerkEnabled ? useUser() : { user: ref(null) }
 const isAuthLoaded = authState.isLoaded
 const isSignedIn = authState.isSignedIn
+const { user } = userState
 let staticTranslationFrame = 0
 let staticTranslationTimeout = 0
 let staticTranslationObserver = null
@@ -91,6 +93,12 @@ const currentPage = computed(() => {
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
 const isPurchaseAllowed = computed(() => purchaseEligibility.value?.allowed !== false)
 const hasCheckoutSession = computed(() => !props.clerkEnabled || isSignedIn.value === true)
+const checkoutEmail = computed(() => (
+  user.value?.primaryEmailAddress?.emailAddress ||
+  user.value?.emailAddresses?.[0]?.emailAddress ||
+  activeDiscount.value?.email ||
+  ''
+))
 const shouldConfirmCheckoutExit = computed(() => (
   currentPage.value === 'checkout' &&
   Boolean(cartItem.value) &&
@@ -473,6 +481,10 @@ async function goToStripeCheckout(options = {}) {
   try {
     const couponWasProvidedByCheckout = Object.prototype.hasOwnProperty.call(options, 'couponCode')
 
+    if (!options.customerEmail && checkoutEmail.value) {
+      options.customerEmail = checkoutEmail.value
+    }
+
     if (!couponWasProvidedByCheckout && activeDiscount.value?.code) {
       options.couponCode = activeDiscount.value.code
       options.customerEmail = activeDiscount.value.email
@@ -692,6 +704,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       v-else-if="currentPage === 'checkout'"
       :item="cartItem"
       :discount="activeDiscount"
+      :checkout-email="checkoutEmail"
       :is-checkout-loading="isCheckoutLoading"
       @checkout="goToStripeCheckout"
       @discount-applied="applyDiscount"

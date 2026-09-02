@@ -9,13 +9,13 @@ import { translateProductTitle } from '../i18n/productText'
 const props = defineProps({
   item: { type: Object, default: null },
   discount: { type: Object, default: null },
+  checkoutEmail: { type: String, default: '' },
   isCheckoutLoading: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['checkout', 'update-quantity', 'remove', 'discount-applied'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
-const customerEmail = ref(props.discount?.email || '')
 const couponCode = ref(props.discount?.code || '')
 const appliedDiscount = ref(props.discount)
 const couponFeedback = ref('')
@@ -82,30 +82,34 @@ const checkoutUpsell = computed(() => {
 })
 const discountPercent = computed(() => Math.max(0, Number(appliedDiscount.value?.amount || 0)))
 const normalizedCoupon = computed(() => couponCode.value.trim().toUpperCase())
+const checkoutCustomerEmail = computed(() => (
+  props.checkoutEmail ||
+  appliedDiscount.value?.email ||
+  ''
+).trim())
 const hasSavedDiscount = computed(() => Boolean(
   appliedDiscount.value?.code &&
   normalizedCoupon.value === appliedDiscount.value.code &&
-  customerEmail.value.trim().toLowerCase() === String(appliedDiscount.value.email || '').toLowerCase()
+  checkoutCustomerEmail.value.toLowerCase() === String(appliedDiscount.value.email || '').toLowerCase()
 ))
 const discountTotal = computed(() => props.item && hasSavedDiscount.value ? subtotal.value * (discountPercent.value / 100) : 0)
 const total = computed(() => Math.max(0, subtotal.value - discountTotal.value))
 const totalSavings = computed(() => discountTotal.value)
-const canSubmit = computed(() => Boolean(props.item && customerEmail.value.trim() && !props.isCheckoutLoading))
-const canApplyCoupon = computed(() => Boolean(normalizedCoupon.value && customerEmail.value.trim() && !isCouponValidating.value))
+const canSubmit = computed(() => Boolean(props.item && !props.isCheckoutLoading))
+const canApplyCoupon = computed(() => Boolean(normalizedCoupon.value && checkoutCustomerEmail.value && !isCouponValidating.value))
 
 watch(
   () => props.discount,
   (discount) => {
     if (!discount?.code) return
     appliedDiscount.value = discount
-    customerEmail.value = discount.email || customerEmail.value
     couponCode.value = discount.code
     couponFeedback.value = 'applied'
   },
   { immediate: true }
 )
 
-watch([couponCode, customerEmail], () => {
+watch([couponCode, checkoutCustomerEmail], () => {
   if (hasSavedDiscount.value) return
   couponFeedback.value = ''
 })
@@ -114,7 +118,7 @@ function submitCheckout() {
   if (!canSubmit.value) return
 
   emit('checkout', {
-    customerEmail: customerEmail.value.trim(),
+    customerEmail: checkoutCustomerEmail.value || undefined,
     couponCode: hasSavedDiscount.value ? normalizedCoupon.value : undefined,
   })
 }
@@ -130,7 +134,7 @@ function setCheckoutQuantity(nextQuantity) {
 async function applyCoupon() {
   if (isCouponValidating.value) return
 
-  if (!normalizedCoupon.value || !customerEmail.value.trim()) {
+  if (!normalizedCoupon.value || !checkoutCustomerEmail.value) {
     couponFeedback.value = 'error'
     return
   }
@@ -140,10 +144,9 @@ async function applyCoupon() {
   try {
     const discount = await validateWelcomeDiscount({
       code: normalizedCoupon.value,
-      email: customerEmail.value.trim()
+      email: checkoutCustomerEmail.value
     })
     appliedDiscount.value = discount
-    customerEmail.value = discount.email || customerEmail.value
     couponCode.value = discount.code
     couponFeedback.value = 'applied'
     emit('discount-applied', discount)
@@ -356,17 +359,6 @@ onUnmounted(() => {
               <span>{{ t(checkoutUpsell.action) }}</span>
             </button>
           </article>
-        </section>
-
-        <section class="mello-checkout-section" aria-labelledby="checkout-billing">
-          <div class="mello-checkout-section__head">
-            <h2 id="checkout-billing">{{ t('checkout.billing.title') }}</h2>
-          </div>
-          <label class="mello-checkout-field">
-            <span>{{ t('checkout.contact.email') }}</span>
-            <input v-model="customerEmail" type="email" autocomplete="email" :placeholder="t('checkout.contact.emailPlaceholder')" required>
-          </label>
-          <p class="mello-checkout-help">{{ t('checkout.contact.help') }}</p>
         </section>
 
       </main>
@@ -590,7 +582,7 @@ onUnmounted(() => {
 
 .mello-checkout-heading h1 {
   color: rgba(0, 0, 0, 0.72);
-  font-family: "Inter", var(--font-body-family), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body-family);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -990,37 +982,6 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-.mello-checkout-field {
-  display: grid;
-  gap: 7px;
-  margin-top: 12px;
-}
-
-.mello-checkout-field span {
-  color: #333333;
-  font-size: 13px;
-  font-weight: 650;
-}
-
-.mello-checkout-field input {
-  appearance: none;
-  background: #ffffff;
-  border: 1px solid #d8d8d8;
-  border-radius: 6px;
-  color: #1d1d1f;
-  font: inherit;
-  font-size: 16px;
-  min-height: 44px;
-  outline: 0;
-  padding: 0 12px;
-  width: 100%;
-}
-
-.mello-checkout-field input:focus {
-  border-color: var(--checkout-blue);
-  box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.18);
-}
-
 .mello-checkout-coupon-line {
   align-items: center;
   color: var(--checkout-blue);
@@ -1037,8 +998,6 @@ onUnmounted(() => {
   font-weight: 650;
   margin: 0;
 }
-
-.mello-checkout-field--coupon { margin-top: 14px; }
 
 .mello-checkout-coupon-applied,
 .mello-checkout-coupon-error,
