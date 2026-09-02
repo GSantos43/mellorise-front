@@ -26,6 +26,15 @@ const displayName = computed(() => (
   t('auth.account')
 ))
 
+function goBack() {
+  if (window.history.length > 1) {
+    window.history.back()
+    return
+  }
+
+  window.location.href = '/collections/all'
+}
+
 const clerkAppearance = {
   variables: {
     colorPrimary: '#186bff',
@@ -72,6 +81,33 @@ onUnmounted(() => {
         </div>
       </Transition>
     </Teleport>
+    <div class="mello-auth-page__mobile-pattern" aria-hidden="true">
+      <span class="mello-auth-page__pattern-item mello-auth-page__pattern-item--leaf">
+        <svg viewBox="0 0 24 24"><path d="M4 20c7.8-.9 14.2-7 16-16C11.6 5.5 5.7 11.4 4 20Z" /><path d="M4 20c4.8-5.6 9.2-9.2 14-11" /></svg>
+      </span>
+      <span class="mello-auth-page__pattern-item mello-auth-page__pattern-item--star">
+        <svg viewBox="0 0 24 24"><path d="m12 3 2.2 6.2L21 12l-6.8 2.8L12 21l-2.2-6.2L3 12l6.8-2.8L12 3Z" /></svg>
+      </span>
+      <span class="mello-auth-page__pattern-item mello-auth-page__pattern-item--heart">
+        <svg viewBox="0 0 24 24"><path d="M20.2 5.8c-1.9-1.9-5-1.7-6.8.3L12 7.6l-1.4-1.5c-1.8-2-4.9-2.2-6.8-.3-2.1 2.1-2 5.5.2 7.6l8 7.1 8-7.1c2.2-2.1 2.3-5.5.2-7.6Z" /></svg>
+      </span>
+      <span class="mello-auth-page__pattern-item mello-auth-page__pattern-item--ruler">
+        <svg viewBox="0 0 24 24"><path d="M7 3h10v18H7V3Z" /><path d="M17 7h-4" /><path d="M17 11h-6" /><path d="M17 15h-4" /></svg>
+      </span>
+      <span class="mello-auth-page__pattern-item mello-auth-page__pattern-item--sun">
+        <svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" /><path d="M12 2v3" /><path d="M12 19v3" /><path d="m4.9 4.9 2.1 2.1" /><path d="m17 17 2.1 2.1" /><path d="M2 12h3" /><path d="M19 12h3" /></svg>
+      </span>
+      <span class="mello-auth-page__pattern-item mello-auth-page__pattern-item--gummy">
+        <svg viewBox="0 0 24 24"><path d="M8.3 7.3c1.9-2.1 5.4-2.1 7.4 0l2 2.1c2 2.1 2 5.3 0 7.4-2 2-5.4 2-7.4 0l-2-2.1c-2-2.1-2-5.3 0-7.4Z" /><path d="M10 9.2h.1" /><path d="M14 13h.1" /><path d="M11 15h.1" /></svg>
+      </span>
+    </div>
+    <button class="mello-auth-page__back" type="button" :aria-label="t('auth.back')" @click="goBack">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m15 18-6-6 6-6" />
+        <path d="M9 12h10" />
+      </svg>
+      <span>{{ t('auth.back') }}</span>
+    </button>
     <div class="mello-auth-page__shell">
       <aside class="mello-auth-page__copy">
         <a class="mello-auth-page__brand" href="/" aria-label="MelloRise home">
@@ -268,6 +304,11 @@ onUnmounted(() => {
 .mello-auth-page * {
   box-sizing: border-box;
   letter-spacing: 0;
+}
+
+.mello-auth-page__mobile-pattern,
+.mello-auth-page__back {
+  display: none;
 }
 
 .mello-auth-page__shell {
@@ -561,20 +602,167 @@ onUnmounted(() => {
 
 @media (max-width: 900px) {
   .mello-auth-page {
+    background:
+      radial-gradient(circle at 0 20%, rgba(119, 205, 250, 0.17), transparent 34%),
+      radial-gradient(circle at 102% 80%, rgba(255, 215, 106, 0.15), transparent 30%),
+      linear-gradient(180deg, #ffffff 0%, #f7fdff 48%, #fffaf0 100%);
     min-height: 100svh;
-    overflow: visible;
-    padding: 18px 14px 30px;
+    overflow: hidden;
+    padding: max(74px, calc(env(safe-area-inset-top) + 58px)) 14px max(30px, env(safe-area-inset-bottom));
   }
 
   .mello-auth-page::before {
-    height: 44%;
-    inset: 0 0 auto;
+    background:
+      radial-gradient(circle at 18% 28%, rgba(223, 248, 239, 0.68), transparent 24%),
+      radial-gradient(circle at 78% 70%, rgba(255, 250, 240, 0.86), transparent 30%),
+      rgba(255, 255, 255, 0.22);
+    height: 100%;
+    inset: 0;
+    opacity: 0.74;
     transform: none;
     width: 100%;
   }
 
   .mello-auth-page::after {
-    opacity: 0.08;
+    content: none;
+  }
+
+  .mello-auth-page__mobile-pattern {
+    display: block;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  .mello-auth-page__mobile-pattern::before,
+  .mello-auth-page__mobile-pattern::after {
+    background: rgba(119, 205, 250, 0.1);
+    border-radius: 50%;
+    content: "";
+    filter: blur(2px);
+    height: 220px;
+    position: absolute;
+    width: 220px;
+  }
+
+  .mello-auth-page__mobile-pattern::before {
+    left: -116px;
+    top: 20%;
+  }
+
+  .mello-auth-page__mobile-pattern::after {
+    background: rgba(255, 215, 106, 0.14);
+    bottom: 7%;
+    right: -124px;
+  }
+
+  .mello-auth-page__pattern-item {
+    color: var(--tone, #77cdfa);
+    height: var(--size, 42px);
+    opacity: var(--alpha, 0.24);
+    position: absolute;
+    transform: translate(-50%, -50%) rotate(var(--rotate, 0deg));
+    width: var(--size, 42px);
+  }
+
+  .mello-auth-page__pattern-item svg {
+    display: block;
+    fill: none;
+    height: 100%;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+    width: 100%;
+  }
+
+  .mello-auth-page__pattern-item--leaf {
+    --alpha: 0.18;
+    --rotate: -19deg;
+    --size: 78px;
+    --tone: #62b98f;
+    left: 8%;
+    top: 20%;
+  }
+
+  .mello-auth-page__pattern-item--star {
+    --alpha: 0.32;
+    --rotate: 14deg;
+    --size: 42px;
+    --tone: #77cdfa;
+    left: 19%;
+    top: 80%;
+  }
+
+  .mello-auth-page__pattern-item--heart {
+    --alpha: 0.16;
+    --rotate: -11deg;
+    --size: 48px;
+    --tone: #ff7d93;
+    left: 4%;
+    top: 56%;
+  }
+
+  .mello-auth-page__pattern-item--ruler {
+    --alpha: 0.16;
+    --rotate: 8deg;
+    --size: 62px;
+    --tone: #5a9091;
+    right: 3%;
+    top: 18%;
+    transform: translate(50%, -50%) rotate(var(--rotate));
+  }
+
+  .mello-auth-page__pattern-item--sun {
+    --alpha: 0.35;
+    --rotate: -9deg;
+    --size: 50px;
+    --tone: #ffd76a;
+    right: 12%;
+    top: 75%;
+    transform: translate(50%, -50%) rotate(var(--rotate));
+  }
+
+  .mello-auth-page__pattern-item--gummy {
+    --alpha: 0.18;
+    --rotate: 19deg;
+    --size: 54px;
+    --tone: #ff6f61;
+    right: 1%;
+    top: 52%;
+    transform: translate(50%, -50%) rotate(var(--rotate));
+  }
+
+  .mello-auth-page__back {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(23, 49, 50, 0.12);
+    border-radius: 999px;
+    box-shadow: 0 12px 28px rgba(23, 49, 50, 0.08);
+    color: #173132;
+    display: inline-flex;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 820;
+    gap: 7px;
+    left: max(14px, env(safe-area-inset-left));
+    min-height: 44px;
+    padding: 0 16px 0 12px;
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    z-index: 2;
+  }
+
+  .mello-auth-page__back svg {
+    fill: none;
+    height: 20px;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    width: 20px;
   }
 
   .mello-auth-page__shell {
@@ -584,7 +772,7 @@ onUnmounted(() => {
       "panel";
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-    min-height: calc(100svh - 48px);
+    min-height: calc(100svh - 104px);
     place-items: center;
     width: 100%;
   }

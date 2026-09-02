@@ -36,6 +36,7 @@ export const messages = {
     auth: {
       loading: 'Cargando cuenta',
       account: 'Cuenta',
+      back: 'Volver',
       menu: 'Menu de cuenta',
       signIn: 'Entrar',
       signUp: 'Crear cuenta',
@@ -698,6 +699,7 @@ export const messages = {
     auth: {
       loading: 'Loading account',
       account: 'Account',
+      back: 'Back',
       menu: 'Account menu',
       signIn: 'Sign in',
       signUp: 'Sign up',
