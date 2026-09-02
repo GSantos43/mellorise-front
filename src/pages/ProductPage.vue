@@ -1018,9 +1018,9 @@ watch(isGalleryLightboxOpen, (isOpen) => {
               <div class="gg-difference-card__stars" aria-label="Cinco estrellas">
                 <span aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
               </div>
-              <h3>{{ ['Una rutina mas facil de mantener', 'Sabor gummy que ayuda a la constancia', 'Mas simple que varios frascos'][index] }}</h3>
-              <p>{{ ['Un formato diario pensado para acompanarte en mananas ocupadas, con una experiencia simple para toda la familia.', 'Una opcion practica para convertir el apoyo nutricional en un habito diario facil de recordar.', 'Una presentacion clara para reunir ingredientes seleccionados en una sola rutina diaria.'][index] }}</p>
-              <footer>Resena editable de cliente</footer>
+              <h3>{{ ['Nos ayudo a ordenar la manana', 'El sabor hizo mas facil repetirlo', 'Menos frascos, menos dudas'][index] }}</h3>
+              <p>{{ ['Lo sumamos despues del desayuno y se volvio una parte simple de nuestra rutina familiar.', 'A mi hijo le gusto que fuera gummy. Para mi, fue mas facil recordar una rutina constante sin preparar nada.', 'Me gusto tener vitaminas, minerales y aminoacidos seleccionados en un solo formato facil de revisar.'][index] }}</p>
+              <footer>{{ ['Rutina familiar', 'Uso diario', 'Compra con informacion clara'][index] }}</footer>
             </div>
           </article>
         </div>
