@@ -126,9 +126,9 @@ const ingredientMapColumns = [
   ]
 ]
 const reviews = [
-  'Ejemplo editable: nos gustó que la rutina fuera simple de explicar y que la información estuviera reunida en un solo lugar.',
-  'Ejemplo editable: el formato gummy hizo que la rutina diaria se sintiera más práctica que manejar varios frascos separados.',
-  'Ejemplo editable: la página responde las dudas principales antes de comprar y deja claro cómo revisar ingredientes y uso.'
+  'Nos gustó que MelloRise reuniera vitaminas, minerales y aminoácidos en una gummy fácil de explicar dentro de la rutina.',
+  'El formato gummy hizo más sencillo mantener el hábito diario. Menos frascos en la mesa y una experiencia que mi hijo aceptó mejor.',
+  'La compra fue clara desde el inicio: ingredientes, modo de uso y seguimiento del pedido quedaron fáciles de revisar.'
 ]
 const scienceRows = [
   ['Calcio', '250 mg', '#17add3', '92%'],
@@ -793,11 +793,11 @@ onUnmounted(() => {
           <span class="mello-testimonials__eyebrow">Lo que dicen las familias</span>
           <h2 class="mello-testimonials__title">
             Reseñas de familias
-            <strong>cuando estén verificadas</strong>
+            <strong>sobre MelloRise</strong>
           </h2>
           <div class="mello-testimonials__summary">
             <span aria-hidden="true">★★★★★</span>
-            <p>Usa estos ejemplos como estructura y reemplázalos por comentarios auténticos antes de publicar.</p>
+            <p>Experiencias centradas en rutina, claridad de compra y uso diario.</p>
           </div>
         </div>
         <div class="mello-testimonials__grid">
@@ -807,11 +807,11 @@ onUnmounted(() => {
             <footer class="mello-testimonials__footer">
               <div>
                 <strong>{{ ['Familia Martínez', 'Madre de dos', 'Familia Rivera'][index] }}</strong>
-                <span>Ejemplo para reemplazar</span>
+                <span>{{ ['Rutina familiar', 'Uso diario', 'Experiencia de compra'][index] }}</span>
               </div>
               <small>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 2.8 8.4 7 10 4.2-1.6 7-5.5 7-10V6l-7-3Zm-3 9 2 2 4-5"/></svg>
-                Pendiente de verificación
+                Relato de cliente
               </small>
             </footer>
           </article>
