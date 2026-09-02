@@ -107,13 +107,15 @@ export const messages = {
     },
     contact: {
       title: 'Get in touch',
-      status: 'Mensaje listo para enviar cuando conectes el endpoint del formulario.',
+      status: 'Mensaje enviado. Te responderemos pronto.',
+      error: 'No pudimos enviar el mensaje ahora. Intentalo de nuevo en unos segundos.',
       name: 'Name',
       email: 'Email',
       emailRequired: 'Email *',
       phone: 'Phone number',
       comment: 'Comment',
-      send: 'Send'
+      send: 'Send',
+      sending: 'Sending...'
     },
     product: {
       topbarLabel: 'Sin hormonas, Sin gluten, Uso responsable',
@@ -826,13 +828,15 @@ export const messages = {
     },
     contact: {
       title: 'Get in touch',
-      status: 'Message ready to send when you connect the form endpoint.',
+      status: 'Message sent. We will reply soon.',
+      error: 'We could not send your message right now. Try again in a few seconds.',
       name: 'Name',
       email: 'Email',
       emailRequired: 'Email *',
       phone: 'Phone number',
       comment: 'Comment',
-      send: 'Send'
+      send: 'Send',
+      sending: 'Sending...'
     },
     product: {
       topbarLabel: 'Hormone-free, gluten-free, responsible use',

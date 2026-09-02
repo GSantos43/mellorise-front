@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { sendContactMessage } from '../services/contact'
 
 const form = reactive({
   name: '',
@@ -10,10 +11,29 @@ const form = reactive({
 })
 
 const wasSubmitted = ref(false)
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 const { t } = useI18n({ useScope: 'global' })
 
-function submitContact() {
-  wasSubmitted.value = true
+async function submitContact() {
+  if (isSubmitting.value) return
+
+  isSubmitting.value = true
+  wasSubmitted.value = false
+  errorMessage.value = ''
+
+  try {
+    await sendContactMessage(form)
+    wasSubmitted.value = true
+    form.name = ''
+    form.email = ''
+    form.phone = ''
+    form.comment = ''
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t('contact.error')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -27,6 +47,9 @@ function submitContact() {
       <form id="ContactForm" class="isolate" @submit.prevent="submitContact">
         <h2 v-if="wasSubmitted" class="form-status form-status-list form__message" tabindex="-1" autofocus>
           {{ t('contact.status') }}
+        </h2>
+        <h2 v-if="errorMessage" class="form-status form-status-list form__message" tabindex="-1">
+          {{ errorMessage }}
         </h2>
 
         <div class="contact__fields">
@@ -89,8 +112,8 @@ function submitContact() {
           </label>
         </div>
         <div class="contact__button">
-          <button type="submit" class="button">
-            {{ t('contact.send') }}
+          <button type="submit" class="button" :disabled="isSubmitting">
+            {{ isSubmitting ? t('contact.sending') : t('contact.send') }}
           </button>
         </div>
       </form>
