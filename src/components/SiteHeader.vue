@@ -200,7 +200,7 @@ watch(isMobileMenuOpen, (isOpen) => {
       </nav>
 
       <div class="mello-mobile-menu__actions">
-        <AuthMenu v-if="clerkEnabled" class="mello-mobile-menu__auth-menu" />
+        <AuthMenu v-if="clerkEnabled" class="mello-mobile-menu__auth-menu" drawer-guest-only />
         <div v-else class="mello-mobile-menu__auth">
           <a class="mello-mobile-menu__account" href="/sign-in" @click="closeMobileMenu">
             <svg viewBox="0 0 24 24" aria-hidden="true">
