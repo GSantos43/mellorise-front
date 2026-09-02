@@ -649,6 +649,8 @@ watch(isMobileMenuOpen, (isOpen) => {
     box-shadow: 0 24px 60px rgba(23, 49, 50, 0.18);
     color: #173132;
     left: 0;
+    max-width: 100vw;
+    overflow-x: hidden;
     padding: 16px 18px 22px;
     position: absolute;
     right: 0;
@@ -753,9 +755,12 @@ watch(isMobileMenuOpen, (isOpen) => {
     gap: 10px;
     grid-template-columns: 1fr;
     margin-top: 18px;
+    min-width: 0;
+    width: 100%;
   }
 
   .mello-mobile-menu__actions .mello-auth-menu {
+    min-width: 0;
     width: 100%;
   }
 
@@ -773,8 +778,11 @@ watch(isMobileMenuOpen, (isOpen) => {
     gap: 10px;
     justify-content: center;
     min-height: 48px;
+    min-width: 0;
+    max-width: 100%;
     padding: 0 16px;
     text-decoration: none;
+    white-space: normal;
     width: 100%;
   }
 
@@ -782,12 +790,16 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-mobile-menu__actions .mello-auth-menu__trigger strong,
   .mello-mobile-menu__actions .mello-auth-menu__signup {
     display: inline-block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-align: center;
   }
 
   .mello-mobile-menu__actions .mello-auth-menu__guest,
   .mello-mobile-menu__auth {
     display: grid;
     gap: 10px;
+    min-width: 0;
     width: 100%;
   }
 
@@ -802,7 +814,12 @@ watch(isMobileMenuOpen, (isOpen) => {
     font-weight: 880;
     justify-content: center;
     min-height: 48px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0 16px;
     text-decoration: none;
+    text-align: center;
+    white-space: normal;
     width: 100%;
   }
 
@@ -826,14 +843,35 @@ watch(isMobileMenuOpen, (isOpen) => {
     font-size: 15px;
     font-weight: 820;
     justify-content: center;
+    max-width: 100%;
     min-height: 48px;
+    min-width: 0;
     padding: 0 18px;
     text-decoration: none;
+    text-align: center;
+    white-space: normal;
   }
 
   .mello-mobile-menu__cta {
     background: #77cdfa;
     color: #102829;
+  }
+}
+
+@media (max-width: 380px) {
+  .mello-mobile-menu__panel {
+    padding-inline: 12px;
+  }
+
+  .mello-mobile-menu__actions .mello-auth-menu__signin,
+  .mello-mobile-menu__actions .mello-auth-menu__trigger,
+  .mello-mobile-menu__actions .mello-auth-menu__signup,
+  .mello-mobile-menu__account,
+  .mello-mobile-menu__signup,
+  .mello-mobile-menu__cta {
+    font-size: 14px;
+    line-height: 1.15;
+    padding-inline: 12px;
   }
 }
 </style>
