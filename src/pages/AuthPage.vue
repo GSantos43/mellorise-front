@@ -287,7 +287,7 @@ onUnmounted(() => {
   min-height: calc(100vh - 82px);
   min-height: calc(100svh - 82px);
   overflow: clip;
-  padding: clamp(22px, 4vh, 44px) 20px;
+  padding: clamp(18px, 3vh, 32px) 20px;
   position: relative;
 }
 
@@ -328,15 +328,16 @@ onUnmounted(() => {
 .mello-auth-page__shell {
   align-items: center;
   display: grid;
-  gap: clamp(34px, 5vw, 76px);
+  column-gap: clamp(34px, 4.2vw, 58px);
+  row-gap: 18px;
   grid-template-areas:
     "copy panel"
     "trust panel"
     "switch panel";
-  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.68fr);
+  grid-template-columns: minmax(0, 0.78fr) minmax(348px, 0.56fr);
   grid-template-rows: auto auto auto;
   margin: 0 auto;
-  max-width: 1070px;
+  max-width: 970px;
   position: relative;
   z-index: 1;
 }
@@ -350,76 +351,76 @@ onUnmounted(() => {
   display: inline-flex;
   font-size: 15px;
   font-weight: 850;
-  margin-bottom: clamp(26px, 3.6vh, 42px);
+  margin-bottom: clamp(14px, 2.2vh, 22px);
   text-decoration: none;
 }
 
 .mello-auth-page__copy h1 {
   color: #102829;
-  font-size: clamp(42px, 5vw, 64px);
+  font-size: clamp(38px, 4.2vw, 54px);
   font-weight: 860;
   letter-spacing: -0.03em;
   line-height: 0.99;
   margin: 0;
-  max-width: 11.5ch;
+  max-width: 12.5ch;
   text-wrap: balance;
 }
 
 .mello-auth-page__copy p {
   color: #53686b;
-  font-size: clamp(16px, 1.24vw, 18px);
-  font-weight: 560;
-  line-height: 1.48;
-  margin: 18px 0 0;
-  max-width: 43ch;
+  font-size: clamp(15px, 1.1vw, 17px);
+  font-weight: 620;
+  line-height: 1.42;
+  margin: 12px 0 0;
+  max-width: 40ch;
 }
 
 .mello-auth-page__trust {
   display: grid;
-  gap: 0;
+  gap: 10px;
   grid-area: trust;
-  margin-top: clamp(18px, 3vh, 26px);
-  max-width: 492px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 4px;
+  max-width: 500px;
 }
 
 .mello-auth-page__trust article {
   align-items: flex-start;
-  border-top: 1px solid rgba(23, 49, 50, 0.12);
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(23, 49, 50, 0.1);
+  border-radius: 8px;
   display: grid;
-  gap: 14px;
-  grid-template-columns: 28px 1fr;
-  padding: 15px 0;
-}
-
-.mello-auth-page__trust article:last-child {
-  border-bottom: 1px solid rgba(23, 49, 50, 0.12);
+  gap: 10px;
+  grid-template-columns: 24px 1fr;
+  min-height: 94px;
+  padding: 12px;
 }
 
 .mello-auth-page__trust svg {
   color: #186bff;
   fill: none;
-  height: 24px;
+  height: 21px;
   margin-top: 1px;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
-  width: 24px;
+  width: 21px;
 }
 
 .mello-auth-page__trust strong {
   display: block;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 780;
 }
 
 .mello-auth-page__trust small {
   color: #53686b;
   display: block;
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 560;
-  line-height: 1.45;
-  margin-top: 4px;
+  line-height: 1.34;
+  margin-top: 3px;
 }
 
 .mello-auth-page__switch {
@@ -427,7 +428,7 @@ onUnmounted(() => {
   flex-wrap: wrap;
   gap: 10px;
   grid-area: switch;
-  margin-top: clamp(20px, 3vh, 26px);
+  margin-top: 0;
 }
 
 .mello-auth-page__switch a {
@@ -439,8 +440,8 @@ onUnmounted(() => {
   display: inline-flex;
   font-size: 13px;
   font-weight: 780;
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 36px;
+  padding: 0 14px;
   text-decoration: none;
   transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
@@ -467,13 +468,13 @@ onUnmounted(() => {
 
 .mello-auth-page__card {
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 22px;
-  box-shadow: 0 26px 72px rgba(23, 49, 50, 0.13);
+  border-radius: 18px;
+  box-shadow: 0 22px 60px rgba(23, 49, 50, 0.12);
   display: grid;
   gap: 14px;
   overflow: hidden;
-  padding: 14px;
-  width: min(100%, 434px);
+  padding: 12px;
+  width: min(100%, 402px);
 }
 
 .mello-auth-page__clerk-root {
