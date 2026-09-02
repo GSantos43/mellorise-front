@@ -82,11 +82,6 @@ onUnmounted(() => {
 
       <main class="mello-auth-page__panel">
         <section class="mello-auth-page__card" aria-label="MelloRise account authentication">
-          <div class="mello-auth-page__panel-head">
-            <span>{{ t(isSignUp ? 'authPage.signUpBadge' : 'authPage.signInBadge') }}</span>
-            <strong>{{ isSignUp ? t('auth.signUp') : t('auth.signIn') }}</strong>
-          </div>
-
           <section v-if="isClerkLoading" class="mello-auth-page__clerk-loading" aria-hidden="true">
             <span class="mello-auth-page__clerk-loading-spinner"></span>
             <span></span>
@@ -419,29 +414,6 @@ onUnmounted(() => {
   width: min(100%, 434px);
 }
 
-.mello-auth-page__panel-head {
-  align-items: center;
-  background: linear-gradient(135deg, #f5fbff 0%, #f8fffc 100%);
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-between;
-  min-height: 54px;
-  padding: 0 16px;
-}
-
-.mello-auth-page__panel-head span {
-  color: #186bff;
-  font-size: 12px;
-  font-weight: 820;
-  text-transform: uppercase;
-}
-
-.mello-auth-page__panel-head strong {
-  color: #173132;
-  font-size: 14px;
-  font-weight: 820;
-}
-
 .mello-auth-page__clerk-root {
   min-width: 0;
   width: 100%;
@@ -625,17 +597,6 @@ onUnmounted(() => {
     border-radius: 20px;
     padding: 10px;
     width: min(100%, 390px);
-  }
-
-  .mello-auth-page__panel-head {
-    border-radius: 14px;
-    min-height: 48px;
-    padding: 0 14px;
-  }
-
-  .mello-auth-page__panel-head span,
-  .mello-auth-page__panel-head strong {
-    font-size: 12px;
   }
 
   .mello-auth-page__clerk-loading {
