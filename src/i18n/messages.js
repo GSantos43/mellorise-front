@@ -185,6 +185,55 @@ export const messages = {
         dailyRoutine: 'Daily routine friendly',
         clearLabel: 'Clear label formula'
       },
+      photoReviews: {
+        badge: 'Reviews',
+        title: 'Historias de familias usando MelloRise',
+        intro: 'Fotos y relatos de rutinas simples con gummies, ingredientes claros y una experiencia de compra facil de acompanar.',
+        summaryLabel: 'Resumen de resenas',
+        average: 'Promedio',
+        fiveStars: 'Cinco estrellas',
+        distributionLabel: 'Distribucion visual de resenas',
+        writeButton: 'Escribir una resena',
+        photoCount: '4 resenas con fotos',
+        latest: 'Ultimas',
+        imageAlt: 'Foto de evaluacion con gummies MelloRise',
+        replyButton: 'Responder',
+        items: {
+          amelia: {
+            title: 'Se volvio parte de la manana',
+            text: 'Mi hijo lo toma despues del desayuno y le gusto desde el primer dia. Para mi fue una forma simple de mantener la rutina sin mezclar nada.'
+          },
+          anna: {
+            title: 'Me dio mas tranquilidad',
+            text: 'Me gusto ver el frasco, revisar la etiqueta y entender la dosis. Las gummies se ven bien y el formato hizo todo mas facil.'
+          },
+          mira: {
+            title: 'Facil de recordar todos los dias',
+            text: 'Lo dejamos en la cocina junto al cafe de la manana. Tener una gummy lista ayuda mucho cuando la casa esta corriendo.'
+          },
+          lin: {
+            title: 'Ingredientes claros en un solo lugar',
+            text: 'Queria algo facil de revisar antes de comprar. La informacion del producto y la rutina recomendada quedaron muy claras.'
+          }
+        }
+      },
+      reviewForm: {
+        closeLabel: 'Cerrar resena',
+        successBadge: 'Gracias',
+        successTitle: 'Recibimos tu resena',
+        successText: 'La revisaremos antes de publicarla para mantener la pagina clara y confiable.',
+        closeButton: 'Cerrar',
+        badge: 'Tu experiencia',
+        title: 'Escribe una resena',
+        intro: 'Cuenta como MelloRise encajo en tu rutina familiar. Evita datos medicos personales.',
+        nameLabel: 'Nombre',
+        namePlaceholder: 'Tu nombre',
+        emailLabel: 'Email de compra',
+        emailPlaceholder: 'tu@email.com',
+        reviewLabel: 'Tu resena',
+        reviewPlaceholder: 'Comparte tu experiencia con el producto',
+        submitButton: 'Enviar resena'
+      },
       accordions: {
         details: {
           title: 'Detalles del producto',
@@ -854,6 +903,55 @@ export const messages = {
         noStimulants: 'No stimulants',
         dailyRoutine: 'Daily routine friendly',
         clearLabel: 'Clear label formula'
+      },
+      photoReviews: {
+        badge: 'Reviews',
+        title: 'Stories from families using MelloRise',
+        intro: 'Photos and stories of simple routines with gummies, clear ingredients, and an easy purchase experience to follow.',
+        summaryLabel: 'Review summary',
+        average: 'Average',
+        fiveStars: 'Five stars',
+        distributionLabel: 'Visual review distribution',
+        writeButton: 'Write a review',
+        photoCount: '4 reviews with photos',
+        latest: 'Latest',
+        imageAlt: 'Review photo with MelloRise gummies',
+        replyButton: 'Reply',
+        items: {
+          amelia: {
+            title: 'It became part of the morning',
+            text: 'My child takes it after breakfast and liked it from the first day. For me, it was a simple way to keep the routine without mixing anything.'
+          },
+          anna: {
+            title: 'It gave me more peace of mind',
+            text: 'I liked seeing the bottle, reviewing the label, and understanding the dosage. The gummies look good, and the format made everything easier.'
+          },
+          mira: {
+            title: 'Easy to remember every day',
+            text: 'We keep it in the kitchen by the morning coffee. Having a gummy ready helps a lot when the house is rushing.'
+          },
+          lin: {
+            title: 'Clear ingredients in one place',
+            text: 'I wanted something easy to review before buying. The product information and recommended routine were very clear.'
+          }
+        }
+      },
+      reviewForm: {
+        closeLabel: 'Close review',
+        successBadge: 'Thank you',
+        successTitle: 'We received your review',
+        successText: 'We will review it before publishing to keep the page clear and trustworthy.',
+        closeButton: 'Close',
+        badge: 'Your experience',
+        title: 'Write a review',
+        intro: 'Share how MelloRise fit into your family routine. Avoid personal medical details.',
+        nameLabel: 'Name',
+        namePlaceholder: 'Your name',
+        emailLabel: 'Purchase email',
+        emailPlaceholder: 'you@email.com',
+        reviewLabel: 'Your review',
+        reviewPlaceholder: 'Share your experience with the product',
+        submitButton: 'Send review'
       },
       accordions: {
         details: {

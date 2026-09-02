@@ -62,32 +62,32 @@ const photoReviews = [
     initial: 'A',
     name: 'Amelia',
     flag: 'US',
-    title: 'Se volvio parte de la manana',
-    text: 'Mi hijo lo toma despues del desayuno y le gusto desde el primer dia. Para mi fue una forma simple de mantener la rutina sin mezclar nada.'
+    titleKey: 'product.photoReviews.items.amelia.title',
+    textKey: 'product.photoReviews.items.amelia.text'
   },
   {
     image: '/assets/review-mellorise-gummies-hand.png',
     initial: 'N',
     name: 'Anna',
     flag: 'US',
-    title: 'Me dio mas tranquilidad',
-    text: 'Me gusto ver el frasco, revisar la etiqueta y entender la dosis. Las gummies se ven bien y el formato hizo todo mas facil.'
+    titleKey: 'product.photoReviews.items.anna.title',
+    textKey: 'product.photoReviews.items.anna.text'
   },
   {
     image: '/assets/review-mellorise-desk.png',
     initial: 'M',
     name: 'Mira',
     flag: 'CA',
-    title: 'Facil de recordar todos los dias',
-    text: 'Lo dejamos en la cocina junto al cafe de la manana. Tener una gummy lista ayuda mucho cuando la casa esta corriendo.'
+    titleKey: 'product.photoReviews.items.mira.title',
+    textKey: 'product.photoReviews.items.mira.text'
   },
   {
     image: '/assets/review-mellorise-label.png',
     initial: 'L',
     name: 'Lin',
     flag: 'AU',
-    title: 'Ingredientes claros en un solo lugar',
-    text: 'Queria algo facil de revisar antes de comprar. La informacion del producto y la rutina recomendada quedaron muy claras.'
+    titleKey: 'product.photoReviews.items.lin.title',
+    textKey: 'product.photoReviews.items.lin.text'
   }
 ]
 
@@ -1159,45 +1159,45 @@ watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) 
     <div class="gg-photo-reviews-section" id="reviews">
       <div class="gg-shell gg-photo-reviews">
         <div class="gg-photo-reviews__head">
-          <span class="gg-photo-reviews__eyebrow">Reviews</span>
-          <h2>Historias de familias usando MelloRise</h2>
-          <p>Fotos y relatos de rutinas simples con gummies, ingredientes claros y una experiencia de compra facil de acompanar.</p>
+          <span class="gg-photo-reviews__eyebrow">{{ t('product.photoReviews.badge') }}</span>
+          <h2>{{ t('product.photoReviews.title') }}</h2>
+          <p>{{ t('product.photoReviews.intro') }}</p>
         </div>
 
-        <div class="gg-photo-reviews__summary" aria-label="Resumen de resenas">
+        <div class="gg-photo-reviews__summary" :aria-label="t('product.photoReviews.summaryLabel')">
           <div class="gg-photo-reviews__score">
-            <span>Promedio</span>
+            <span>{{ t('product.photoReviews.average') }}</span>
             <strong>5</strong>
-            <div class="gg-photo-reviews__stars" aria-label="Cinco estrellas">★★★★★</div>
+            <div class="gg-photo-reviews__stars" :aria-label="t('product.photoReviews.fiveStars')">★★★★★</div>
           </div>
-          <div class="gg-photo-reviews__bars" aria-label="Distribucion visual de resenas">
+          <div class="gg-photo-reviews__bars" :aria-label="t('product.photoReviews.distributionLabel')">
             <div><span>5 ★</span><i style="--fill: 97%"></i><em>97%</em></div>
             <div><span>4 ★</span><i style="--fill: 3%"></i><em>3%</em></div>
             <div><span>3 ★</span><i style="--fill: 0%"></i><em>0%</em></div>
             <div><span>2 ★</span><i style="--fill: 0%"></i><em>0%</em></div>
             <div><span>1 ★</span><i style="--fill: 0%"></i><em>0%</em></div>
           </div>
-          <button class="gg-photo-reviews__button" type="button" @click="openReviewForm">Escribir una resena</button>
+          <button class="gg-photo-reviews__button" type="button" @click="openReviewForm">{{ t('product.photoReviews.writeButton') }}</button>
         </div>
 
         <div class="gg-photo-reviews__meta">
-          <span>4 resenas con fotos</span>
-          <span>Ultimas <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+          <span>{{ t('product.photoReviews.photoCount') }}</span>
+          <span>{{ t('product.photoReviews.latest') }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
         </div>
 
         <div class="gg-photo-reviews__grid">
           <article v-for="review in photoReviews" :key="review.image" class="gg-photo-review-card">
             <div class="gg-photo-review-card__media">
-              <img :src="review.image" alt="Foto de evaluacion con gummies MelloRise" width="1024" height="1024" loading="lazy">
+              <img :src="review.image" :alt="t('product.photoReviews.imageAlt')" width="1024" height="1024" loading="lazy">
             </div>
             <div class="gg-photo-review-card__body">
               <div class="gg-photo-review-card__author"><b>{{ review.initial }}</b><span>{{ review.name }} <small>{{ review.flag }}</small></span></div>
-              <div class="gg-photo-reviews__stars" aria-label="Cinco estrellas">★★★★★</div>
-              <h3>{{ review.title }}</h3>
-              <p>{{ review.text }}</p>
+              <div class="gg-photo-reviews__stars" :aria-label="t('product.photoReviews.fiveStars')">★★★★★</div>
+              <h3>{{ t(review.titleKey) }}</h3>
+              <p>{{ t(review.textKey) }}</p>
               <button class="gg-photo-review-card__reply" type="button" @click="openReviewForm">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a7 7 0 0 1-7 7H8l-5 3 1.7-5.1A7 7 0 1 1 21 12Z"/></svg>
-                Responder
+                {{ t('product.photoReviews.replyButton') }}
               </button>
             </div>
           </article>
@@ -1209,32 +1209,32 @@ watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) 
       <Transition name="gg-review-modal">
         <div v-if="isReviewFormOpen" class="gg-review-modal" role="dialog" aria-modal="true" aria-labelledby="gg-review-modal-title" @click.self="closeReviewForm">
           <div class="gg-review-modal__card">
-            <button class="gg-review-modal__close" type="button" aria-label="Cerrar resena" @click="closeReviewForm">
+            <button class="gg-review-modal__close" type="button" :aria-label="t('product.reviewForm.closeLabel')" @click="closeReviewForm">
               <span aria-hidden="true"></span>
             </button>
             <template v-if="isReviewSubmitted">
-              <span class="gg-review-modal__badge">Gracias</span>
-              <h2 id="gg-review-modal-title">Recibimos tu resena</h2>
-              <p>La revisaremos antes de publicarla para mantener la pagina clara y confiable.</p>
-              <button class="gg-review-modal__submit" type="button" @click="closeReviewForm">Cerrar</button>
+              <span class="gg-review-modal__badge">{{ t('product.reviewForm.successBadge') }}</span>
+              <h2 id="gg-review-modal-title">{{ t('product.reviewForm.successTitle') }}</h2>
+              <p>{{ t('product.reviewForm.successText') }}</p>
+              <button class="gg-review-modal__submit" type="button" @click="closeReviewForm">{{ t('product.reviewForm.closeButton') }}</button>
             </template>
             <form v-else class="gg-review-form" @submit.prevent="submitReviewForm">
-              <span class="gg-review-modal__badge">Tu experiencia</span>
-              <h2 id="gg-review-modal-title">Escribe una resena</h2>
-              <p>Cuenta como MelloRise encajo en tu rutina familiar. Evita datos medicos personales.</p>
+              <span class="gg-review-modal__badge">{{ t('product.reviewForm.badge') }}</span>
+              <h2 id="gg-review-modal-title">{{ t('product.reviewForm.title') }}</h2>
+              <p>{{ t('product.reviewForm.intro') }}</p>
               <label>
-                Nombre
-                <input type="text" name="name" autocomplete="name" placeholder="Tu nombre" required>
+                {{ t('product.reviewForm.nameLabel') }}
+                <input type="text" name="name" autocomplete="name" :placeholder="t('product.reviewForm.namePlaceholder')" required>
               </label>
               <label>
-                Email de compra
-                <input type="email" name="email" autocomplete="email" placeholder="tu@email.com" required>
+                {{ t('product.reviewForm.emailLabel') }}
+                <input type="email" name="email" autocomplete="email" :placeholder="t('product.reviewForm.emailPlaceholder')" required>
               </label>
               <label>
-                Tu resena
-                <textarea name="review" rows="5" placeholder="Comparte tu experiencia con el producto" required></textarea>
+                {{ t('product.reviewForm.reviewLabel') }}
+                <textarea name="review" rows="5" :placeholder="t('product.reviewForm.reviewPlaceholder')" required></textarea>
               </label>
-              <button class="gg-review-modal__submit" type="submit">Enviar resena</button>
+              <button class="gg-review-modal__submit" type="submit">{{ t('product.reviewForm.submitButton') }}</button>
             </form>
           </div>
         </div>
