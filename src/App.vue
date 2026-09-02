@@ -10,7 +10,6 @@ import FaqPage from './pages/FaqPage.vue'
 import InstitutionalPage from './pages/InstitutionalPage.vue'
 import CheckoutPage from './pages/CheckoutPage.vue'
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
-import TrackOrderPage from './pages/TrackOrderPage.vue'
 import AccountOrdersPage from './pages/AccountOrdersPage.vue'
 import AccountOrderDetailPage from './pages/AccountOrderDetailPage.vue'
 import AccountAuthUnavailablePage from './pages/AccountAuthUnavailablePage.vue'
@@ -417,6 +416,13 @@ function handlePopState() {
   route.value = nextPath
 }
 
+function redirectTrackingToAccountOrders() {
+  if (currentPage.value !== 'tracking' || !props.clerkEnabled || isSignedIn.value !== true) return
+
+  window.history.replaceState({}, '', '/account/orders')
+  route.value = window.location.pathname
+}
+
 function handleBeforeUnload(event) {
   if (!shouldConfirmCheckoutExit.value) return
 
@@ -617,6 +623,7 @@ watch([route, cartItem, isAuthLoaded, isSignedIn], () => {
   if (currentPage.value !== 'checkout') return
   ensureCheckoutSession()
 }, { flush: 'post' })
+watch([route, isAuthLoaded, isSignedIn], redirectTrackingToAccountOrders, { immediate: true, flush: 'post' })
 watch(documentTitle, updateDocumentTitle, { immediate: true })
 watch(cartItem, persistCartItem, { deep: true })
 watch(activeDiscount, persistDiscount, { deep: true })
@@ -710,7 +717,12 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :order-id="accountOrderId"
     />
     <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders' || currentPage === 'account-order-detail'" />
-    <TrackOrderPage v-else-if="currentPage === 'tracking'" />
+    <AuthPage
+      v-else-if="currentPage === 'tracking' && props.clerkEnabled"
+      mode="sign-in"
+      fallback-redirect-path="/account/orders"
+    />
+    <AccountAuthUnavailablePage v-else-if="currentPage === 'tracking'" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"
       :item="cartItem"
@@ -732,9 +744,9 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :purchase-eligibility="purchaseEligibility"
       @add-to-cart="addToCart"
     />
-    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up'].includes(currentPage)" />
+    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking'].includes(currentPage)" />
     <button
-      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'account-orders', 'account-order-detail'].includes(currentPage)"
+      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking', 'account-orders', 'account-order-detail'].includes(currentPage)"
       class="mello-floating-cart"
       type="button"
       :aria-label="t('nav.cart')"

@@ -9,6 +9,10 @@ const props = defineProps({
     type: String,
     default: 'sign-in',
     validator: (value) => ['sign-in', 'sign-up'].includes(value)
+  },
+  fallbackRedirectPath: {
+    type: String,
+    default: ''
   }
 })
 
@@ -18,7 +22,7 @@ const { user } = useUser()
 
 const isSignUp = computed(() => props.mode === 'sign-up')
 const isClerkLoading = computed(() => !isLoaded.value)
-const authFallbackRedirectUrl = computed(() => getSafeRedirectPath() || '/collections/all')
+const authFallbackRedirectUrl = computed(() => getSafeRedirectPath() || props.fallbackRedirectPath || '/collections/all')
 const authSignInUrl = computed(() => getAuthPath('/sign-in'))
 const authSignUpUrl = computed(() => getAuthPath('/sign-up'))
 const displayName = computed(() => (
