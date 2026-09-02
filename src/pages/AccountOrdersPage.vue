@@ -103,6 +103,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 
         <div v-else-if="errorMessage" class="mello-account__state is-error" role="alert">
           <h2>{{ t('account.errorTitle') }}</h2>
+          <p>{{ t('account.error') }}</p>
           <button type="button" @click="loadOrders">{{ t('account.tryAgain') }}</button>
         </div>
 
@@ -176,7 +177,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   gap: clamp(18px, 2.4vw, 28px);
   margin: 0 auto;
   max-width: 1040px;
-  min-height: min(620px, calc(100svh - 150px));
+  min-height: min(520px, calc(100svh - 150px));
   overflow: hidden;
   padding: clamp(24px, 3.4vw, 40px);
 }
@@ -270,13 +271,13 @@ watch([isLoaded, isSignedIn], loadOrders)
   align-content: center;
   display: grid;
   justify-items: center;
-  min-height: 300px;
+  min-height: 220px;
   padding: clamp(24px, 4vw, 46px) 18px;
   text-align: center;
 }
 
 .mello-account__state.is-inline {
-  min-height: 280px;
+  min-height: 220px;
 }
 
 .mello-account__state h2,
@@ -451,7 +452,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   .mello-account__card {
     border-radius: 16px;
     gap: 18px;
-    min-height: calc(100svh - 104px);
+    min-height: 0;
     padding: 22px 18px;
   }
 
@@ -499,7 +500,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 @media (max-width: 420px) {
   .mello-account__state,
   .mello-account__empty {
-    min-height: 260px;
+    min-height: 190px;
     padding-inline: 4px;
   }
 
