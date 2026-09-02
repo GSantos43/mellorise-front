@@ -45,6 +45,7 @@ const isCheckoutLoading = ref(false)
 const isCheckoutTransitionLoading = ref(false)
 const isCheckoutExitConfirmVisible = ref(false)
 const isPageLoading = ref(true)
+const discountNotice = ref(null)
 const purchaseEligibility = ref({
   allowed: true,
   countryCode: null,
@@ -66,6 +67,7 @@ let staticTranslationObserver = null
 let pageLoaderTimer = 0
 let checkoutTransitionTimer = 0
 let pendingCheckoutExitPath = ''
+let discountNoticeTimer = 0
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
@@ -203,6 +205,23 @@ function applyDiscount(discount) {
   if (!discount?.code || !discount?.email) return
 
   activeDiscount.value = discount
+  showDiscountNotice(discount.email)
+}
+
+function showDiscountNotice(email) {
+  window.clearTimeout(discountNoticeTimer)
+  discountNotice.value = {
+    title: t('home.offer.sentTitle'),
+    message: t('home.offer.sentMessage', { email })
+  }
+  discountNoticeTimer = window.setTimeout(() => {
+    discountNotice.value = null
+  }, 5200)
+}
+
+function closeDiscountNotice() {
+  window.clearTimeout(discountNoticeTimer)
+  discountNotice.value = null
 }
 
 function readSavedCartItem() {
@@ -547,6 +566,10 @@ onUnmounted(() => {
     window.clearTimeout(pageLoaderTimer)
   }
 
+  if (discountNoticeTimer) {
+    window.clearTimeout(discountNoticeTimer)
+  }
+
   if (staticTranslationFrame) {
     window.cancelAnimationFrame(staticTranslationFrame)
   }
@@ -589,6 +612,22 @@ watch(activeDiscount, persistDiscount, { deep: true })
             <small>{{ t('checkoutTransition.text') }}</small>
           </div>
         </div>
+      </Transition>
+    </Teleport>
+    <Teleport to="body">
+      <Transition name="mello-discount-notice">
+        <aside v-if="discountNotice" class="mello-discount-notice" role="status" aria-live="polite">
+          <span class="mello-discount-notice__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>
+          </span>
+          <span class="mello-discount-notice__content">
+            <strong>{{ discountNotice.title }}</strong>
+            <span>{{ discountNotice.message }}</span>
+          </span>
+          <button class="mello-discount-notice__close" type="button" :aria-label="t('home.offer.closeNotice')" @click="closeDiscountNotice">
+            <span aria-hidden="true"></span>
+          </button>
+        </aside>
       </Transition>
     </Teleport>
     <Teleport to="body">
@@ -691,6 +730,121 @@ watch(activeDiscount, persistDiscount, { deep: true })
 </template>
 
 <style>
+.mello-discount-notice {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(19, 49, 48, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(11, 35, 34, 0.18);
+  color: #102f2e;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 36px minmax(0, 1fr) 32px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 14px;
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  top: max(18px, env(safe-area-inset-top));
+  z-index: 21000;
+}
+
+.mello-discount-notice__mark {
+  align-items: center;
+  background: #133130;
+  border-radius: 50%;
+  color: #ffffff;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.mello-discount-notice__mark svg {
+  display: block;
+  height: 18px;
+  width: 18px;
+}
+
+.mello-discount-notice__mark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.mello-discount-notice__content {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mello-discount-notice__content strong {
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.mello-discount-notice__content span {
+  color: #5d7271;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.mello-discount-notice__close {
+  align-items: center;
+  appearance: none;
+  background: rgba(19, 49, 48, 0.07);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  padding: 0;
+  width: 32px;
+}
+
+.mello-discount-notice__close span,
+.mello-discount-notice__close span::after {
+  background: #133130;
+  border-radius: 999px;
+  content: '';
+  display: block;
+  height: 2px;
+  width: 13px;
+}
+
+.mello-discount-notice__close span {
+  transform: rotate(45deg);
+}
+
+.mello-discount-notice__close span::after {
+  transform: rotate(90deg);
+}
+
+.mello-discount-notice-enter-active,
+.mello-discount-notice-leave-active {
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-discount-notice-enter-from,
+.mello-discount-notice-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .mello-discount-notice {
+    left: 12px;
+    right: 12px;
+    top: max(12px, env(safe-area-inset-top));
+    max-width: none;
+  }
+}
+
 .mello-checkout-transition {
   align-items: center;
   background:

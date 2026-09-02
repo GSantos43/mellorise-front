@@ -258,6 +258,9 @@ export const messages = {
         loading: 'Generando cupón...',
         error: 'No fue posible generar el cupón. Intenta de nuevo.',
         missingEmail: 'Tu cuenta necesita un email verificado.',
+        sentTitle: 'Cupón enviado',
+        sentMessage: 'Enviamos tu 10% a {email}.',
+        closeNotice: 'Cerrar aviso',
         dismiss: 'No, prefiero continuar',
         close: 'Cerrar oferta',
         shopWithDiscount: 'Comprar con descuento'
@@ -925,6 +928,9 @@ export const messages = {
         loading: 'Creating coupon...',
         error: 'We could not create the coupon. Please try again.',
         missingEmail: 'Your account needs a verified email.',
+        sentTitle: 'Coupon sent',
+        sentMessage: 'We sent your 10% discount to {email}.',
+        closeNotice: 'Close notification',
         dismiss: 'No, I prefer to continue',
         close: 'Close offer',
         shopWithDiscount: 'Shop with discount'
