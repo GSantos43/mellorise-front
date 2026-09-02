@@ -1131,10 +1131,10 @@ watch(isGalleryLightboxOpen, (isOpen) => {
 
         <div class="gg-photo-reviews__grid">
           <article v-for="review in [
-            ['/assets/review-photo-routine.png', 'A', 'Amelia', 'Rutina mas facil', 'Formato practico para mantener una rutina familiar simple.'],
-            ['/assets/review-photo-bottle.jpg', 'N', 'Anna', 'Producto claro', 'Una presentacion facil de revisar y agregar al dia.'],
-            ['/assets/review-photo-desk.jpg', 'M', 'Mira', 'Uso cotidiano', 'La experiencia gummy ayuda a que la rutina se sienta sencilla.'],
-            ['/assets/review-photo-family.jpg', 'L', 'Lin', 'Compra guiada', 'Informacion organizada para elegir con mas confianza.']
+            ['/assets/review-photo-routine.png', 'A', 'Amelia', 'Se volvio parte de la manana', 'Lo dejamos junto al desayuno y ahora es una rutina facil de recordar antes de salir.'],
+            ['/assets/review-photo-bottle.jpg', 'N', 'Anna', 'Me dio mas tranquilidad', 'Me gusto poder revisar ingredientes y dosis con claridad antes de agregarlo al dia.'],
+            ['/assets/review-photo-desk.jpg', 'M', 'Mira', 'A mi hijo le gusto el formato', 'Que fuera gummy ayudo mucho. No tuve que mezclar nada ni pelear con capsulas.'],
+            ['/assets/review-photo-family.jpg', 'L', 'Lin', 'La compra fue sencilla', 'Encontramos la informacion rapido y pudimos seguir el pedido sin complicarnos.']
           ]" :key="review[0]" class="gg-photo-review-card">
             <div class="gg-photo-review-card__media">
               <img :src="review[0]" alt="Foto de rutina familiar con gummies MelloRise" width="1024" height="1024" loading="lazy">

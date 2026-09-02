@@ -287,12 +287,14 @@ const staticTextMap = new Map(Object.entries({
   'Resenas con fotos': 'Reviews with photos',
   'Ultimas': 'Latest',
   'Foto de rutina familiar con gummies MelloRise': 'Family routine photo with MelloRise gummies',
-  'Rutina mas facil': 'Easier routine',
-  'Producto claro': 'Clear product',
-  'Uma presentacion facil de revisar y agregar al dia.': 'A presentation that is easy to review and add to the day.',
-  'Una presentacion facil de revisar y agregar al dia.': 'A presentation that is easy to review and add to the day.',
-  'La experiencia gummy ayuda a que la rutina se sienta sencilla.': 'The gummy experience helps the routine feel simple.',
-  'Informacion organizada para elegir con mas confianza.': 'Organized information to choose with more confidence.',
+  'Se volvio parte de la manana': 'It became part of the morning',
+  'Lo dejamos junto al desayuno y ahora es una rutina facil de recordar antes de salir.': 'We keep it by breakfast, and now it is an easy routine to remember before leaving.',
+  'Me dio mas tranquilidad': 'It gave me more peace of mind',
+  'Me gusto poder revisar ingredientes y dosis con claridad antes de agregarlo al dia.': 'I liked being able to review ingredients and dosage clearly before adding it to the day.',
+  'A mi hijo le gusto el formato': 'My child liked the format',
+  'Que fuera gummy ayudo mucho. No tuve que mezclar nada ni pelear con capsulas.': 'The gummy format helped a lot. I did not have to mix anything or struggle with capsules.',
+  'La compra fue sencilla': 'The purchase was simple',
+  'Encontramos la informacion rapido y pudimos seguir el pedido sin complicarnos.': 'We found the information quickly and could track the order without complications.',
   'Compra rapida': 'Quick buy'
 }))
 
