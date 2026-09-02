@@ -18,6 +18,7 @@ const { user } = useUser()
 
 const isSignUp = computed(() => props.mode === 'sign-up')
 const isClerkLoading = computed(() => !isLoaded.value)
+const authFallbackRedirectUrl = '/collections/all'
 const displayName = computed(() => (
   user.value?.firstName ||
   user.value?.fullName ||
@@ -104,8 +105,8 @@ onUnmounted(() => {
             path="/sign-up"
             routing="path"
             sign-in-url="/sign-in"
-            fallback-redirect-url="/account/orders"
-            sign-in-fallback-redirect-url="/account/orders"
+            :fallback-redirect-url="authFallbackRedirectUrl"
+            :sign-in-fallback-redirect-url="authFallbackRedirectUrl"
             :appearance="clerkAppearance"
           />
 
@@ -114,8 +115,8 @@ onUnmounted(() => {
             path="/sign-in"
             routing="path"
             sign-up-url="/sign-up"
-            fallback-redirect-url="/account/orders"
-            sign-up-fallback-redirect-url="/account/orders"
+            :fallback-redirect-url="authFallbackRedirectUrl"
+            :sign-up-fallback-redirect-url="authFallbackRedirectUrl"
             :appearance="clerkAppearance"
           />
         </section>
