@@ -17,7 +17,11 @@ app.use(i18n)
 if (clerkPublishableKey) {
   app.use(clerkPlugin, {
     publishableKey: clerkPublishableKey,
+    signInUrl: '/sign-in',
+    signUpUrl: '/sign-up',
+    signInForceRedirectUrl: authFallbackRedirectUrl,
     signInFallbackRedirectUrl: authFallbackRedirectUrl,
+    signUpForceRedirectUrl: authFallbackRedirectUrl,
     signUpFallbackRedirectUrl: authFallbackRedirectUrl,
   })
 }

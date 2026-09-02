@@ -104,9 +104,12 @@ onUnmounted(() => {
             v-else-if="isSignUp"
             path="/sign-up"
             routing="path"
+            oauth-flow="redirect"
             sign-in-url="/sign-in"
             :fallback-redirect-url="authFallbackRedirectUrl"
+            :force-redirect-url="authFallbackRedirectUrl"
             :sign-in-fallback-redirect-url="authFallbackRedirectUrl"
+            :sign-in-force-redirect-url="authFallbackRedirectUrl"
             :appearance="clerkAppearance"
           />
 
@@ -114,9 +117,12 @@ onUnmounted(() => {
             v-else
             path="/sign-in"
             routing="path"
+            oauth-flow="redirect"
             sign-up-url="/sign-up"
             :fallback-redirect-url="authFallbackRedirectUrl"
+            :force-redirect-url="authFallbackRedirectUrl"
             :sign-up-fallback-redirect-url="authFallbackRedirectUrl"
+            :sign-up-force-redirect-url="authFallbackRedirectUrl"
             :appearance="clerkAppearance"
           />
         </section>
