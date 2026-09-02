@@ -382,6 +382,35 @@ onUnmounted(() => {
     width: 100%;
   }
 
+  .mello-mobile-menu__auth-menu .mello-auth-menu__trigger {
+    background: rgba(239, 249, 255, 0.95);
+    border-radius: 14px;
+    display: flex;
+    gap: 10px;
+    height: auto;
+    justify-content: flex-start;
+    max-width: 100%;
+    min-height: 48px;
+    min-width: 0;
+    padding: 4px 12px 4px 7px;
+    width: 100%;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__trigger strong {
+    display: block;
+    flex: 1 1 auto;
+    max-width: none;
+    min-width: 0;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__trigger > svg {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
   .mello-mobile-menu__auth-menu .mello-auth-menu__guest {
     display: grid;
     gap: 10px;
@@ -420,6 +449,15 @@ onUnmounted(() => {
     display: inline-block;
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__panel {
+    left: 0;
+    min-width: 100%;
+    right: auto;
+    top: calc(100% + 8px);
+    width: 100%;
+    z-index: 140;
   }
 
 }

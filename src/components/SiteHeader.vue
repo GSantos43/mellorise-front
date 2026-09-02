@@ -650,7 +650,7 @@ watch(isMobileMenuOpen, (isOpen) => {
     color: #173132;
     left: 0;
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow: visible;
     padding: 16px 18px 22px;
     position: absolute;
     right: 0;
