@@ -369,5 +369,50 @@ onUnmounted(() => {
   .mello-auth-menu__panel {
     right: -52px;
   }
+
+  .mello-mobile-menu__auth-menu {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__guest {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__signin,
+  .mello-mobile-menu__auth-menu .mello-auth-menu__signup {
+    border-radius: 14px;
+    display: flex;
+    font-size: 15px;
+    justify-content: center;
+    min-height: 48px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0 16px;
+    text-align: center;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__signin {
+    background: #eff9ff;
+    color: #173132;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__signup {
+    background: #173132;
+    color: #ffffff;
+  }
+
+  .mello-mobile-menu__auth-menu .mello-auth-menu__signin span,
+  .mello-mobile-menu__auth-menu .mello-auth-menu__signup span {
+    display: inline-block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
 }
 </style>

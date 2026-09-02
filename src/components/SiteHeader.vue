@@ -200,7 +200,7 @@ watch(isMobileMenuOpen, (isOpen) => {
       </nav>
 
       <div class="mello-mobile-menu__actions">
-        <AuthMenu v-if="clerkEnabled" />
+        <AuthMenu v-if="clerkEnabled" class="mello-mobile-menu__auth-menu" />
         <div v-else class="mello-mobile-menu__auth">
           <a class="mello-mobile-menu__account" href="/sign-in" @click="closeMobileMenu">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -759,14 +759,6 @@ watch(isMobileMenuOpen, (isOpen) => {
     width: 100%;
   }
 
-  .mello-mobile-menu__actions .mello-auth-menu {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .mello-mobile-menu__actions .mello-auth-menu__signin,
-  .mello-mobile-menu__actions .mello-auth-menu__trigger,
-  .mello-mobile-menu__actions .mello-auth-menu__signup,
   .mello-mobile-menu__account {
     align-items: center;
     background: #eff9ff;
@@ -786,16 +778,6 @@ watch(isMobileMenuOpen, (isOpen) => {
     width: 100%;
   }
 
-  .mello-mobile-menu__actions .mello-auth-menu__signin span,
-  .mello-mobile-menu__actions .mello-auth-menu__trigger strong,
-  .mello-mobile-menu__actions .mello-auth-menu__signup {
-    display: inline-block;
-    min-width: 0;
-    overflow-wrap: anywhere;
-    text-align: center;
-  }
-
-  .mello-mobile-menu__actions .mello-auth-menu__guest,
   .mello-mobile-menu__auth {
     display: grid;
     gap: 10px;
@@ -803,7 +785,6 @@ watch(isMobileMenuOpen, (isOpen) => {
     width: 100%;
   }
 
-  .mello-mobile-menu__actions .mello-auth-menu__signup,
   .mello-mobile-menu__signup {
     align-items: center;
     background: #173132;
@@ -821,14 +802,6 @@ watch(isMobileMenuOpen, (isOpen) => {
     text-align: center;
     white-space: normal;
     width: 100%;
-  }
-
-  .mello-mobile-menu__actions .mello-auth-menu__panel {
-    border-radius: 14px;
-    box-shadow: 0 18px 44px rgba(23, 49, 50, 0.14);
-    left: 0;
-    min-width: 100%;
-    right: auto;
   }
 
   .mello-mobile-menu__account svg {

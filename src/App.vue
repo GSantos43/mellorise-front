@@ -631,7 +631,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" :class="`mello-route-${currentPage}`" @click="navigate">
-    <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" :clerk-enabled="props.clerkEnabled" />
+    <SiteHeader v-if="!['checkout', 'checkout-success', 'tracking'].includes(currentPage)" :current-route="route" :clerk-enabled="props.clerkEnabled" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
