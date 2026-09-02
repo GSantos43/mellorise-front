@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useAuth, useUser } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import { createWelcomeDiscount } from '../services/discounts'
 
@@ -15,11 +16,25 @@ const props = defineProps({
   activeDiscount: {
     type: Object,
     default: null
+  },
+  clerkEnabled: {
+    type: Boolean,
+    default: false
   }
 })
 const emit = defineEmits(['discount-created'])
 
 const { t } = useI18n()
+const authState = props.clerkEnabled
+  ? useAuth()
+  : {
+    isLoaded: ref(true),
+    isSignedIn: ref(false),
+    getToken: ref(async () => '')
+  }
+const userState = props.clerkEnabled ? useUser() : { user: ref(null) }
+const { isLoaded: isAuthLoaded, isSignedIn, getToken } = authState
+const { user } = userState
 
 const announcementItems = ['Sin hormonas', 'Etiqueta clara', 'Uso responsable', 'Sin gluten', 'Ingredientes seleccionados']
 const nutrients = [
@@ -161,9 +176,9 @@ const comparisonNegative = [
 ]
 
 const OFFER_LOAD_COUNT_KEY = 'mellorise-offer-load-count'
+const PENDING_OFFER_KEY = 'mellorise-pending-welcome-discount'
 const isOfferVisible = ref(false)
 const isOfferExitConfirmVisible = ref(false)
-const offerEmail = ref('')
 const offerError = ref('')
 const isOfferSubmitting = ref(false)
 const openHomeFaqIndex = ref(null)
@@ -172,6 +187,11 @@ const densityCard = ref(null)
 const isDensityVisible = ref(false)
 let densityObserver
 let revealObserver
+const signedInEmail = computed(() => user.value?.primaryEmailAddress?.emailAddress || user.value?.emailAddresses?.[0]?.emailAddress || '')
+const offerClaimLabel = computed(() => {
+  if (isOfferSubmitting.value || !isAuthLoaded.value) return t('home.offer.loading')
+  return isSignedIn.value ? t('home.offer.claim') : t('home.offer.signInClaim')
+})
 
 const revealSelectors = [
   '.gh-ticker',
@@ -263,6 +283,7 @@ function keepOffer() {
 }
 
 function confirmCloseOffer() {
+  clearPendingOffer()
   closeOffer()
 }
 
@@ -270,11 +291,28 @@ async function claimWelcomeOffer() {
   if (isOfferSubmitting.value) return
 
   offerError.value = ''
+
+  if (!isAuthLoaded.value) {
+    return
+  }
+
+  if (!isSignedIn.value) {
+    redirectToOfferLogin()
+    return
+  }
+
+  if (!signedInEmail.value) {
+    offerError.value = t('home.offer.missingEmail')
+    return
+  }
+
   isOfferSubmitting.value = true
 
   try {
-    const discount = await createWelcomeDiscount(offerEmail.value)
+    const token = await getToken.value()
+    const discount = await createWelcomeDiscount({ token })
     emit('discount-created', discount)
+    clearPendingOffer()
     closeOffer()
     window.history.pushState({}, '', '/products/wondernest-heightener-gummies-2026')
     window.dispatchEvent(new Event('popstate'))
@@ -282,6 +320,44 @@ async function claimWelcomeOffer() {
     offerError.value = error.message || t('home.offer.error')
   } finally {
     isOfferSubmitting.value = false
+  }
+}
+
+function redirectToOfferLogin() {
+  if (typeof window === 'undefined') return
+
+  window.sessionStorage.setItem(PENDING_OFFER_KEY, '1')
+  const redirectPath = '/?claim_discount=1'
+  window.history.pushState({}, '', `/sign-in?redirect_url=${encodeURIComponent(redirectPath)}`)
+  window.dispatchEvent(new Event('popstate'))
+}
+
+function clearPendingOffer() {
+  if (typeof window === 'undefined') return
+
+  window.sessionStorage.removeItem(PENDING_OFFER_KEY)
+  if (window.location.search.includes('claim_discount=1')) {
+    window.history.replaceState({}, '', '/')
+  }
+}
+
+function shouldResumePendingOffer() {
+  if (typeof window === 'undefined') return false
+
+  return (
+    window.sessionStorage.getItem(PENDING_OFFER_KEY) === '1' ||
+    new URLSearchParams(window.location.search).get('claim_discount') === '1'
+  )
+}
+
+function resumePendingOffer() {
+  if (!shouldResumePendingOffer() || props.activeDiscount?.code) return
+  if (!isAuthLoaded.value) return
+
+  isOfferVisible.value = true
+
+  if (isSignedIn.value) {
+    claimWelcomeOffer()
   }
 }
 
@@ -294,7 +370,8 @@ function toggleHomeFaq(index) {
 }
 
 onMounted(() => {
-  isOfferVisible.value = shouldShowOffer()
+  isOfferVisible.value = shouldResumePendingOffer() || shouldShowOffer()
+  resumePendingOffer()
   setupScrollReveal()
 
   if (!densityCard.value) return
@@ -317,6 +394,10 @@ onMounted(() => {
   )
 
   densityObserver.observe(densityCard.value)
+})
+
+watch([isAuthLoaded, isSignedIn], () => {
+  resumePendingOffer()
 })
 
 onUnmounted(() => {
@@ -365,19 +446,9 @@ onUnmounted(() => {
         <p class="gh-offer__discount">10% OFF</p>
         <p class="gh-offer__subtitle">{{ props.activeDiscount?.code ? t('home.offer.alreadySaved') : t('home.offer.subtitle') }}</p>
         <form v-if="!props.activeDiscount?.code" class="gh-offer__form" @submit.prevent="claimWelcomeOffer">
-          <label class="gh-offer__label" for="welcome-offer-email">{{ t('home.offer.emailLabel') }}</label>
-          <input
-            id="welcome-offer-email"
-            v-model="offerEmail"
-            class="gh-offer__input"
-            type="email"
-            autocomplete="email"
-            :placeholder="t('home.offer.emailPlaceholder')"
-            required
-          >
           <p v-if="offerError" class="gh-offer__error">{{ offerError }}</p>
-          <button class="gh-offer__primary" type="submit" :disabled="isOfferSubmitting">
-            {{ isOfferSubmitting ? t('home.offer.loading') : t('home.offer.claim') }}
+          <button class="gh-offer__primary" type="submit" :disabled="isOfferSubmitting || !isAuthLoaded">
+            {{ offerClaimLabel }}
           </button>
         </form>
         <a v-else class="gh-offer__primary" href="/products/wondernest-heightener-gummies-2026" @click="closeOffer">{{ t('home.offer.shopWithDiscount') }}</a>

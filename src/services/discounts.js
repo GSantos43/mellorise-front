@@ -4,14 +4,14 @@ const BFF_URL = getBffUrl()
 
 const VISITOR_STORAGE_KEY = 'mellorise-visitor-id-v1'
 
-export async function createWelcomeDiscount(email) {
+export async function createWelcomeDiscount(options = {}) {
   const response = await fetch(`${BFF_URL}/discounts/welcome`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
     },
     body: JSON.stringify({
-      email,
       visitorId: getVisitorId()
     })
   })

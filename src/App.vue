@@ -623,7 +623,14 @@ watch(activeDiscount, persistDiscount, { deep: true })
         </div>
       </Transition>
     </Teleport>
-    <HomePage v-if="currentPage === 'home'" :products="products" :is-loading="isLoading" :active-discount="activeDiscount" @discount-created="applyDiscount" />
+    <HomePage
+      v-if="currentPage === 'home'"
+      :products="products"
+      :is-loading="isLoading"
+      :active-discount="activeDiscount"
+      :clerk-enabled="props.clerkEnabled"
+      @discount-created="applyDiscount"
+    />
     <ProductPage
       v-else-if="currentPage === 'product'"
       :product="currentProduct"
