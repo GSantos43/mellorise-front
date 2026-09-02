@@ -4,12 +4,6 @@ import { useAuth, useClerk, useUser } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n({ useScope: 'global' })
-const props = defineProps({
-  drawerGuestOnly: {
-    type: Boolean,
-    default: false
-  }
-})
 const clerk = useClerk()
 const { isLoaded, isSignedIn } = useAuth()
 const { user } = useUser()
@@ -67,7 +61,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="!props.drawerGuestOnly || !isLoaded || !isSignedIn" ref="menuRef" class="mello-auth-menu">
+  <div ref="menuRef" class="mello-auth-menu">
     <button
       v-if="!isLoaded"
       class="mello-auth-menu__trigger is-loading"
