@@ -78,35 +78,6 @@ onUnmounted(() => {
         </a>
         <h1>{{ t(isSignUp ? 'authPage.signUpTitle' : 'authPage.signInTitle') }}</h1>
         <p>{{ t(isSignUp ? 'authPage.signUpText' : 'authPage.signInText') }}</p>
-        <div class="mello-auth-page__trust" aria-label="Account benefits">
-          <article>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3 5.5 5.8v5.4c0 4.4 2.7 8.1 6.5 9.5 3.8-1.4 6.5-5.1 6.5-9.5V5.8L12 3Z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-            <div>
-              <strong>{{ t('authPage.ordersTitle') }}</strong>
-              <small>{{ t('authPage.ordersText') }}</small>
-            </div>
-          </article>
-          <article>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M7 8.5h10" />
-              <path d="M7 12h10" />
-              <path d="M10 15.5h4" />
-              <path d="M5.5 4.5h13A1.5 1.5 0 0 1 20 6v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18V6a1.5 1.5 0 0 1 1.5-1.5Z" />
-            </svg>
-            <div>
-              <strong>{{ t('authPage.securityTitle') }}</strong>
-              <small>{{ t('authPage.securityText') }}</small>
-            </div>
-          </article>
-        </div>
-        <nav class="mello-auth-page__switch" aria-label="Authentication links">
-          <a v-if="isSignUp" href="/sign-in">{{ t('auth.signIn') }}</a>
-          <a v-else href="/sign-up">{{ t('auth.signUp') }}</a>
-          <a href="/track-order">{{ t('auth.track') }}</a>
-        </nav>
       </aside>
 
       <main class="mello-auth-page__panel">
@@ -154,6 +125,37 @@ onUnmounted(() => {
           />
         </section>
       </main>
+
+      <div class="mello-auth-page__trust" aria-label="Account benefits">
+        <article>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3 5.5 5.8v5.4c0 4.4 2.7 8.1 6.5 9.5 3.8-1.4 6.5-5.1 6.5-9.5V5.8L12 3Z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <div>
+            <strong>{{ t('authPage.ordersTitle') }}</strong>
+            <small>{{ t('authPage.ordersText') }}</small>
+          </div>
+        </article>
+        <article>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 8.5h10" />
+            <path d="M7 12h10" />
+            <path d="M10 15.5h4" />
+            <path d="M5.5 4.5h13A1.5 1.5 0 0 1 20 6v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18V6a1.5 1.5 0 0 1 1.5-1.5Z" />
+          </svg>
+          <div>
+            <strong>{{ t('authPage.securityTitle') }}</strong>
+            <small>{{ t('authPage.securityText') }}</small>
+          </div>
+        </article>
+      </div>
+
+      <nav class="mello-auth-page__switch" aria-label="Authentication links">
+        <a v-if="isSignUp" href="/sign-in">{{ t('auth.signIn') }}</a>
+        <a v-else href="/sign-up">{{ t('auth.signUp') }}</a>
+        <a href="/track-order">{{ t('auth.track') }}</a>
+      </nav>
     </div>
   </section>
 </template>
@@ -270,11 +272,20 @@ onUnmounted(() => {
   align-items: center;
   display: grid;
   gap: clamp(34px, 5vw, 76px);
+  grid-template-areas:
+    "copy panel"
+    "trust panel"
+    "switch panel";
   grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.68fr);
+  grid-template-rows: auto auto auto;
   margin: 0 auto;
   max-width: 1070px;
   position: relative;
   z-index: 1;
+}
+
+.mello-auth-page__copy {
+  grid-area: copy;
 }
 
 .mello-auth-page__brand {
@@ -309,6 +320,7 @@ onUnmounted(() => {
 .mello-auth-page__trust {
   display: grid;
   gap: 0;
+  grid-area: trust;
   margin-top: clamp(18px, 3vh, 26px);
   max-width: 492px;
 }
@@ -357,6 +369,7 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  grid-area: switch;
   margin-top: clamp(20px, 3vh, 26px);
 }
 
@@ -390,6 +403,7 @@ onUnmounted(() => {
 .mello-auth-page__panel {
   align-items: center;
   display: flex;
+  grid-area: panel;
   justify-content: center;
   min-height: 0;
 }
@@ -429,12 +443,15 @@ onUnmounted(() => {
 }
 
 .mello-auth-page__clerk-root {
+  min-width: 0;
   width: 100%;
 }
 
 .mello-auth-page__clerk-card {
   border: 0;
   box-shadow: none;
+  max-width: 100%;
+  min-width: 0;
   width: 100%;
 }
 
@@ -456,6 +473,7 @@ onUnmounted(() => {
 .mello-auth-page__clerk-social,
 .mello-auth-page__clerk-link {
   font-weight: 720;
+  min-width: 0;
 }
 
 .mello-auth-page__clerk-loading {
@@ -562,11 +580,11 @@ onUnmounted(() => {
   text-decoration: none;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 900px) {
   .mello-auth-page {
-    min-height: calc(100svh - 72px);
+    min-height: 100svh;
     overflow: visible;
-    padding: 22px 14px 32px;
+    padding: 18px 14px 30px;
   }
 
   .mello-auth-page::before {
@@ -577,35 +595,66 @@ onUnmounted(() => {
   }
 
   .mello-auth-page::after {
-    opacity: 0.12;
+    opacity: 0.08;
   }
 
   .mello-auth-page__shell {
-    gap: 28px;
+    align-items: center;
+    gap: 0;
+    grid-template-areas:
+      "panel";
     grid-template-columns: 1fr;
-    min-height: 0;
+    grid-template-rows: 1fr;
+    min-height: calc(100svh - 48px);
+    place-items: center;
+    width: 100%;
   }
 
-  .mello-auth-page__brand {
-    margin-bottom: 22px;
-  }
-
-  .mello-auth-page__copy h1 {
-    font-size: clamp(38px, 10vw, 52px);
-    max-width: 11.5ch;
+  .mello-auth-page__copy,
+  .mello-auth-page__trust,
+  .mello-auth-page__switch {
+    display: none;
   }
 
   .mello-auth-page__panel {
-    min-height: 0;
+    min-height: auto;
+    width: 100%;
   }
 
   .mello-auth-page__card {
     border-radius: 20px;
-    padding: 12px;
+    padding: 10px;
+    width: min(100%, 390px);
   }
 
   .mello-auth-page__panel-head {
     border-radius: 14px;
+    min-height: 48px;
+    padding: 0 14px;
+  }
+
+  .mello-auth-page__panel-head span,
+  .mello-auth-page__panel-head strong {
+    font-size: 12px;
+  }
+
+  .mello-auth-page__clerk-loading {
+    min-height: 390px;
+    padding: 24px 18px;
+  }
+
+  .mello-auth-page__clerk-card {
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .mello-auth-page {
+    padding-inline: 10px;
+  }
+
+  .mello-auth-page__card {
+    border-radius: 18px;
   }
 }
 

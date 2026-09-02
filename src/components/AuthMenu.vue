@@ -365,7 +365,7 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 900px) {
   .mello-auth-menu__panel {
     right: -52px;
   }

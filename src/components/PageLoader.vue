@@ -135,4 +135,18 @@ const { t } = useI18n({ useScope: 'global' })
     animation: none;
   }
 }
+
+@media (max-width: 900px) {
+  .mello-page-loader {
+    z-index: 39;
+  }
+
+  .mello-page-loader__bar {
+    height: 2px;
+  }
+
+  .mello-page-loader__pill {
+    display: none;
+  }
+}
 </style>

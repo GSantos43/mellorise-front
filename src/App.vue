@@ -526,7 +526,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 </script>
 
 <template>
-  <main data-template="vue3-store" @click="navigate">
+  <main data-template="vue3-store" :class="`mello-route-${currentPage}`" @click="navigate">
     <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" :clerk-enabled="clerkEnabled" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
@@ -1054,6 +1054,13 @@ watch(activeDiscount, persistDiscount, { deep: true })
     height: 56px;
     right: max(16px, calc(env(safe-area-inset-right) + 14px));
     width: 56px;
+  }
+}
+
+@media (max-width: 900px) {
+  .mello-route-sign-in .mello-site-header,
+  .mello-route-sign-up .mello-site-header {
+    display: none;
   }
 }
 </style>

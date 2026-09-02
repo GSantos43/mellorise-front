@@ -568,7 +568,7 @@ watch(isMobileMenuOpen, (isOpen) => {
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 900px) {
   .mello-page-header__inner {
     gap: 12px;
     grid-template-columns: 1fr auto;
