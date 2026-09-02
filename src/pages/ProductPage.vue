@@ -48,11 +48,48 @@ const galleryDragOffset = ref(0)
 const loadedGalleryImages = ref(new Set())
 const suppressGalleryClick = ref(false)
 const isGalleryLightboxOpen = ref(false)
+const isReviewFormOpen = ref(false)
+const isReviewSubmitted = ref(false)
 let galleryDragStartX = 0
 let galleryDragStartY = 0
 let galleryPointerId = null
 let previousBodyOverflow = ''
+let isBodyScrollLocked = false
 const maxGalleryIndicators = 5
+const photoReviews = [
+  {
+    image: '/assets/review-mellorise-gummies-open.png',
+    initial: 'A',
+    name: 'Amelia',
+    flag: 'US',
+    title: 'Se volvio parte de la manana',
+    text: 'Mi hijo lo toma despues del desayuno y le gusto desde el primer dia. Para mi fue una forma simple de mantener la rutina sin mezclar nada.'
+  },
+  {
+    image: '/assets/review-mellorise-gummies-hand.png',
+    initial: 'N',
+    name: 'Anna',
+    flag: 'US',
+    title: 'Me dio mas tranquilidad',
+    text: 'Me gusto ver el frasco, revisar la etiqueta y entender la dosis. Las gummies se ven bien y el formato hizo todo mas facil.'
+  },
+  {
+    image: '/assets/review-mellorise-desk.png',
+    initial: 'M',
+    name: 'Mira',
+    flag: 'CA',
+    title: 'Facil de recordar todos los dias',
+    text: 'Lo dejamos en la cocina junto al cafe de la manana. Tener una gummy lista ayuda mucho cuando la casa esta corriendo.'
+  },
+  {
+    image: '/assets/review-mellorise-label.png',
+    initial: 'L',
+    name: 'Lin',
+    flag: 'AU',
+    title: 'Ingredientes claros en un solo lugar',
+    text: 'Queria algo facil de revisar antes de comprar. La informacion del producto y la rutina recomendada quedaron muy claras.'
+  }
+]
 
 const activeProduct = computed(() => props.product || fallbackProduct)
 const localizedProductTitle = computed(() => translateProductTitle(activeProduct.value.title, locale.value))
@@ -292,9 +329,23 @@ function closeGalleryLightbox() {
   isGalleryLightboxOpen.value = false
 }
 
+function openReviewForm() {
+  isReviewSubmitted.value = false
+  isReviewFormOpen.value = true
+}
+
+function closeReviewForm() {
+  isReviewFormOpen.value = false
+}
+
+function submitReviewForm() {
+  isReviewSubmitted.value = true
+}
+
 function handleGalleryKeydown(event) {
   if (event.key === 'Escape') {
     closeGalleryLightbox()
+    closeReviewForm()
   }
 }
 
@@ -448,6 +499,7 @@ watch(activeProduct, () => {
   selectedImageIndex.value = 0
   applyRequestedBundle()
   closeGalleryLightbox()
+  closeReviewForm()
 })
 
 watch(mainImage, (src) => {
@@ -455,13 +507,17 @@ watch(mainImage, (src) => {
   preloadAdjacentGalleryImages()
 }, { immediate: true })
 
-watch(isGalleryLightboxOpen, (isOpen) => {
-  if (isOpen) {
-    previousBodyOverflow = document.body.style.overflow
+watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) => {
+  if (isLightboxOpen || isFormOpen) {
+    if (!isBodyScrollLocked) {
+      previousBodyOverflow = document.body.style.overflow
+    }
+    isBodyScrollLocked = true
     document.body.style.overflow = 'hidden'
     return
   }
 
+  isBodyScrollLocked = false
   document.body.style.overflow = previousBodyOverflow
 })
 </script>
@@ -1104,8 +1160,8 @@ watch(isGalleryLightboxOpen, (isOpen) => {
       <div class="gg-shell gg-photo-reviews">
         <div class="gg-photo-reviews__head">
           <span class="gg-photo-reviews__eyebrow">Reviews</span>
-          <h2>Lo que dicen las familias</h2>
-          <p>Una seccion visual para destacar opiniones y fotos reales cuando esten verificadas por la tienda.</p>
+          <h2>Historias de familias usando MelloRise</h2>
+          <p>Fotos y relatos de rutinas simples con gummies, ingredientes claros y una experiencia de compra facil de acompanar.</p>
         </div>
 
         <div class="gg-photo-reviews__summary" aria-label="Resumen de resenas">
@@ -1121,34 +1177,69 @@ watch(isGalleryLightboxOpen, (isOpen) => {
             <div><span>2 ★</span><i style="--fill: 0%"></i><em>0%</em></div>
             <div><span>1 ★</span><i style="--fill: 0%"></i><em>0%</em></div>
           </div>
-          <a class="gg-photo-reviews__button" href="#comprar">Escribir una resena</a>
+          <button class="gg-photo-reviews__button" type="button" @click="openReviewForm">Escribir una resena</button>
         </div>
 
         <div class="gg-photo-reviews__meta">
-          <span>Resenas con fotos</span>
+          <span>4 resenas con fotos</span>
           <span>Ultimas <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
         </div>
 
         <div class="gg-photo-reviews__grid">
-          <article v-for="review in [
-            ['/assets/review-photo-routine.png', 'A', 'Amelia', 'Se volvio parte de la manana', 'Lo dejamos junto al desayuno y ahora es una rutina facil de recordar antes de salir.'],
-            ['/assets/review-photo-bottle.jpg', 'N', 'Anna', 'Me dio mas tranquilidad', 'Me gusto poder revisar ingredientes y dosis con claridad antes de agregarlo al dia.'],
-            ['/assets/review-photo-desk.jpg', 'M', 'Mira', 'A mi hijo le gusto el formato', 'Que fuera gummy ayudo mucho. No tuve que mezclar nada ni pelear con capsulas.'],
-            ['/assets/review-photo-family.jpg', 'L', 'Lin', 'La compra fue sencilla', 'Encontramos la informacion rapido y pudimos seguir el pedido sin complicarnos.']
-          ]" :key="review[0]" class="gg-photo-review-card">
+          <article v-for="review in photoReviews" :key="review.image" class="gg-photo-review-card">
             <div class="gg-photo-review-card__media">
-              <img :src="review[0]" alt="Foto de rutina familiar con gummies MelloRise" width="1024" height="1024" loading="lazy">
+              <img :src="review.image" alt="Foto de evaluacion con gummies MelloRise" width="1024" height="1024" loading="lazy">
             </div>
             <div class="gg-photo-review-card__body">
-              <div class="gg-photo-review-card__author"><b>{{ review[1] }}</b><span>{{ review[2] }}</span></div>
+              <div class="gg-photo-review-card__author"><b>{{ review.initial }}</b><span>{{ review.name }} <small>{{ review.flag }}</small></span></div>
               <div class="gg-photo-reviews__stars" aria-label="Cinco estrellas">★★★★★</div>
-              <h3>{{ review[3] }}</h3>
-              <p>{{ review[4] }}</p>
+              <h3>{{ review.title }}</h3>
+              <p>{{ review.text }}</p>
+              <button class="gg-photo-review-card__reply" type="button" @click="openReviewForm">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a7 7 0 0 1-7 7H8l-5 3 1.7-5.1A7 7 0 1 1 21 12Z"/></svg>
+                Responder
+              </button>
             </div>
           </article>
         </div>
       </div>
     </div>
+
+    <Teleport to="body">
+      <Transition name="gg-review-modal">
+        <div v-if="isReviewFormOpen" class="gg-review-modal" role="dialog" aria-modal="true" aria-labelledby="gg-review-modal-title" @click.self="closeReviewForm">
+          <div class="gg-review-modal__card">
+            <button class="gg-review-modal__close" type="button" aria-label="Cerrar resena" @click="closeReviewForm">
+              <span aria-hidden="true"></span>
+            </button>
+            <template v-if="isReviewSubmitted">
+              <span class="gg-review-modal__badge">Gracias</span>
+              <h2 id="gg-review-modal-title">Recibimos tu resena</h2>
+              <p>La revisaremos antes de publicarla para mantener la pagina clara y confiable.</p>
+              <button class="gg-review-modal__submit" type="button" @click="closeReviewForm">Cerrar</button>
+            </template>
+            <form v-else class="gg-review-form" @submit.prevent="submitReviewForm">
+              <span class="gg-review-modal__badge">Tu experiencia</span>
+              <h2 id="gg-review-modal-title">Escribe una resena</h2>
+              <p>Cuenta como MelloRise encajo en tu rutina familiar. Evita datos medicos personales.</p>
+              <label>
+                Nombre
+                <input type="text" name="name" autocomplete="name" placeholder="Tu nombre" required>
+              </label>
+              <label>
+                Email de compra
+                <input type="email" name="email" autocomplete="email" placeholder="tu@email.com" required>
+              </label>
+              <label>
+                Tu resena
+                <textarea name="review" rows="5" placeholder="Comparte tu experiencia con el producto" required></textarea>
+              </label>
+              <button class="gg-review-modal__submit" type="submit">Enviar resena</button>
+            </form>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <div class="gg-sticky" aria-label="Compra rapida">
       <div class="gg-sticky__text">

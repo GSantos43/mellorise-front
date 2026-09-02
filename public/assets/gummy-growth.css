@@ -2605,10 +2605,13 @@ button.gg-image-card {
 
 .gg-photo-reviews__button {
   align-items: center;
+  appearance: none;
   background: #303030;
+  border: 0;
   border-radius: 999px;
   box-shadow: 0 18px 30px rgba(23, 49, 50, 0.16);
   color: #fff;
+  cursor: pointer;
   display: inline-flex;
   font-size: 15px;
   font-weight: 950;
@@ -2617,6 +2620,7 @@ button.gg-image-card {
   padding: 0 22px;
   text-align: center;
   text-decoration: none;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
 .gg-photo-reviews__meta {
@@ -2714,6 +2718,13 @@ button.gg-image-card {
   font-weight: 850;
 }
 
+.gg-photo-review-card__author small {
+  color: #6b6b6b;
+  font-size: 11px;
+  font-weight: 900;
+  margin-left: 3px;
+}
+
 .gg-photo-review-card__body .gg-photo-reviews__stars {
   font-size: 20px;
   margin-top: 16px;
@@ -2733,6 +2744,212 @@ button.gg-image-card {
   font-size: 15px;
   line-height: 1.32;
   margin: 10px 0 0;
+}
+
+.gg-photo-review-card__reply {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: #555;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  gap: 5px;
+  margin-top: 16px;
+  padding: 0;
+}
+
+.gg-photo-review-card__reply svg {
+  fill: none;
+  height: 16px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 16px;
+}
+
+.gg-photo-reviews__button:hover,
+.gg-photo-reviews__button:focus-visible,
+.gg-review-modal__submit:hover,
+.gg-review-modal__submit:focus-visible {
+  background: #173132;
+  box-shadow: 0 0 0 3px rgba(119, 205, 250, 0.28), 0 18px 30px rgba(23, 49, 50, 0.16);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.gg-photo-review-card__reply:hover,
+.gg-photo-review-card__reply:focus-visible {
+  color: #071415;
+  outline: 2px solid rgba(119, 205, 250, 0.42);
+  outline-offset: 3px;
+}
+
+.gg-review-modal {
+  align-items: center;
+  background: rgba(7, 20, 21, 0.58);
+  backdrop-filter: blur(8px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+  position: fixed;
+  z-index: 22000;
+}
+
+.gg-review-modal__card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 28px 90px rgba(7, 20, 21, 0.28);
+  color: #071415;
+  max-width: 480px;
+  padding: 28px;
+  position: relative;
+  width: min(100%, 480px);
+}
+
+.gg-review-modal__close {
+  align-items: center;
+  appearance: none;
+  background: #f1f5f5;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 34px;
+}
+
+.gg-review-modal__close span,
+.gg-review-modal__close span::after {
+  background: #071415;
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 2px;
+  width: 14px;
+}
+
+.gg-review-modal__close span {
+  transform: rotate(45deg);
+}
+
+.gg-review-modal__close span::after {
+  transform: rotate(90deg);
+}
+
+.gg-review-modal__badge {
+  color: var(--gg-blue);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.gg-review-modal h2 {
+  color: #071415;
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 950;
+  line-height: 1.04;
+  margin: 12px 36px 0 0;
+}
+
+.gg-review-modal p {
+  color: #4f5d5e;
+  font-size: 15px;
+  line-height: 1.42;
+  margin: 10px 0 0;
+}
+
+.gg-review-form {
+  display: grid;
+  gap: 14px;
+}
+
+.gg-review-form label {
+  color: #071415;
+  display: grid;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 7px;
+}
+
+.gg-review-form label:first-of-type {
+  margin-top: 10px;
+}
+
+.gg-review-form input,
+.gg-review-form textarea {
+  background: #fff;
+  border: 1px solid rgba(7, 20, 21, 0.16);
+  border-radius: 8px;
+  color: #071415;
+  font: inherit;
+  font-size: 15px;
+  min-height: 46px;
+  padding: 11px 13px;
+  resize: vertical;
+}
+
+.gg-review-form textarea {
+  min-height: 116px;
+}
+
+.gg-review-form input:focus,
+.gg-review-form textarea:focus {
+  border-color: var(--gg-blue);
+  box-shadow: 0 0 0 3px rgba(119, 205, 250, 0.25);
+  outline: 0;
+}
+
+.gg-review-modal__submit {
+  align-items: center;
+  appearance: none;
+  background: #071415;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 950;
+  justify-content: center;
+  margin-top: 4px;
+  min-height: 46px;
+  padding: 0 22px;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.gg-review-modal-enter-active,
+.gg-review-modal-leave-active {
+  transition: opacity 180ms ease, backdrop-filter 220ms ease;
+}
+
+.gg-review-modal-enter-active .gg-review-modal__card,
+.gg-review-modal-leave-active .gg-review-modal__card {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gg-review-modal-enter-from,
+.gg-review-modal-leave-to {
+  backdrop-filter: blur(0);
+  opacity: 0;
+}
+
+.gg-review-modal-enter-from .gg-review-modal__card,
+.gg-review-modal-leave-to .gg-review-modal__card {
+  transform: translateY(10px) scale(0.98);
 }
 
 .gg-difference-section {
@@ -4492,6 +4709,22 @@ button.gg-image-card {
 
   .gg-photo-review-card p {
     font-size: 13px;
+  }
+
+  .gg-review-modal {
+    align-items: end;
+    padding: 12px;
+  }
+
+  .gg-review-modal__card {
+    border-radius: 14px;
+    max-height: calc(100svh - 24px);
+    overflow-y: auto;
+    padding: 24px 18px 18px;
+  }
+
+  .gg-review-modal h2 {
+    margin-right: 40px;
   }
 
   .gg-proof__eyebrow {
