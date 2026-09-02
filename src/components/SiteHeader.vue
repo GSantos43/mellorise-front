@@ -594,6 +594,10 @@ watch(isMobileMenuOpen, (isOpen) => {
     display: none;
   }
 
+  .mello-page-header__actions > .mello-auth-menu {
+    display: none;
+  }
+
   .mello-page-header__locale {
     min-height: 38px;
   }
