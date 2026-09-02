@@ -1,24 +1,20 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useAuth, useClerk, useUser } from '@clerk/vue'
+import { useAuth, useClerk } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import { fetchAccountOrders } from '../services/account'
 
 const { t } = useI18n({ useScope: 'global' })
 const clerk = useClerk()
 const { isLoaded, isSignedIn, getToken } = useAuth()
-const { user } = useUser()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const orders = ref([])
-const customer = ref(null)
 
-const displayName = computed(() => (
-  user.value?.firstName ||
-  user.value?.fullName ||
-  customer.value?.name ||
-  t('account.title')
-))
+const orderCountLabel = computed(() => {
+  if (!orders.value.length) return ''
+  return orders.value.length === 1 ? t('account.oneOrder') : t('account.manyOrders', { count: orders.value.length })
+})
 
 async function loadOrders() {
   if (!isLoaded.value || !isSignedIn.value || isLoading.value) return
@@ -30,7 +26,6 @@ async function loadOrders() {
     const token = await getToken.value()
     const data = await fetchAccountOrders(token)
     orders.value = Array.isArray(data?.orders) ? data.orders : []
-    customer.value = data?.customer || null
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : t('account.error')
   } finally {
@@ -74,9 +69,8 @@ watch([isLoaded, isSignedIn], loadOrders)
     <article class="mello-account__card" aria-labelledby="mello-account-title">
       <header class="mello-account__header">
         <div>
-          <span>{{ t('account.eyebrow') }}</span>
           <h1 id="mello-account-title">{{ t('account.title') }}</h1>
-          <p>{{ t('account.subtitle') }}</p>
+          <p v-if="orderCountLabel">{{ orderCountLabel }}</p>
         </div>
 
         <button
@@ -102,17 +96,6 @@ watch([isLoaded, isSignedIn], loadOrders)
       </section>
 
       <section v-else class="mello-account__content">
-        <div class="mello-account__customer">
-          <span class="mello-account__avatar" aria-hidden="true">
-            {{ displayName.charAt(0).toUpperCase() }}
-          </span>
-          <div>
-            <span>{{ t('account.signedInAs') }}</span>
-            <strong>{{ displayName }}</strong>
-            <small>{{ customer?.email || user?.primaryEmailAddress?.emailAddress }}</small>
-          </div>
-        </div>
-
         <div v-if="isLoading" class="mello-account__state is-inline" aria-live="polite">
           <span class="mello-account__spinner" aria-hidden="true"></span>
           <h2>{{ t('account.loadingOrders') }}</h2>
@@ -120,21 +103,11 @@ watch([isLoaded, isSignedIn], loadOrders)
 
         <div v-else-if="errorMessage" class="mello-account__state is-error" role="alert">
           <h2>{{ t('account.errorTitle') }}</h2>
-          <p>{{ t('account.error') }}</p>
           <button type="button" @click="loadOrders">{{ t('account.tryAgain') }}</button>
         </div>
 
         <div v-else-if="!orders.length" class="mello-account__empty">
-          <span aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 8h12l1 12H5L6 8Z" />
-              <path d="M9 8a3 3 0 0 1 6 0" />
-              <path d="M9 13h6" />
-            </svg>
-          </span>
           <h2>{{ t('account.emptyTitle') }}</h2>
-          <p>{{ t('account.emptyText') }}</p>
-          <a href="/collections/all">{{ t('account.emptyAction') }}</a>
         </div>
 
         <div v-else class="mello-account__orders">
@@ -197,15 +170,15 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account__card {
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 28px 80px rgba(23, 49, 50, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 18px 54px rgba(23, 49, 50, 0.08);
   display: grid;
-  gap: clamp(24px, 3vw, 34px);
+  gap: clamp(18px, 2.4vw, 28px);
   margin: 0 auto;
-  max-width: 1120px;
-  min-height: min(720px, calc(100svh - 150px));
+  max-width: 1040px;
+  min-height: min(620px, calc(100svh - 150px));
   overflow: hidden;
-  padding: clamp(24px, 4vw, 44px);
+  padding: clamp(24px, 3.4vw, 40px);
 }
 
 .mello-account__header {
@@ -215,8 +188,6 @@ watch([isLoaded, isSignedIn], loadOrders)
   justify-content: space-between;
 }
 
-.mello-account__header span,
-.mello-account__customer span,
 .mello-account-order__head span,
 .mello-account-order__tracking span {
   color: #5f7073;
@@ -229,20 +200,19 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account__header h1 {
   color: #102829;
-  font-size: clamp(38px, 5vw, 66px);
+  font-size: clamp(34px, 4.4vw, 56px);
   font-weight: 950;
   letter-spacing: -0.03em;
-  line-height: 0.98;
-  margin: 10px 0 0;
+  line-height: 1;
+  margin: 0;
 }
 
 .mello-account__header p {
   color: #53686b;
-  font-size: clamp(15px, 1.4vw, 18px);
-  font-weight: 580;
-  line-height: 1.48;
-  margin: 14px 0 0;
-  max-width: 58ch;
+  font-size: 14px;
+  font-weight: 720;
+  line-height: 1.35;
+  margin: 8px 0 0;
 }
 
 .mello-account__refresh,
@@ -292,49 +262,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account__content {
   display: grid;
-  gap: 22px;
-}
-
-.mello-account__customer {
-  align-items: center;
-  background: #f6fbfb;
-  border-radius: 16px;
-  display: flex;
-  gap: 14px;
-  padding: 16px;
-}
-
-.mello-account__avatar {
-  align-items: center;
-  background: #173132;
-  border-radius: 50%;
-  color: #ffffff;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 18px;
-  font-weight: 950;
-  height: 52px;
-  justify-content: center;
-  width: 52px;
-}
-
-.mello-account__customer strong {
-  color: #102829;
-  display: block;
-  font-size: 22px;
-  font-weight: 930;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
-  margin-top: 4px;
-}
-
-.mello-account__customer small {
-  color: #53686b;
-  display: block;
-  font-size: 14px;
-  font-weight: 650;
-  margin-top: 2px;
-  overflow-wrap: anywhere;
+  gap: 18px;
 }
 
 .mello-account__state,
@@ -342,8 +270,8 @@ watch([isLoaded, isSignedIn], loadOrders)
   align-content: center;
   display: grid;
   justify-items: center;
-  min-height: 360px;
-  padding: clamp(28px, 5vw, 58px) 18px;
+  min-height: 300px;
+  padding: clamp(24px, 4vw, 46px) 18px;
   text-align: center;
 }
 
@@ -354,12 +282,12 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account__state h2,
 .mello-account__empty h2 {
   color: #102829;
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(24px, 3vw, 34px);
   font-weight: 930;
   letter-spacing: -0.02em;
-  line-height: 1.08;
+  line-height: 1.12;
   margin: 0;
-  max-width: 16ch;
+  max-width: 18ch;
 }
 
 .mello-account__state p,
@@ -379,28 +307,6 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account__state.is-error h2 {
   color: #8e1c3a;
-}
-
-.mello-account__empty > span {
-  align-items: center;
-  background: #eff9ff;
-  border-radius: 50%;
-  color: #173132;
-  display: inline-flex;
-  height: 72px;
-  justify-content: center;
-  margin-bottom: 20px;
-  width: 72px;
-}
-
-.mello-account__empty svg {
-  fill: none;
-  height: 34px;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
-  width: 34px;
 }
 
 .mello-account__spinner {
@@ -543,10 +449,10 @@ watch([isLoaded, isSignedIn], loadOrders)
   }
 
   .mello-account__card {
-    border-radius: 18px;
-    gap: 22px;
-    min-height: calc(100svh - 106px);
-    padding: 22px 16px;
+    border-radius: 16px;
+    gap: 18px;
+    min-height: calc(100svh - 104px);
+    padding: 22px 18px;
   }
 
   .mello-account__header {
@@ -555,11 +461,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   }
 
   .mello-account__header h1 {
-    font-size: clamp(38px, 11vw, 50px);
-  }
-
-  .mello-account__header p {
-    font-size: 15px;
+    font-size: clamp(32px, 10vw, 44px);
   }
 
   .mello-account__refresh {
@@ -595,18 +497,9 @@ watch([isLoaded, isSignedIn], loadOrders)
 }
 
 @media (max-width: 420px) {
-  .mello-account__customer {
-    align-items: flex-start;
-  }
-
-  .mello-account__avatar {
-    height: 46px;
-    width: 46px;
-  }
-
   .mello-account__state,
   .mello-account__empty {
-    min-height: 320px;
+    min-height: 260px;
     padding-inline: 4px;
   }
 
