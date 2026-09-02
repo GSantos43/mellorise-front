@@ -205,14 +205,18 @@ function applyDiscount(discount) {
   if (!discount?.code || !discount?.email) return
 
   activeDiscount.value = discount
-  showDiscountNotice(discount.email)
+  showDiscountNotice(discount)
 }
 
-function showDiscountNotice(email) {
+function showDiscountNotice(discount) {
   window.clearTimeout(discountNoticeTimer)
+  const emailWasSent = discount.emailSent !== false
   discountNotice.value = {
-    title: t('home.offer.sentTitle'),
-    message: t('home.offer.sentMessage', { email })
+    title: t(emailWasSent ? 'home.offer.sentTitle' : 'home.offer.readyTitle'),
+    message: t(emailWasSent ? 'home.offer.sentMessage' : 'home.offer.readyMessage', {
+      email: discount.email,
+      code: discount.code
+    })
   }
   discountNoticeTimer = window.setTimeout(() => {
     discountNotice.value = null
