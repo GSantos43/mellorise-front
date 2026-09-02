@@ -12,6 +12,7 @@ import CheckoutPage from './pages/CheckoutPage.vue'
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
 import TrackOrderPage from './pages/TrackOrderPage.vue'
 import AccountOrdersPage from './pages/AccountOrdersPage.vue'
+import AccountOrderDetailPage from './pages/AccountOrderDetailPage.vue'
 import AccountAuthUnavailablePage from './pages/AccountAuthUnavailablePage.vue'
 import AuthPage from './pages/AuthPage.vue'
 import SiteHeader from './components/SiteHeader.vue'
@@ -82,6 +83,7 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/checkout')) return 'checkout'
   if (route.value.startsWith('/sign-up')) return 'sign-up'
   if (route.value.startsWith('/sign-in')) return 'sign-in'
+  if (route.value.startsWith('/account/orders/')) return 'account-order-detail'
   if (route.value.startsWith('/account/orders')) return 'account-orders'
   if (route.value.startsWith('/track-order') || route.value.startsWith('/apps/track123')) return 'tracking'
   if (route.value === '/pages/contact-us' || route.value === '/pages/contact') return 'contact'
@@ -89,6 +91,10 @@ const currentPage = computed(() => {
   if (route.value.startsWith('/policies/')) return 'institutional'
   if (route.value.startsWith('/collections') || route.value === '/products') return 'collection'
   return 'home'
+})
+const accountOrderId = computed(() => {
+  if (!route.value.startsWith('/account/orders/')) return ''
+  return decodeURIComponent(route.value.split('/account/orders/')[1]?.split('/')[0] || '')
 })
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
 const isPurchaseAllowed = computed(() => purchaseEligibility.value?.allowed !== false)
@@ -116,6 +122,7 @@ const documentTitle = computed(() => {
     faq: t('meta.faq'),
     tracking: t('meta.tracking'),
     'account-orders': t('meta.accountOrders'),
+    'account-order-detail': t('meta.accountOrderDetail'),
     'sign-in': t('meta.signIn'),
     'sign-up': t('meta.signUp'),
     checkout: t('meta.checkout'),
@@ -698,7 +705,11 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <AuthPage v-else-if="currentPage === 'sign-up' && props.clerkEnabled" mode="sign-up" />
     <AccountAuthUnavailablePage v-else-if="currentPage === 'sign-in' || currentPage === 'sign-up'" />
     <AccountOrdersPage v-else-if="currentPage === 'account-orders' && props.clerkEnabled" />
-    <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders'" />
+    <AccountOrderDetailPage
+      v-else-if="currentPage === 'account-order-detail' && props.clerkEnabled"
+      :order-id="accountOrderId"
+    />
+    <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders' || currentPage === 'account-order-detail'" />
     <TrackOrderPage v-else-if="currentPage === 'tracking'" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"
@@ -723,7 +734,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
     />
     <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up'].includes(currentPage)" />
     <button
-      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'account-orders'].includes(currentPage)"
+      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'account-orders', 'account-order-detail'].includes(currentPage)"
       class="mello-floating-cart"
       type="button"
       :aria-label="t('nav.cart')"

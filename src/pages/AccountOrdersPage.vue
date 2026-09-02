@@ -60,6 +60,10 @@ function formatOrderDate(value) {
   }).format(new Date(value))
 }
 
+function getOrderHref(order) {
+  return `/account/orders/${encodeURIComponent(order.id)}`
+}
+
 onMounted(loadOrders)
 watch([isLoaded, isSignedIn], loadOrders)
 </script>
@@ -112,7 +116,7 @@ watch([isLoaded, isSignedIn], loadOrders)
         </div>
 
         <div v-else class="mello-account__orders">
-          <article v-for="order in orders" :key="order.id" class="mello-account-order">
+          <a v-for="order in orders" :key="order.id" class="mello-account-order" :href="getOrderHref(order)">
             <header class="mello-account-order__head">
               <div>
                 <span>{{ t('account.order') }} #{{ order.number }}</span>
@@ -137,15 +141,13 @@ watch([isLoaded, isSignedIn], loadOrders)
                 <span>{{ t('account.trackingReady') }}</span>
                 <strong>{{ order.tracking.code }}</strong>
               </div>
-              <a v-if="order.tracking.url" :href="order.tracking.url" target="_blank" rel="noopener">
-                {{ t('tracking.result.openCarrier') }}
-              </a>
+              <span>{{ t('account.openDetails') }}</span>
             </footer>
 
             <footer v-else class="mello-account-order__pending">
               {{ t('account.trackingPending') }}
             </footer>
-          </article>
+          </a>
         </div>
       </section>
     </article>
@@ -219,7 +221,7 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account__refresh,
 .mello-account__state button,
 .mello-account__empty a,
-.mello-account-order__tracking a {
+.mello-account-order__tracking span:last-child {
   align-items: center;
   appearance: none;
   background: #173132;
@@ -253,10 +255,11 @@ watch([isLoaded, isSignedIn], loadOrders)
 .mello-account__state button:focus-visible,
 .mello-account__empty a:hover,
 .mello-account__empty a:focus-visible,
-.mello-account-order__tracking a:hover,
-.mello-account-order__tracking a:focus-visible {
+.mello-account-order:hover .mello-account-order__tracking span:last-child,
+.mello-account-order:focus-visible .mello-account-order__tracking span:last-child {
   background: #102829;
   box-shadow: 0 16px 36px rgba(23, 49, 50, 0.18);
+  color: #ffffff;
   outline: 0;
   transform: translateY(-1px);
 }
@@ -327,9 +330,19 @@ watch([isLoaded, isSignedIn], loadOrders)
 
 .mello-account-order {
   border-bottom: 1px solid rgba(23, 49, 50, 0.1);
+  color: inherit;
   display: grid;
   gap: 16px;
   padding: 24px 0;
+  text-decoration: none;
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.mello-account-order:hover,
+.mello-account-order:focus-visible {
+  background: #f7fbfb;
+  box-shadow: 0 0 0 14px #f7fbfb;
+  outline: 0;
 }
 
 .mello-account-order:last-child {
@@ -425,7 +438,7 @@ watch([isLoaded, isSignedIn], loadOrders)
   margin-top: 4px;
 }
 
-.mello-account-order__tracking a {
+.mello-account-order__tracking span:last-child {
   background: #31d6b0;
   color: #102829;
 }
@@ -492,7 +505,7 @@ watch([isLoaded, isSignedIn], loadOrders)
     display: grid;
   }
 
-  .mello-account-order__tracking a {
+  .mello-account-order__tracking span:last-child {
     justify-self: start;
   }
 }
