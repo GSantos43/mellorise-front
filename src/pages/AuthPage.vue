@@ -124,9 +124,9 @@ onUnmounted(() => {
     </button>
     <div class="mello-auth-page__shell">
       <aside class="mello-auth-page__copy">
-        <a class="mello-auth-page__brand" href="/" aria-label="MelloRise home">
+        <span class="mello-auth-page__brand" aria-label="MelloRise">
           MelloRise
-        </a>
+        </span>
         <h1>{{ t(isSignUp ? 'authPage.signUpTitle' : 'authPage.signInTitle') }}</h1>
         <p>{{ t(isSignUp ? 'authPage.signUpText' : 'authPage.signInText') }}</p>
       </aside>
@@ -284,10 +284,10 @@ onUnmounted(() => {
   color: #102829;
   display: flex;
   font-family: var(--font-body-family);
-  min-height: calc(100vh - 82px);
-  min-height: calc(100svh - 82px);
+  min-height: 100vh;
+  min-height: 100svh;
   overflow: clip;
-  padding: clamp(18px, 3vh, 32px) 20px;
+  padding: clamp(22px, 4vh, 44px) 24px;
   position: relative;
 }
 
@@ -328,16 +328,16 @@ onUnmounted(() => {
 .mello-auth-page__shell {
   align-items: center;
   display: grid;
-  column-gap: clamp(34px, 4.2vw, 58px);
+  column-gap: clamp(42px, 5vw, 72px);
   row-gap: 18px;
   grid-template-areas:
     "copy panel"
     "trust panel"
     "switch panel";
-  grid-template-columns: minmax(0, 0.78fr) minmax(348px, 0.56fr);
+  grid-template-columns: minmax(360px, 0.9fr) minmax(360px, 402px);
   grid-template-rows: auto auto auto;
   margin: 0 auto;
-  max-width: 970px;
+  max-width: 1040px;
   position: relative;
   z-index: 1;
 }
@@ -352,17 +352,17 @@ onUnmounted(() => {
   font-size: 15px;
   font-weight: 850;
   margin-bottom: clamp(14px, 2.2vh, 22px);
-  text-decoration: none;
+  user-select: none;
 }
 
 .mello-auth-page__copy h1 {
   color: #102829;
-  font-size: clamp(38px, 4.2vw, 54px);
+  font-size: clamp(44px, 5vw, 64px);
   font-weight: 860;
   letter-spacing: -0.03em;
-  line-height: 0.99;
+  line-height: 1;
   margin: 0;
-  max-width: 12.5ch;
+  max-width: 11ch;
   text-wrap: balance;
 }
 
@@ -379,7 +379,7 @@ onUnmounted(() => {
   display: grid;
   gap: 10px;
   grid-area: trust;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
   margin-top: 4px;
   max-width: 500px;
 }
@@ -615,7 +615,7 @@ onUnmounted(() => {
   text-decoration: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1020px) {
   .mello-auth-page {
     background:
       radial-gradient(circle at 0 20%, rgba(119, 205, 250, 0.17), transparent 34%),
