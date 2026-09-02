@@ -18,13 +18,27 @@ const { user } = useUser()
 
 const isSignUp = computed(() => props.mode === 'sign-up')
 const isClerkLoading = computed(() => !isLoaded.value)
-const authFallbackRedirectUrl = '/collections/all'
+const authFallbackRedirectUrl = computed(() => getSafeRedirectPath() || '/collections/all')
+const authSignInUrl = computed(() => getAuthPath('/sign-in'))
+const authSignUpUrl = computed(() => getAuthPath('/sign-up'))
 const displayName = computed(() => (
   user.value?.firstName ||
   user.value?.fullName ||
   user.value?.primaryEmailAddress?.emailAddress?.split('@')[0] ||
   t('auth.account')
 ))
+
+function getSafeRedirectPath() {
+  const redirectUrl = new URLSearchParams(window.location.search).get('redirect_url')
+  if (!redirectUrl || !redirectUrl.startsWith('/') || redirectUrl.startsWith('//')) return ''
+
+  return redirectUrl
+}
+
+function getAuthPath(path) {
+  const redirectPath = getSafeRedirectPath()
+  return redirectPath ? `${path}?redirect_url=${encodeURIComponent(redirectPath)}` : path
+}
 
 function goBack() {
   if (window.history.length > 1) {
@@ -141,7 +155,7 @@ onUnmounted(() => {
             path="/sign-up"
             routing="path"
             oauth-flow="redirect"
-            sign-in-url="/sign-in"
+            :sign-in-url="authSignInUrl"
             :fallback-redirect-url="authFallbackRedirectUrl"
             :force-redirect-url="authFallbackRedirectUrl"
             :sign-in-fallback-redirect-url="authFallbackRedirectUrl"
@@ -154,7 +168,7 @@ onUnmounted(() => {
             path="/sign-in"
             routing="path"
             oauth-flow="redirect"
-            sign-up-url="/sign-up"
+            :sign-up-url="authSignUpUrl"
             :fallback-redirect-url="authFallbackRedirectUrl"
             :force-redirect-url="authFallbackRedirectUrl"
             :sign-up-fallback-redirect-url="authFallbackRedirectUrl"
@@ -190,8 +204,8 @@ onUnmounted(() => {
       </div>
 
       <nav class="mello-auth-page__switch" aria-label="Authentication links">
-        <a v-if="isSignUp" href="/sign-in">{{ t('auth.signIn') }}</a>
-        <a v-else href="/sign-up">{{ t('auth.signUp') }}</a>
+        <a v-if="isSignUp" :href="authSignInUrl">{{ t('auth.signIn') }}</a>
+        <a v-else :href="authSignUpUrl">{{ t('auth.signUp') }}</a>
         <a href="/track-order">{{ t('auth.track') }}</a>
       </nav>
     </div>

@@ -19,9 +19,7 @@ if (clerkPublishableKey) {
     publishableKey: clerkPublishableKey,
     signInUrl: '/sign-in',
     signUpUrl: '/sign-up',
-    signInForceRedirectUrl: authFallbackRedirectUrl,
     signInFallbackRedirectUrl: authFallbackRedirectUrl,
-    signUpForceRedirectUrl: authFallbackRedirectUrl,
     signUpFallbackRedirectUrl: authFallbackRedirectUrl,
   })
 }

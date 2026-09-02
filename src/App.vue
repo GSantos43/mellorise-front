@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useAuth } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import HomePage from './pages/HomePage.vue'
 import ProductPage from './pages/ProductPage.vue'
@@ -23,7 +24,7 @@ import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 import { translateProductTitle } from './i18n/productText'
 
-defineProps({
+const props = defineProps({
   clerkEnabled: {
     type: Boolean,
     default: false
@@ -32,6 +33,7 @@ defineProps({
 
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
 const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
+const CHECKOUT_PATH = '/checkout'
 
 const products = ref([])
 const isLoading = ref(true)
@@ -50,6 +52,14 @@ const purchaseEligibility = ref({
   reason: 'loading'
 })
 const { t, locale } = useI18n({ useScope: 'global' })
+const authState = props.clerkEnabled
+  ? useAuth()
+  : {
+    isLoaded: ref(true),
+    isSignedIn: ref(false)
+  }
+const isAuthLoaded = authState.isLoaded
+const isSignedIn = authState.isSignedIn
 let staticTranslationFrame = 0
 let staticTranslationTimeout = 0
 let staticTranslationObserver = null
@@ -78,6 +88,7 @@ const currentPage = computed(() => {
 })
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
 const isPurchaseAllowed = computed(() => purchaseEligibility.value?.allowed !== false)
+const hasCheckoutSession = computed(() => !props.clerkEnabled || isSignedIn.value === true)
 const shouldConfirmCheckoutExit = computed(() => (
   currentPage.value === 'checkout' &&
   Boolean(cartItem.value) &&
@@ -293,11 +304,46 @@ function hideCheckoutTransition() {
   isCheckoutTransitionLoading.value = false
 }
 
+function getCheckoutSignInPath(targetPath = CHECKOUT_PATH) {
+  return `/sign-in?redirect_url=${encodeURIComponent(targetPath)}`
+}
+
+function redirectToCheckoutSignIn(targetPath = CHECKOUT_PATH) {
+  closeCart()
+  hideCheckoutTransition()
+  window.history.pushState({}, '', getCheckoutSignInPath(targetPath))
+  route.value = window.location.pathname
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function ensureCheckoutSession(targetPath = CHECKOUT_PATH) {
+  if (!props.clerkEnabled || !cartItem.value) return true
+  if (!isAuthLoaded.value) {
+    showCheckoutTransition(900)
+    return false
+  }
+  if (hasCheckoutSession.value) return true
+
+  redirectToCheckoutSignIn(targetPath)
+  return false
+}
+
 function navigateToCheckout() {
   if (!cartItem.value || !isPurchaseAllowed.value) return
-  showCheckoutTransition()
   closeCart()
-  window.history.pushState({}, '', '/checkout')
+
+  if (props.clerkEnabled && !isAuthLoaded.value) {
+    showCheckoutTransition()
+    window.history.pushState({}, '', CHECKOUT_PATH)
+    route.value = window.location.pathname
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+
+  if (!ensureCheckoutSession(CHECKOUT_PATH)) return
+
+  showCheckoutTransition()
+  window.history.pushState({}, '', CHECKOUT_PATH)
   route.value = window.location.pathname
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -396,6 +442,7 @@ function shouldClearCartAfterSuccessfulCheckout() {
 
 async function goToStripeCheckout(options = {}) {
   if (!cartItem.value || isCheckoutLoading.value || !isPurchaseAllowed.value) return
+  if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
   isCheckoutLoading.value = true
   isCheckoutTransitionLoading.value = true
@@ -520,6 +567,10 @@ watch(isCheckoutTransitionLoading, (active) => {
 }, { immediate: true })
 
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
+watch([route, cartItem, isAuthLoaded, isSignedIn], () => {
+  if (currentPage.value !== 'checkout') return
+  ensureCheckoutSession()
+}, { flush: 'post' })
 watch(documentTitle, updateDocumentTitle, { immediate: true })
 watch(cartItem, persistCartItem, { deep: true })
 watch(activeDiscount, persistDiscount, { deep: true })
@@ -527,7 +578,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" :class="`mello-route-${currentPage}`" @click="navigate">
-    <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" :clerk-enabled="clerkEnabled" />
+    <SiteHeader v-if="!['checkout', 'checkout-success'].includes(currentPage)" :current-route="route" :clerk-enabled="props.clerkEnabled" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
@@ -581,10 +632,10 @@ watch(activeDiscount, persistDiscount, { deep: true })
       @add-to-cart="addToCart"
     />
     <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
-    <AuthPage v-else-if="currentPage === 'sign-in' && clerkEnabled" mode="sign-in" />
-    <AuthPage v-else-if="currentPage === 'sign-up' && clerkEnabled" mode="sign-up" />
+    <AuthPage v-else-if="currentPage === 'sign-in' && props.clerkEnabled" mode="sign-in" />
+    <AuthPage v-else-if="currentPage === 'sign-up' && props.clerkEnabled" mode="sign-up" />
     <AccountAuthUnavailablePage v-else-if="currentPage === 'sign-in' || currentPage === 'sign-up'" />
-    <AccountOrdersPage v-else-if="currentPage === 'account-orders' && clerkEnabled" />
+    <AccountOrdersPage v-else-if="currentPage === 'account-orders' && props.clerkEnabled" />
     <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders'" />
     <TrackOrderPage v-else-if="currentPage === 'tracking'" />
     <CheckoutPage
