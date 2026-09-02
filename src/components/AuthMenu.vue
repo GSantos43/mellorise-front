@@ -154,8 +154,15 @@ onUnmounted(() => {
 
 <style>
 .mello-auth-menu {
+  box-sizing: border-box;
   flex: 0 0 auto;
   position: relative;
+}
+
+.mello-auth-menu *,
+.mello-auth-menu *::before,
+.mello-auth-menu *::after {
+  box-sizing: border-box;
 }
 
 .mello-auth-menu__guest {
@@ -385,6 +392,7 @@ onUnmounted(() => {
   .mello-mobile-menu__auth-menu .mello-auth-menu__signin,
   .mello-mobile-menu__auth-menu .mello-auth-menu__signup {
     border-radius: 14px;
+    box-sizing: border-box;
     display: flex;
     font-size: 15px;
     justify-content: center;
