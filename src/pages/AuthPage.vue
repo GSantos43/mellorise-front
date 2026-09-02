@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
 import { SignIn, SignUp } from '@clerk/vue'
 import { useAuth, useUser } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
@@ -17,6 +17,7 @@ const { isLoaded, isSignedIn } = useAuth()
 const { user } = useUser()
 
 const isSignUp = computed(() => props.mode === 'sign-up')
+const isClerkLoading = computed(() => !isLoaded.value)
 const displayName = computed(() => (
   user.value?.firstName ||
   user.value?.fullName ||
@@ -43,10 +44,33 @@ const clerkAppearance = {
     footerActionLink: 'mello-auth-page__clerk-link'
   }
 }
+
+watch(isClerkLoading, (active) => {
+  document.documentElement.classList.toggle('mello-auth-loading-lock', active)
+}, { immediate: true })
+
+onUnmounted(() => {
+  document.documentElement.classList.remove('mello-auth-loading-lock')
+})
 </script>
 
 <template>
   <section class="mello-auth-page">
+    <Teleport to="body">
+      <Transition name="mello-auth-loading" appear>
+        <div
+          v-if="isClerkLoading"
+          class="mello-auth-loading"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          :aria-label="t('auth.loading')"
+        >
+          <span class="mello-auth-loading__spinner" aria-hidden="true"></span>
+          <strong>{{ t('auth.loading') }}</strong>
+        </div>
+      </Transition>
+    </Teleport>
     <div class="mello-auth-page__shell">
       <aside class="mello-auth-page__copy">
         <a class="mello-auth-page__brand" href="/" aria-label="MelloRise home">
@@ -92,7 +116,14 @@ const clerkAppearance = {
             <strong>{{ isSignUp ? t('auth.signUp') : t('auth.signIn') }}</strong>
           </div>
 
-          <section v-if="isLoaded && isSignedIn" class="mello-auth-page__signed-in">
+          <section v-if="isClerkLoading" class="mello-auth-page__clerk-loading" aria-hidden="true">
+            <span class="mello-auth-page__clerk-loading-spinner"></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </section>
+
+          <section v-else-if="isSignedIn" class="mello-auth-page__signed-in">
             <span class="mello-auth-page__avatar">
               <img v-if="user?.imageUrl" :src="user.imageUrl" alt="" loading="lazy">
               <b v-else>{{ displayName.charAt(0).toUpperCase() }}</b>
@@ -128,6 +159,69 @@ const clerkAppearance = {
 </template>
 
 <style>
+.mello-auth-loading {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(119, 205, 250, 0.18), transparent 25%),
+    rgba(3, 12, 13, 0.82);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body-family);
+  gap: 16px;
+  inset: 0;
+  justify-content: center;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  position: fixed;
+  text-align: center;
+  z-index: 30000;
+}
+
+.mello-auth-loading__spinner {
+  animation: mello-auth-spin 820ms linear infinite;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-left-color: #77cdfa;
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(119, 205, 250, 0.08), 0 18px 38px rgba(0, 0, 0, 0.24);
+  display: block;
+  height: 58px;
+  width: 58px;
+}
+
+.mello-auth-loading strong {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.mello-auth-loading-enter-active {
+  transition: opacity 240ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-auth-loading-leave-active {
+  transition: opacity 340ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mello-auth-loading-enter-from,
+.mello-auth-loading-leave-to {
+  backdrop-filter: blur(0);
+  opacity: 0;
+}
+
+.mello-auth-loading-lock,
+.mello-auth-loading-lock body {
+  overflow: hidden;
+}
+
+@keyframes mello-auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .mello-auth-page {
   background:
     radial-gradient(circle at 20% 15%, rgba(119, 205, 250, 0.22), transparent 30%),
@@ -156,7 +250,10 @@ const clerkAppearance = {
 }
 
 .mello-auth-page::after {
-  background: url("/assets/mellorise-background.png") center / cover no-repeat;
+  background-image: url("/assets/mellorise-background.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   content: "";
   inset: 0;
   opacity: 0.14;
@@ -361,6 +458,50 @@ const clerkAppearance = {
   font-weight: 720;
 }
 
+.mello-auth-page__clerk-loading {
+  display: grid;
+  gap: 14px;
+  min-height: 430px;
+  padding: 28px 24px;
+  place-items: center;
+}
+
+.mello-auth-page__clerk-loading span:not(.mello-auth-page__clerk-loading-spinner) {
+  background: rgba(23, 49, 50, 0.08);
+  border-radius: 999px;
+  display: block;
+  height: 14px;
+  overflow: hidden;
+  position: relative;
+  width: min(100%, 260px);
+}
+
+.mello-auth-page__clerk-loading span:not(.mello-auth-page__clerk-loading-spinner)::after {
+  animation: mello-auth-shimmer 980ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  background: linear-gradient(90deg, transparent, rgba(119, 205, 250, 0.3), transparent);
+  content: "";
+  inset: 0;
+  position: absolute;
+  transform: translateX(-100%);
+}
+
+.mello-auth-page__clerk-loading-spinner {
+  animation: mello-auth-spin 820ms linear infinite;
+  border: 3px solid rgba(23, 49, 50, 0.1);
+  border-radius: 50%;
+  border-top-color: #173132;
+  display: block;
+  height: 44px;
+  margin-bottom: 8px;
+  width: 44px;
+}
+
+@keyframes mello-auth-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .mello-auth-page__signed-in {
   background: transparent;
   display: grid;
@@ -436,7 +577,6 @@ const clerkAppearance = {
   }
 
   .mello-auth-page::after {
-    background-position: 24% center;
     opacity: 0.12;
   }
 
@@ -466,6 +606,19 @@ const clerkAppearance = {
 
   .mello-auth-page__panel-head {
     border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mello-auth-loading,
+  .mello-auth-page__clerk-loading span:not(.mello-auth-page__clerk-loading-spinner)::after {
+    transition: opacity 160ms ease;
+  }
+
+  .mello-auth-loading__spinner,
+  .mello-auth-page__clerk-loading-spinner,
+  .mello-auth-page__clerk-loading span:not(.mello-auth-page__clerk-loading-spinner)::after {
+    animation: none;
   }
 }
 </style>

@@ -492,6 +492,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   hideCheckoutTransition()
+  document.documentElement.classList.remove('mello-checkout-loading-lock')
   window.removeEventListener('popstate', handlePopState)
   window.removeEventListener('beforeunload', handleBeforeUnload)
 
@@ -513,6 +514,10 @@ onUnmounted(() => {
 watch([route, locale], () => {
   showPageLoader(240)
 }, { flush: 'sync' })
+
+watch(isCheckoutTransitionLoading, (active) => {
+  document.documentElement.classList.toggle('mello-checkout-loading-lock', active)
+}, { immediate: true })
 
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
 watch(documentTitle, updateDocumentTitle, { immediate: true })
@@ -630,8 +635,10 @@ watch(activeDiscount, persistDiscount, { deep: true })
 <style>
 .mello-checkout-transition {
   align-items: center;
-  background: rgba(7, 20, 21, 0.72);
-  backdrop-filter: blur(7px);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(119, 205, 250, 0.18), transparent 24%),
+    rgba(3, 12, 13, 0.82);
+  backdrop-filter: blur(10px);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -641,11 +648,11 @@ watch(activeDiscount, persistDiscount, { deep: true })
 }
 
 .mello-checkout-transition-enter-active {
-  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 260ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mello-checkout-transition-leave-active {
-  transition: opacity 420ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mello-checkout-transition-enter-from,
@@ -676,43 +683,46 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 .mello-checkout-transition__card {
   align-items: center;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 18px;
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
-  color: #102829;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   font-family: var(--font-body-family);
-  gap: 10px;
+  gap: 12px;
   max-width: 330px;
-  padding: 28px 26px 26px;
+  padding: 28px 26px;
   text-align: center;
   width: min(100%, 330px);
 }
 
 .mello-checkout-transition__spinner {
-  animation: mello-checkout-spin 860ms linear infinite;
-  border: 4px solid rgba(119, 205, 250, 0.28);
-  border-top-color: #173132;
+  animation: mello-checkout-spin 820ms linear infinite;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-left-color: #77cdfa;
+  border-top-color: #ffffff;
   border-radius: 50%;
-  height: 48px;
-  margin-bottom: 4px;
-  width: 48px;
+  box-shadow: 0 0 0 1px rgba(119, 205, 250, 0.08), 0 18px 38px rgba(0, 0, 0, 0.22);
+  height: 58px;
+  margin-bottom: 8px;
+  width: 58px;
 }
 
 .mello-checkout-transition__card strong {
-  color: #102829;
-  font-size: 20px;
+  color: #ffffff;
+  font-size: 18px;
   font-weight: 900;
   line-height: 1.12;
 }
 
 .mello-checkout-transition__card small {
-  color: #5d6c70;
+  color: rgba(255, 255, 255, 0.74);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
+}
+
+.mello-checkout-loading-lock,
+.mello-checkout-loading-lock body {
+  overflow: hidden;
 }
 
 @keyframes mello-checkout-spin {
