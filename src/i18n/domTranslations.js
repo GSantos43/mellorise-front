@@ -192,7 +192,7 @@ const staticTextMap = new Map(Object.entries({
   'Combinalo con horarios de sueno saludables y acompanamiento familiar.': 'Pair it with healthy sleep schedules and family support.',
   'Ingredientes que MelloRise evita': 'Ingredients MelloRise avoids',
   'Por que elegir MelloRise': 'Why choose MelloRise',
-  'MelloRise frente a': 'MelloRise vs',
+  'MelloRise frente a': 'MelloRise vs ',
   'opciones genericas': 'generic options',
   'MelloRise frente a opciones genericas': 'MelloRise vs generic options',
   'Nutrientes seleccionados en una gummy practica para la rutina diaria.': 'Selected nutrients in a practical gummy for the daily routine.',

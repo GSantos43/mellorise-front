@@ -3628,8 +3628,13 @@ button.gg-image-card {
 }
 
 @media (max-width: 640px) {
+  .gummy-growth {
+    overflow-x: clip;
+    padding-bottom: 112px;
+  }
+
   .gg-shell {
-    width: calc(100vw - 32px);
+    width: min(100% - 28px, 1180px);
     max-width: 1180px;
   }
 
@@ -4511,11 +4516,18 @@ button.gg-image-card {
   }
 
   .gg-compare-section {
-    padding: 38px 0 48px;
+    padding: 34px 0 42px;
+    overflow: hidden;
   }
 
   .gg-compare {
-    gap: 22px;
+    gap: 20px;
+    max-width: 100%;
+  }
+
+  .gg-compare__copy {
+    max-width: 100%;
+    min-width: 0;
   }
 
   .gg-compare__eyebrow {
@@ -4524,21 +4536,31 @@ button.gg-image-card {
   }
 
   .gg-compare__copy h2 {
-    font-size: 26px;
-    line-height: 1.04;
+    font-size: clamp(24px, 7vw, 28px);
+    line-height: 1.08;
     margin-top: 14px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  .gg-compare__copy h2 span {
+    display: inline;
+    margin-left: 0.12em;
   }
 
   .gg-compare__copy > p {
     font-size: 14px;
     line-height: 1.3;
     margin-top: 10px;
+    max-width: 34ch;
   }
 
   .gg-compare__cta {
     font-size: 13px;
     margin-top: 18px;
     min-height: 46px;
+    padding: 0 16px;
     width: 100%;
   }
 
@@ -4548,12 +4570,14 @@ button.gg-image-card {
   }
 
   .gg-compare__table {
-    grid-template-columns: minmax(156px, 1fr) minmax(120px, 0.76fr) minmax(132px, 0.82fr);
-    margin-left: -8px;
-    margin-right: -8px;
+    border-radius: 18px;
+    grid-template-columns: minmax(0, 1.1fr) minmax(88px, 0.82fr) minmax(0, 1fr);
+    margin-left: 0;
+    margin-right: 0;
     min-height: 0;
     overflow: visible;
     padding: 66px 0 0;
+    width: 100%;
   }
 
   .gg-compare__features,
@@ -4573,22 +4597,30 @@ button.gg-image-card {
   .gg-compare__features > div,
   .gg-compare__generic > div,
   .gg-compare__brand > div {
-    padding: 0 8px;
+    min-width: 0;
+    padding: 0 6px;
   }
 
   .gg-compare__features > div:not(.gg-compare__head) {
-    font-size: 10px;
-    line-height: 1.12;
+    font-size: clamp(9px, 2.45vw, 10.5px);
+    font-weight: 800;
+    line-height: 1.14;
+    overflow-wrap: anywhere;
   }
 
   .gg-compare__head {
-    font-size: 11px;
+    font-size: clamp(9px, 2.55vw, 11px);
+    font-weight: 850;
+    line-height: 1.12;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .gg-compare__brand {
     border-radius: 18px;
     grid-template-rows: 112px repeat(8, 38px);
     margin-top: 0;
+    min-width: 0;
   }
 
   .gg-compare__brand-logo img {
@@ -4629,6 +4661,7 @@ button.gg-image-card {
 
   .gg-photo-reviews-section {
     padding: 48px 0 54px;
+    overflow: hidden;
   }
 
   .gg-photo-reviews__head {
@@ -4679,28 +4712,48 @@ button.gg-image-card {
   }
 
   .gg-photo-reviews__meta {
+    gap: 12px;
     font-size: 13px;
     margin-top: 16px;
+  }
+
+  .gg-photo-reviews__meta span {
+    min-width: 0;
+  }
+
+  .gg-photo-reviews__meta span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .gg-photo-reviews__grid {
     display: flex;
     gap: 14px;
-    margin-left: calc((100vw - 100%) / -2);
-    margin-right: calc((100vw - 100%) / -2);
+    margin-left: 0;
+    margin-right: 0;
     margin-top: 16px;
     overflow-x: auto;
-    padding: 0 max(18px, calc((100vw - 100%) / 2)) 12px;
+    overscroll-behavior-inline: contain;
+    padding: 0 0 14px;
     scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    width: 100%;
   }
 
   .gg-photo-review-card {
-    flex: 0 0 min(78vw, 290px);
+    flex: 0 0 min(100%, 328px);
+    max-width: calc(100vw - 42px);
+    min-width: 0;
     scroll-snap-align: start;
   }
 
+  .gg-photo-review-card__media {
+    aspect-ratio: 1 / 1.08;
+  }
+
   .gg-photo-review-card__body {
-    padding-bottom: 16px;
+    padding: 0 18px 16px;
   }
 
   .gg-photo-review-card h3 {
@@ -4708,7 +4761,8 @@ button.gg-image-card {
   }
 
   .gg-photo-review-card p {
-    font-size: 13px;
+    font-size: 13.5px;
+    line-height: 1.34;
   }
 
   .gg-review-modal {
@@ -4900,18 +4954,43 @@ button.gg-image-card {
   }
 
   .gg-sticky {
+    bottom: max(14px, env(safe-area-inset-bottom));
     grid-template-columns: 1fr;
+    gap: 7px;
+    left: max(16px, env(safe-area-inset-left));
+    transform: translateY(18px);
+    width: min(calc(100% - 104px), 380px);
     border-radius: 18px;
+    padding: 9px;
+  }
+
+  .gummy-growth.is-past-hero .gg-sticky {
+    transform: none;
   }
 
   .gg-sticky__text {
-    padding: 0 6px;
+    padding: 0 8px;
+  }
+
+  .gg-sticky__text strong {
+    display: none;
+  }
+
+  .gg-sticky__text span {
+    color: #526767;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .gg-sticky .gg-button {
+    min-height: 42px;
+    width: 100%;
   }
 }
 
 @media (max-width: 380px) {
   .gg-shell {
-    width: min(100% - 28px, 1180px);
+    width: min(100% - 24px, 1180px);
   }
 
   .gg-product-panel {
@@ -4920,6 +4999,28 @@ button.gg-image-card {
 
   .gg-title {
     font-size: 25px;
+  }
+
+  .gg-compare__table {
+    grid-template-columns: minmax(0, 1.08fr) minmax(80px, 0.78fr) minmax(0, 0.96fr);
+  }
+
+  .gg-compare__features > div:not(.gg-compare__head) {
+    font-size: 9px;
+  }
+
+  .gg-compare__head {
+    font-size: 9px;
+  }
+
+  .gg-photo-review-card {
+    flex-basis: min(100%, 312px);
+    max-width: calc(100vw - 36px);
+  }
+
+  .gg-sticky {
+    left: max(12px, env(safe-area-inset-left));
+    width: calc(100% - 96px);
   }
 
   .gg-rating {
