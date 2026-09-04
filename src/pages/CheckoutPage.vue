@@ -25,6 +25,7 @@ const COUPON_ERROR_KEYS = {
   coupon_first_purchase_only: 'checkout.couponErrors.firstPurchaseOnly',
   coupon_not_found: 'checkout.couponErrors.notFound',
   coupon_invalid: 'checkout.couponErrors.invalid',
+  coupon_already_issued: 'checkout.couponErrors.alreadyIssued',
   coupon_missing_email: 'checkout.couponErrors.missingEmail',
   coupon_missing_code: 'checkout.couponErrors.invalid'
 }

@@ -732,6 +732,7 @@ export const messages = {
         firstPurchaseOnly: 'Este descuento es solo para la primera compra. Lo quitamos del checkout; vuelve a tocar pagar para continuar.',
         notFound: 'No encontramos este cupón. Revisa el código o continúa sin descuento.',
         invalid: 'Este cupón no está disponible. Revisa el código o continúa sin descuento.',
+        alreadyIssued: 'Ya rescataste el cupón de primera compra para este email. Revisa tu bandeja de entrada y pega el código en el campo de cupón.',
         missingEmail: 'Necesitamos el email de compra para validar este cupón.',
         missingCode: 'Pega el código recibido por email para aplicar el descuento.'
       },
@@ -1520,6 +1521,7 @@ export const messages = {
         firstPurchaseOnly: 'This discount is only for a first purchase. We removed it from checkout; tap Pay again to continue.',
         notFound: 'We could not find this coupon. Check the code or continue without the discount.',
         invalid: 'This coupon is not available. Check the code or continue without the discount.',
+        alreadyIssued: 'You already claimed the first-purchase coupon for this email. Check your inbox and paste the code into the coupon field.',
         missingEmail: 'We need the purchase email to validate this coupon.',
         missingCode: 'Paste the code received by email to apply the discount.'
       },
