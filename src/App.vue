@@ -1,6 +1,5 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useAuth, useUser } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
 import HomePage from './pages/HomePage.vue'
 import ProductPage from './pages/ProductPage.vue'
@@ -10,10 +9,13 @@ import FaqPage from './pages/FaqPage.vue'
 import InstitutionalPage from './pages/InstitutionalPage.vue'
 import CheckoutPage from './pages/CheckoutPage.vue'
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
-import AccountOrdersPage from './pages/AccountOrdersPage.vue'
-import AccountOrderDetailPage from './pages/AccountOrderDetailPage.vue'
 import AccountAuthUnavailablePage from './pages/AccountAuthUnavailablePage.vue'
-import AuthPage from './pages/AuthPage.vue'
+import TrackOrderPage from './pages/TrackOrderPage.vue'
+// Clerk-driven account pages are paused while checkout runs directly through Stripe.
+// import { useAuth, useUser } from '@clerk/vue'
+// import AccountOrdersPage from './pages/AccountOrdersPage.vue'
+// import AccountOrderDetailPage from './pages/AccountOrderDetailPage.vue'
+// import AuthPage from './pages/AuthPage.vue'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreFooter from './components/StoreFooter.vue'
 import CartDrawer from './components/CartDrawer.vue'
@@ -65,16 +67,17 @@ const purchaseEligibility = ref({
   reason: 'loading'
 })
 const { t, locale } = useI18n({ useScope: 'global' })
-const authState = props.clerkEnabled
-  ? useAuth()
-  : {
-    isLoaded: ref(true),
-    isSignedIn: ref(false)
-  }
-const userState = props.clerkEnabled ? useUser() : { user: ref(null) }
+// Auth is disabled temporarily; keep inert refs so the surrounding flow stays reversible.
+// const authState = props.clerkEnabled ? useAuth() : { isLoaded: ref(true), isSignedIn: ref(false) }
+// const userState = props.clerkEnabled ? useUser() : { user: ref(null) }
+const authState = {
+  isLoaded: ref(true),
+  isSignedIn: ref(false)
+}
+// const userState = { user: ref(null) }
 const isAuthLoaded = authState.isLoaded
 const isSignedIn = authState.isSignedIn
-const { user } = userState
+// const { user } = userState
 let staticTranslationFrame = 0
 let staticTranslationTimeout = 0
 let staticTranslationObserver = null
@@ -109,10 +112,11 @@ const accountOrderId = computed(() => {
 })
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
 const isPurchaseAllowed = computed(() => purchaseEligibility.value?.allowed !== false)
-const hasCheckoutSession = computed(() => !props.clerkEnabled || isSignedIn.value === true)
+const hasCheckoutSession = computed(() => true)
 const checkoutEmail = computed(() => (
-  user.value?.primaryEmailAddress?.emailAddress ||
-  user.value?.emailAddresses?.[0]?.emailAddress ||
+  // Clerk email hydration is paused while checkout runs without login.
+  // user.value?.primaryEmailAddress?.emailAddress ||
+  // user.value?.emailAddresses?.[0]?.emailAddress ||
   activeDiscount.value?.email ||
   ''
 ))
@@ -353,41 +357,35 @@ function hideCheckoutTransition() {
   isCheckoutTransitionLoading.value = false
 }
 
-function getCheckoutSignInPath(targetPath = CHECKOUT_PATH) {
-  return `/sign-in?redirect_url=${encodeURIComponent(targetPath)}`
-}
-
-function redirectToCheckoutSignIn(targetPath = CHECKOUT_PATH) {
-  closeCart()
-  hideCheckoutTransition()
-  window.history.pushState({}, '', getCheckoutSignInPath(targetPath))
-  route.value = window.location.pathname
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
+// function getCheckoutSignInPath(targetPath = CHECKOUT_PATH) {
+//   return `/sign-in?redirect_url=${encodeURIComponent(targetPath)}`
+// }
+//
+// function redirectToCheckoutSignIn(targetPath = CHECKOUT_PATH) {
+//   closeCart()
+//   hideCheckoutTransition()
+//   window.history.pushState({}, '', getCheckoutSignInPath(targetPath))
+//   route.value = window.location.pathname
+//   window.scrollTo({ top: 0, behavior: 'smooth' })
+// }
 
 function ensureCheckoutSession(targetPath = CHECKOUT_PATH) {
-  if (!props.clerkEnabled || !cartItem.value) return true
-  if (!isAuthLoaded.value) {
-    showCheckoutTransition(900)
-    return false
-  }
-  if (hasCheckoutSession.value) return true
-
-  redirectToCheckoutSignIn(targetPath)
-  return false
+  // Auth gate is paused: cart presence is enough to enter checkout.
+  void targetPath
+  return Boolean(cartItem.value)
 }
 
 function navigateToCheckout() {
   if (!cartItem.value || !isPurchaseAllowed.value) return
   closeCart()
 
-  if (props.clerkEnabled && !isAuthLoaded.value) {
-    showCheckoutTransition()
-    window.history.pushState({}, '', CHECKOUT_PATH)
-    route.value = window.location.pathname
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    return
-  }
+  // if (props.clerkEnabled && !isAuthLoaded.value) {
+  //   showCheckoutTransition()
+  //   window.history.pushState({}, '', CHECKOUT_PATH)
+  //   route.value = window.location.pathname
+  //   window.scrollTo({ top: 0, behavior: 'smooth' })
+  //   return
+  // }
 
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
@@ -429,10 +427,11 @@ function handlePopState() {
 }
 
 function redirectTrackingToAccountOrders() {
-  if (currentPage.value !== 'tracking' || !props.clerkEnabled || isSignedIn.value !== true) return
-
-  window.history.replaceState({}, '', '/account/orders')
-  route.value = window.location.pathname
+  // Auth redirect is paused; /track-order stays public.
+  // if (currentPage.value !== 'tracking' || !props.clerkEnabled || isSignedIn.value !== true) return
+  //
+  // window.history.replaceState({}, '', '/account/orders')
+  // route.value = window.location.pathname
 }
 
 function handleBeforeUnload(event) {
@@ -664,7 +663,7 @@ watch([route, cartItem, isAuthLoaded, isSignedIn], () => {
   if (currentPage.value !== 'checkout') return
   ensureCheckoutSession()
 }, { flush: 'post' })
-watch([route, isAuthLoaded, isSignedIn], redirectTrackingToAccountOrders, { immediate: true, flush: 'post' })
+// watch([route, isAuthLoaded, isSignedIn], redirectTrackingToAccountOrders, { immediate: true, flush: 'post' })
 watch(documentTitle, updateDocumentTitle, { immediate: true })
 watch(cartItem, persistCartItem, { deep: true })
 watch(activeDiscount, persistDiscount, { deep: true })
@@ -672,7 +671,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" :class="`mello-route-${currentPage}`" @click="navigate">
-    <SiteHeader v-if="!['checkout', 'checkout-success', 'tracking'].includes(currentPage)" :current-route="route" :clerk-enabled="props.clerkEnabled" />
+    <SiteHeader v-if="!['checkout', 'checkout-success', 'tracking'].includes(currentPage)" :current-route="route" :clerk-enabled="false" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
@@ -738,7 +737,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :products="products"
       :is-loading="isLoading"
       :active-discount="activeDiscount"
-      :clerk-enabled="props.clerkEnabled"
+      :clerk-enabled="false"
       @discount-created="applyDiscount"
     />
     <ProductPage
@@ -749,22 +748,23 @@ watch(activeDiscount, persistDiscount, { deep: true })
       @add-to-cart="addToCart"
     />
     <CheckoutSuccessPage v-else-if="currentPage === 'checkout-success'" @clear-cart="removeCartItem" />
-    <AuthPage v-else-if="currentPage === 'sign-in' && props.clerkEnabled" mode="sign-in" />
-    <AuthPage v-else-if="currentPage === 'sign-up' && props.clerkEnabled" mode="sign-up" />
+    <!-- Auth pages are paused while checkout runs directly through Stripe. -->
+    <!-- <AuthPage v-else-if="currentPage === 'sign-in' && props.clerkEnabled" mode="sign-in" /> -->
+    <!-- <AuthPage v-else-if="currentPage === 'sign-up' && props.clerkEnabled" mode="sign-up" /> -->
     <AccountAuthUnavailablePage v-else-if="currentPage === 'sign-in' || currentPage === 'sign-up'" />
-    <AccountOrdersPage v-else-if="currentPage === 'account-orders' && props.clerkEnabled" />
-    <AccountOrderDetailPage
+    <!-- <AccountOrdersPage v-else-if="currentPage === 'account-orders' && props.clerkEnabled" /> -->
+    <!-- <AccountOrderDetailPage
       v-else-if="currentPage === 'account-order-detail' && props.clerkEnabled"
       :order-id="accountOrderId"
-    />
+    /> -->
     <AccountAuthUnavailablePage v-else-if="currentPage === 'account-orders' || currentPage === 'account-order-detail'" />
-    <AuthPage
+    <!-- <AuthPage
       v-else-if="currentPage === 'tracking' && props.clerkEnabled"
       mode="sign-in"
       auth-path="/track-order"
       fallback-redirect-path="/account/orders"
-    />
-    <AccountAuthUnavailablePage v-else-if="currentPage === 'tracking'" />
+    /> -->
+    <TrackOrderPage v-else-if="currentPage === 'tracking'" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"
       :item="cartItem"

@@ -2,7 +2,8 @@
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale, supportedLocales } from '../i18n'
-import AuthMenu from './AuthMenu.vue'
+// Clerk auth menu is intentionally paused while checkout runs directly through Stripe.
+// import AuthMenu from './AuthMenu.vue'
 
 const props = defineProps({
   currentRoute: {
@@ -134,8 +135,9 @@ watch(isMobileMenuOpen, (isOpen) => {
 
       <div class="mello-page-header__actions">
         <a class="mello-page-header__cta" href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
-        <AuthMenu v-if="clerkEnabled" />
-        <div v-else class="mello-page-header__auth-fallback">
+        <!-- Auth actions are paused while checkout runs directly through Stripe. -->
+        <!-- <AuthMenu v-if="clerkEnabled" /> -->
+        <!-- <div v-else class="mello-page-header__auth-fallback">
           <a class="mello-page-header__account-fallback" href="/sign-in" :aria-label="t('auth.signIn')">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M20 21a8 8 0 0 0-16 0" />
@@ -144,7 +146,7 @@ watch(isMobileMenuOpen, (isOpen) => {
             <span>{{ t('auth.signIn') }}</span>
           </a>
           <a class="mello-page-header__signup-fallback" href="/sign-up">{{ t('auth.signUp') }}</a>
-        </div>
+        </div> -->
         <div class="mello-page-header__locale" :aria-label="t('language.label')" role="group">
           <span class="mello-page-header__locale-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3c2.2 2.5 3.3 5.5 3.3 9s-1.1 6.5-3.3 9c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z"/></svg>
@@ -200,8 +202,9 @@ watch(isMobileMenuOpen, (isOpen) => {
       </nav>
 
       <div class="mello-mobile-menu__actions">
-        <AuthMenu v-if="clerkEnabled" class="mello-mobile-menu__auth-menu" />
-        <div v-else class="mello-mobile-menu__auth">
+        <!-- Auth actions are paused while checkout runs directly through Stripe. -->
+        <!-- <AuthMenu v-if="clerkEnabled" class="mello-mobile-menu__auth-menu" /> -->
+        <!-- <div v-else class="mello-mobile-menu__auth">
           <a class="mello-mobile-menu__account" href="/sign-in" @click="closeMobileMenu">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M20 21a8 8 0 0 0-16 0" />
@@ -210,7 +213,7 @@ watch(isMobileMenuOpen, (isOpen) => {
             <span>{{ t('auth.signIn') }}</span>
           </a>
           <a class="mello-mobile-menu__signup" href="/sign-up" @click="closeMobileMenu">{{ t('auth.signUp') }}</a>
-        </div>
+        </div> -->
         <a class="mello-mobile-menu__cta" href="/products/wondernest-heightener-gummies-2026#comprar" @click="closeMobileMenu">{{ t('nav.cta') }}</a>
       </div>
     </aside>

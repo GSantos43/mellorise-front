@@ -1,8 +1,9 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useAuth, useUser } from '@clerk/vue'
 import { useI18n } from 'vue-i18n'
-import { createWelcomeDiscount } from '../services/discounts'
+// Welcome discount auth flow is paused while checkout runs directly through Stripe.
+// import { useAuth, useUser } from '@clerk/vue'
+// import { createWelcomeDiscount } from '../services/discounts'
 
 const props = defineProps({
   products: {
@@ -25,16 +26,16 @@ const props = defineProps({
 const emit = defineEmits(['discount-created'])
 
 const { t } = useI18n()
-const authState = props.clerkEnabled
-  ? useAuth()
-  : {
-    isLoaded: ref(true),
-    isSignedIn: ref(false),
-    getToken: ref(async () => '')
-  }
-const userState = props.clerkEnabled ? useUser() : { user: ref(null) }
+// Auth is disabled temporarily; keep inert refs so this component stays reversible.
+// const authState = props.clerkEnabled ? useAuth() : { isLoaded: ref(true), isSignedIn: ref(false), getToken: ref(async () => '') }
+// const userState = props.clerkEnabled ? useUser() : { user: ref(null) }
+const authState = {
+  isLoaded: ref(true),
+  isSignedIn: ref(false),
+  getToken: ref(async () => '')
+}
 const { isLoaded: isAuthLoaded, isSignedIn, getToken } = authState
-const { user } = userState
+// const { user } = userState
 
 const announcementItems = ['Sin hormonas', 'Etiqueta clara', 'Uso responsable', 'Sin gluten', 'Ingredientes seleccionados']
 const nutrients = [
@@ -187,7 +188,7 @@ const densityCard = ref(null)
 const isDensityVisible = ref(false)
 let densityObserver
 let revealObserver
-const signedInEmail = computed(() => user.value?.primaryEmailAddress?.emailAddress || user.value?.emailAddresses?.[0]?.emailAddress || '')
+const signedInEmail = computed(() => '')
 const offerClaimLabel = computed(() => {
   if (isOfferSubmitting.value || !isAuthLoaded.value) return t('home.offer.loading')
   return isSignedIn.value ? t('home.offer.claim') : t('home.offer.signInClaim')
@@ -255,6 +256,9 @@ function setupScrollReveal() {
 }
 
 function shouldShowOffer() {
+  // Auth-backed welcome offer is paused for the direct checkout period.
+  return false
+
   if (typeof window === 'undefined') return false
 
   const currentCount = Number(window.localStorage.getItem(OFFER_LOAD_COUNT_KEY) || 0)
@@ -291,6 +295,8 @@ async function claimWelcomeOffer() {
   if (isOfferSubmitting.value) return
 
   offerError.value = ''
+  offerError.value = t('home.offer.error')
+  return
 
   if (!isAuthLoaded.value) {
     return
@@ -309,9 +315,9 @@ async function claimWelcomeOffer() {
   isOfferSubmitting.value = true
 
   try {
-    const token = await getToken.value()
-    const discount = await createWelcomeDiscount({ token })
-    emit('discount-created', discount)
+    // const token = await getToken.value()
+    // const discount = await createWelcomeDiscount({ token })
+    // emit('discount-created', discount)
     clearPendingOffer()
     closeOffer()
     window.history.pushState({}, '', '/products/wondernest-heightener-gummies-2026')
@@ -324,6 +330,8 @@ async function claimWelcomeOffer() {
 }
 
 function redirectToOfferLogin() {
+  return
+
   if (typeof window === 'undefined') return
 
   window.sessionStorage.setItem(PENDING_OFFER_KEY, '1')
@@ -342,6 +350,8 @@ function clearPendingOffer() {
 }
 
 function shouldResumePendingOffer() {
+  return false
+
   if (typeof window === 'undefined') return false
 
   return (
