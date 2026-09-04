@@ -11,6 +11,7 @@ import CheckoutPage from './pages/CheckoutPage.vue'
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.vue'
 import AccountAuthUnavailablePage from './pages/AccountAuthUnavailablePage.vue'
 import TrackOrderPage from './pages/TrackOrderPage.vue'
+import AnalyticsPage from './pages/AnalyticsPage.vue'
 // Clerk-driven account pages are paused while checkout runs directly through Stripe.
 // import { useAuth, useUser } from '@clerk/vue'
 // import AccountOrdersPage from './pages/AccountOrdersPage.vue'
@@ -104,6 +105,7 @@ const currentProduct = computed(() => {
 })
 
 const currentPage = computed(() => {
+  if (route.value.startsWith('/analytttcs')) return 'analytics'
   if (route.value.startsWith('/products/')) return 'product'
   if (route.value.startsWith('/checkout/success')) return 'checkout-success'
   if (route.value.startsWith('/checkout')) return 'checkout'
@@ -154,6 +156,7 @@ const documentTitle = computed(() => {
     'sign-up': t('meta.signUp'),
     checkout: t('meta.checkout'),
     'checkout-success': t('meta.checkoutSuccess'),
+    analytics: 'Analytics',
     institutional: getInstitutionalTitle(),
   }
 
@@ -643,9 +646,15 @@ function trackCurrentProductView() {
   trackProductView(currentProduct.value)
 }
 
+function shouldTrackCurrentPage() {
+  return currentPage.value !== 'analytics'
+}
+
 onMounted(async () => {
   initAnalytics()
-  trackPageView(window.location.pathname, document.title)
+  if (shouldTrackCurrentPage()) {
+    trackPageView(window.location.pathname, document.title)
+  }
   scheduleStaticTranslation()
   if (shouldClearCartAfterSuccessfulCheckout()) {
     persistCartItem(null)
@@ -718,7 +727,9 @@ watch([route, locale], () => {
 }, { flush: 'sync' })
 
 watch(route, () => {
-  trackPageView(window.location.pathname, document.title)
+  if (shouldTrackCurrentPage()) {
+    trackPageView(window.location.pathname, document.title)
+  }
   trackCurrentProductView()
 }, { flush: 'sync' })
 
@@ -739,7 +750,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" :class="`mello-route-${currentPage}`" @click="navigate">
-    <SiteHeader v-if="!['checkout', 'checkout-success', 'tracking'].includes(currentPage)" :current-route="route" :clerk-enabled="false" />
+    <SiteHeader v-if="!['checkout', 'checkout-success', 'tracking', 'analytics'].includes(currentPage)" :current-route="route" :clerk-enabled="false" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
@@ -839,6 +850,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       fallback-redirect-path="/account/orders"
     /> -->
     <TrackOrderPage v-else-if="currentPage === 'tracking'" />
+    <AnalyticsPage v-else-if="currentPage === 'analytics'" />
     <CheckoutPage
       v-else-if="currentPage === 'checkout'"
       :item="cartItem"
@@ -864,9 +876,9 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :purchase-eligibility="purchaseEligibility"
       @add-to-cart="addToCart"
     />
-    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking'].includes(currentPage)" />
+    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking', 'analytics'].includes(currentPage)" />
     <button
-      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking', 'account-orders', 'account-order-detail'].includes(currentPage)"
+      v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking', 'account-orders', 'account-order-detail', 'analytics'].includes(currentPage)"
       class="mello-floating-cart"
       type="button"
       :aria-label="t('nav.cart')"
