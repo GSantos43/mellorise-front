@@ -111,10 +111,10 @@ const total = computed(() => Math.max(0, subtotal.value - discountTotal.value))
 const totalSavings = computed(() => discountTotal.value)
 const canSubmit = computed(() => Boolean(props.item && !props.isCheckoutLoading))
 const canApplyCoupon = computed(() => Boolean(hasCheckoutEmail.value && !isCouponValidating.value))
-const canUseCouponButton = computed(() => hasSavedDiscount.value || canApplyCoupon.value)
-const couponButtonLabel = computed(() => {
+const canUseEmailDiscountButton = computed(() => Boolean(hasCheckoutEmail.value && !isCouponValidating.value))
+const emailDiscountButtonLabel = computed(() => {
   if (isCouponValidating.value) return t('checkout.coupon.applying')
-  return hasSavedDiscount.value ? t('checkout.coupon.remove') : t('checkout.coupon.request')
+  return hasSavedDiscount.value ? t('checkout.coupon.emailAgain') : t('checkout.coupon.request')
 })
 const couponFeedbackMessage = computed(() => couponErrorMessage.value || t('checkout.coupon.invalid'))
 
@@ -450,14 +450,19 @@ onUnmounted(() => {
             </div>
             <label class="mello-checkout-summary-contact__field">
               <span>{{ t('checkout.contact.email') }}</span>
-              <input
-                v-model="checkoutEmailInput"
-                type="email"
-                autocomplete="email"
-                inputmode="email"
-                :placeholder="t('checkout.contact.emailPlaceholder')"
-                :aria-invalid="couponFeedback === 'error' && !hasCheckoutEmail"
-              >
+              <span class="mello-checkout-summary-contact__row">
+                <input
+                  v-model="checkoutEmailInput"
+                  type="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  :placeholder="t('checkout.contact.emailPlaceholder')"
+                  :aria-invalid="couponFeedback === 'error' && !hasCheckoutEmail"
+                >
+                <button type="button" :disabled="!canUseEmailDiscountButton" @click="applyCoupon">
+                  {{ emailDiscountButtonLabel }}
+                </button>
+              </span>
             </label>
             <p class="mello-checkout-help">{{ t('checkout.contact.help') }}</p>
           </section>
@@ -469,7 +474,7 @@ onUnmounted(() => {
             </div>
             <label class="mello-checkout-summary-coupon__field">
               <span>{{ t('checkout.coupon.label') }}</span>
-              <span class="mello-checkout-summary-coupon__row">
+              <span class="mello-checkout-summary-coupon__row" :class="{ 'has-action': hasSavedDiscount }">
                 <input
                   v-model="couponCode"
                   type="text"
@@ -478,8 +483,8 @@ onUnmounted(() => {
                   :aria-invalid="couponFeedback === 'error'"
                   readonly
                 >
-                <button type="button" :disabled="!canUseCouponButton" @click="handleCouponButton">
-                  {{ couponButtonLabel }}
+                <button v-if="hasSavedDiscount" type="button" @click="handleCouponButton">
+                  {{ t('checkout.coupon.remove') }}
                 </button>
               </span>
             </label>
@@ -1165,9 +1170,14 @@ onUnmounted(() => {
   font-weight: 650;
 }
 
+.mello-checkout-summary-contact__row,
 .mello-checkout-summary-coupon__row {
   display: grid;
   gap: 8px;
+}
+
+.mello-checkout-summary-contact__row,
+.mello-checkout-summary-coupon__row.has-action {
   grid-template-columns: minmax(0, 7fr) minmax(86px, 3fr);
 }
 
@@ -1203,6 +1213,7 @@ onUnmounted(() => {
   box-shadow: 0 0 0 2px rgba(209, 36, 47, 0.12);
 }
 
+.mello-checkout-summary-contact button,
 .mello-checkout-summary-coupon button {
   appearance: none;
   background: #173132;
@@ -1218,6 +1229,14 @@ onUnmounted(() => {
   transition: background 160ms ease, transform 160ms ease;
 }
 
+.mello-checkout-summary-contact button {
+  background: #3483fa;
+  font-size: 13px;
+  line-height: 1.05;
+}
+
+.mello-checkout-summary-contact button:hover,
+.mello-checkout-summary-contact button:focus-visible,
 .mello-checkout-summary-coupon button:hover,
 .mello-checkout-summary-coupon button:focus-visible {
   background: #214748;
@@ -1225,6 +1244,12 @@ onUnmounted(() => {
   transform: translateY(-1px);
 }
 
+.mello-checkout-summary-contact button:hover,
+.mello-checkout-summary-contact button:focus-visible {
+  background: #1f70e8;
+}
+
+.mello-checkout-summary-contact button:disabled,
 .mello-checkout-summary-coupon button:disabled {
   background: #c8d0d0;
   color: rgba(255, 255, 255, 0.92);
@@ -1457,6 +1482,15 @@ onUnmounted(() => {
   .mello-checkout-section h2,
   .mello-checkout-section__head h2 { font-size: 21px; }
   .mello-checkout-radio { grid-template-columns: 26px minmax(0, 1fr) auto; }
+  .mello-checkout-summary-contact__row,
+  .mello-checkout-summary-coupon__row.has-action {
+    grid-template-columns: 1fr;
+  }
+  .mello-checkout-summary-contact button,
+  .mello-checkout-summary-coupon button {
+    min-height: 46px;
+    width: 100%;
+  }
 }
 
 @keyframes melloCheckoutConfettiFall {
