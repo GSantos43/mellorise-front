@@ -773,7 +773,7 @@ watch([isGalleryLightboxOpen, isReviewFormOpen, selectedPhotoReview], ([isLightb
             <span class="gg-stars" aria-hidden="true">
               <svg v-for="star in 5" :key="star" viewBox="0 0 24 24"><path d="m12 2.8 2.75 5.58 6.16.9-4.45 4.34 1.05 6.13L12 16.85l-5.51 2.9 1.05-6.13-4.45-4.34 6.16-.9L12 2.8Z"/></svg>
             </span>
-            <span><strong>4.4/5</strong> stars rated by <strong>15,000+</strong> parents</span>
+            <span><strong>4.7/5</strong> stars rated by <strong>15,000+</strong> parents</span>
           </div>
           <h1 class="gg-title">{{ localizedProductTitle }}</h1>
           <p class="gg-lede">{{ t('product.lede') }}</p>

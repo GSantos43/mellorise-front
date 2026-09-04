@@ -164,8 +164,8 @@ onUnmounted(() => {
             {{ isCheckoutLoading ? t('cart.checkoutLoading') : `${t('cart.checkout')} • ${formatMoney(checkoutTotal)}` }}
           </button>
 
-          <div class="mello-cart-paypal" aria-hidden="true">
-            <span>P</span>
+          <div class="mello-cart-stripe" aria-hidden="true">
+            <span>Payment with <strong>Stripe</strong></span>
           </div>
         </footer>
       </aside>
@@ -679,26 +679,26 @@ onUnmounted(() => {
   opacity: 0.5;
 }
 
-.mello-cart-paypal {
+.mello-cart-stripe {
   align-items: center;
   display: flex;
   justify-content: center;
-  min-height: 39px;
-  padding-top: 12px;
+  min-height: 34px;
+  padding-top: 10px;
 }
 
-.mello-cart-paypal span {
-  align-items: center;
-  background: #f7f7f7;
-  border: 1px solid rgba(7, 20, 21, 0.08);
-  border-radius: 4px;
-  color: #003087;
+.mello-cart-stripe span {
+  color: rgba(23, 49, 50, 0.66);
   display: inline-flex;
-  font-size: 16px;
-  font-weight: 760;
-  height: 24px;
-  justify-content: center;
-  width: 38px;
+  font-size: 13px;
+  font-weight: 560;
+  gap: 4px;
+  line-height: 1.2;
+}
+
+.mello-cart-stripe strong {
+  color: #635bff;
+  font-weight: 850;
 }
 
 @media (max-width: 520px) {
@@ -839,14 +839,13 @@ onUnmounted(() => {
     min-height: 46px;
   }
 
-  .mello-cart-paypal {
+  .mello-cart-stripe {
     min-height: 28px;
     padding-top: 8px;
   }
 
-  .mello-cart-paypal span {
-    height: 22px;
-    width: 36px;
+  .mello-cart-stripe span {
+    font-size: 12px;
   }
 }
 </style>
