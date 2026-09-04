@@ -606,7 +606,9 @@ export const messages = {
         toggle: 'Activar protección de envío'
       },
       discount: {
-        label: 'Descuento aplicado'
+        label: 'Descuento aplicado',
+        newCustomers: '10% para nuevos clientes',
+        checkout: 'Verificar en checkout'
       }
     },
     checkoutTransition: {
@@ -711,13 +713,15 @@ export const messages = {
       },
       coupon: {
         title: 'Cupón',
-        label: 'Código de descuento',
-        placeholder: 'MELLO10',
+        label: 'Descuento disponible',
+        placeholder: 'Tu cupón aparece aquí',
         apply: 'Aplicar',
-        applying: 'Aplicando...',
+        request: 'Pedir descuento',
+        remove: 'Quitar',
+        applying: 'Verificando...',
         applied: '{percent}% reservado para este email',
         invalid: 'Cupón inválido o expirado.',
-        help: 'Inserta tu cupón y aplícalo antes del pago.'
+        help: 'Verificamos si este email aún puede recibir el descuento de primera compra.'
       },
       couponErrors: {
         exhausted: 'Este cupón ya fue usado o agotó su límite. Lo quitamos del checkout; vuelve a tocar pagar para continuar sin descuento.',
@@ -1372,7 +1376,9 @@ export const messages = {
         toggle: 'Toggle shipping protection'
       },
       discount: {
-        label: 'Discount applied'
+        label: 'Discount applied',
+        newCustomers: '10% for new customers',
+        checkout: 'Check at checkout'
       }
     },
     checkoutTransition: {
@@ -1477,13 +1483,15 @@ export const messages = {
       },
       coupon: {
         title: 'Coupon',
-        label: 'Discount code',
-        placeholder: 'MELLO10',
+        label: 'Available discount',
+        placeholder: 'Your coupon appears here',
         apply: 'Apply',
-        applying: 'Applying...',
+        request: 'Get discount',
+        remove: 'Remove',
+        applying: 'Checking...',
         applied: '{percent}% reserved for this email',
         invalid: 'Coupon invalid or expired.',
-        help: 'Enter your coupon and apply it before payment.'
+        help: 'We check whether this email can still receive the first-order discount.'
       },
       couponErrors: {
         exhausted: 'This coupon has already been used or reached its limit. We removed it from checkout; tap Pay again to continue without the discount.',

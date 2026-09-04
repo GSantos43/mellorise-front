@@ -22,6 +22,7 @@ export async function createWelcomeDiscount(options = {}) {
       ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
     },
     body: JSON.stringify({
+      customerEmail: options.email,
       visitorId: getVisitorId()
     })
   })

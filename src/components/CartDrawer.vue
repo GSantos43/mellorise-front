@@ -151,9 +151,11 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <div v-if="item && discount?.code" class="mello-cart-discount">
-            <span>{{ t('cart.discount.label') }} <strong>{{ discount.code }}</strong></span>
-            <b>-{{ formatMoney(discountTotal) }}</b>
+          <div v-if="item" class="mello-cart-discount" :class="{ 'is-preview': !discount?.code }">
+            <span v-if="discount?.code">{{ t('cart.discount.label') }} <strong>{{ discount.code }}</strong></span>
+            <span v-else>{{ t('cart.discount.newCustomers') }}</span>
+            <b v-if="discount?.code">-{{ formatMoney(discountTotal) }}</b>
+            <b v-else>{{ t('cart.discount.checkout') }}</b>
           </div>
 
           <p v-if="item && !isPurchaseAllowed" class="mello-cart-region-lock" role="status">
@@ -639,6 +641,19 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 760;
   white-space: nowrap;
+}
+
+.mello-cart-discount.is-preview {
+  background: #f4fbff;
+  border-color: rgba(100, 198, 244, 0.28);
+  color: #123233;
+}
+
+.mello-cart-discount.is-preview b {
+  color: var(--mcart-teal);
+  font-size: 12px;
+  font-weight: 780;
+  text-align: right;
 }
 
 .mello-cart-region-lock {

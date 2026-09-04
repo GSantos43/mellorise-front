@@ -3,7 +3,7 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale, supportedLocales } from '../i18n'
 import { formatMoney } from '../services/products'
-import { validateWelcomeDiscount } from '../services/discounts'
+import { createWelcomeDiscount } from '../services/discounts'
 import { translateProductTitle } from '../i18n/productText'
 
 const props = defineProps({
@@ -15,7 +15,7 @@ const props = defineProps({
   checkoutRedirectError: { type: String, default: '' }
 })
 
-const emit = defineEmits(['checkout', 'update-quantity', 'remove', 'discount-applied'])
+const emit = defineEmits(['checkout', 'update-quantity', 'remove', 'discount-applied', 'discount-removed'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
 const COUPON_ERROR_KEYS = {
@@ -29,6 +29,9 @@ const COUPON_ERROR_KEYS = {
   coupon_missing_code: 'checkout.couponErrors.invalid'
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const checkoutEmailInput = ref(props.checkoutEmail || props.discount?.email || '')
 const couponCode = ref(props.discount?.code || '')
 const appliedDiscount = ref(props.discount)
 const couponFeedback = ref('')
@@ -96,21 +99,23 @@ const checkoutUpsell = computed(() => {
 })
 const discountPercent = computed(() => Math.max(0, Number(appliedDiscount.value?.amount || 0)))
 const normalizedCoupon = computed(() => couponCode.value.trim().toUpperCase())
-const checkoutCustomerEmail = computed(() => (
-  props.checkoutEmail ||
-  appliedDiscount.value?.email ||
-  ''
-).trim())
+const checkoutCustomerEmail = computed(() => checkoutEmailInput.value.trim())
+const hasCheckoutEmail = computed(() => EMAIL_PATTERN.test(checkoutCustomerEmail.value))
 const hasSavedDiscount = computed(() => Boolean(
   appliedDiscount.value?.code &&
-  normalizedCoupon.value === appliedDiscount.value.code &&
+  normalizedCoupon.value === String(appliedDiscount.value.code).toUpperCase() &&
   checkoutCustomerEmail.value.toLowerCase() === String(appliedDiscount.value.email || '').toLowerCase()
 ))
 const discountTotal = computed(() => props.item && hasSavedDiscount.value ? subtotal.value * (discountPercent.value / 100) : 0)
 const total = computed(() => Math.max(0, subtotal.value - discountTotal.value))
 const totalSavings = computed(() => discountTotal.value)
 const canSubmit = computed(() => Boolean(props.item && !props.isCheckoutLoading))
-const canApplyCoupon = computed(() => Boolean(normalizedCoupon.value && checkoutCustomerEmail.value && !isCouponValidating.value))
+const canApplyCoupon = computed(() => Boolean(hasCheckoutEmail.value && !isCouponValidating.value))
+const canUseCouponButton = computed(() => hasSavedDiscount.value || canApplyCoupon.value)
+const couponButtonLabel = computed(() => {
+  if (isCouponValidating.value) return t('checkout.coupon.applying')
+  return hasSavedDiscount.value ? t('checkout.coupon.remove') : t('checkout.coupon.request')
+})
 const couponFeedbackMessage = computed(() => couponErrorMessage.value || t('checkout.coupon.invalid'))
 
 watch(
@@ -125,6 +130,7 @@ watch(
     }
 
     appliedDiscount.value = discount
+    checkoutEmailInput.value = discount.email || checkoutEmailInput.value
     couponCode.value = discount.code
     couponErrorMessage.value = ''
     couponFeedback.value = 'applied'
@@ -132,8 +138,10 @@ watch(
   { immediate: true }
 )
 
-watch([couponCode, checkoutCustomerEmail], () => {
+watch(checkoutEmailInput, () => {
   if (hasSavedDiscount.value) return
+  appliedDiscount.value = null
+  couponCode.value = ''
   couponErrorMessage.value = ''
   couponFeedback.value = ''
 })
@@ -164,7 +172,7 @@ function setCheckoutQuantity(nextQuantity) {
 async function applyCoupon() {
   if (isCouponValidating.value) return
 
-  if (!normalizedCoupon.value || !checkoutCustomerEmail.value) {
+  if (!hasCheckoutEmail.value) {
     couponErrorMessage.value = t('checkout.couponErrors.missingEmail')
     couponFeedback.value = 'error'
     return
@@ -173,11 +181,11 @@ async function applyCoupon() {
   isCouponValidating.value = true
 
   try {
-    const discount = await validateWelcomeDiscount({
-      code: normalizedCoupon.value,
+    const discount = await createWelcomeDiscount({
       email: checkoutCustomerEmail.value
     })
     appliedDiscount.value = discount
+    checkoutEmailInput.value = discount.email || checkoutEmailInput.value
     couponCode.value = discount.code
     couponFeedback.value = 'applied'
     emit('discount-applied', discount)
@@ -189,6 +197,23 @@ async function applyCoupon() {
   } finally {
     isCouponValidating.value = false
   }
+}
+
+function removeCoupon() {
+  appliedDiscount.value = null
+  couponCode.value = ''
+  couponErrorMessage.value = ''
+  couponFeedback.value = ''
+  emit('discount-removed')
+}
+
+function handleCouponButton() {
+  if (hasSavedDiscount.value) {
+    removeCoupon()
+    return
+  }
+
+  applyCoupon()
 }
 
 function activateCheckoutUpsell() {
@@ -418,6 +443,25 @@ onUnmounted(() => {
             </div>
           </dl>
 
+          <section class="mello-checkout-summary-contact" aria-labelledby="checkout-contact">
+            <div class="mello-checkout-contact-line">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+              <h3 id="checkout-contact">{{ t('checkout.contact.title') }}</h3>
+            </div>
+            <label class="mello-checkout-summary-contact__field">
+              <span>{{ t('checkout.contact.email') }}</span>
+              <input
+                v-model="checkoutEmailInput"
+                type="email"
+                autocomplete="email"
+                inputmode="email"
+                :placeholder="t('checkout.contact.emailPlaceholder')"
+                :aria-invalid="couponFeedback === 'error' && !hasCheckoutEmail"
+              >
+            </label>
+            <p class="mello-checkout-help">{{ t('checkout.contact.help') }}</p>
+          </section>
+
           <section class="mello-checkout-summary-coupon" aria-labelledby="checkout-coupon">
             <div class="mello-checkout-coupon-line">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V6h16v3a3 3 0 0 0 0 6v3H4v-3a3 3 0 0 0 0-6Z"/><path d="M9 9h.01M15 15h.01M15 9l-6 6"/></svg>
@@ -432,9 +476,10 @@ onUnmounted(() => {
                   autocomplete="off"
                   :placeholder="t('checkout.coupon.placeholder')"
                   :aria-invalid="couponFeedback === 'error'"
+                  readonly
                 >
-                <button type="button" :disabled="!canApplyCoupon" @click="applyCoupon">
-                  {{ isCouponValidating ? t('checkout.coupon.applying') : t('checkout.coupon.apply') }}
+                <button type="button" :disabled="!canUseCouponButton" @click="handleCouponButton">
+                  {{ couponButtonLabel }}
                 </button>
               </span>
             </label>
@@ -943,6 +988,7 @@ onUnmounted(() => {
   font-weight: 650;
 }
 
+.mello-checkout-contact-line svg,
 .mello-checkout-coupon-line svg {
   fill: none;
   stroke: currentColor;
@@ -1021,6 +1067,7 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
+.mello-checkout-contact-line,
 .mello-checkout-coupon-line {
   align-items: center;
   color: var(--checkout-blue);
@@ -1028,8 +1075,11 @@ onUnmounted(() => {
   gap: 8px;
 }
 
+.mello-checkout-contact-line svg,
 .mello-checkout-coupon-line svg { height: 22px; width: 22px; }
 
+.mello-checkout-contact-line h2,
+.mello-checkout-contact-line h3,
 .mello-checkout-coupon-line h2,
 .mello-checkout-coupon-line h3 {
   color: var(--checkout-blue);
@@ -1094,18 +1144,21 @@ onUnmounted(() => {
 
 .mello-checkout-totals .is-saving { color: var(--checkout-green); }
 
+.mello-checkout-summary-contact,
 .mello-checkout-summary-coupon {
   border-top: 1px solid var(--checkout-line);
   margin-top: 16px;
   padding-top: 16px;
 }
 
+.mello-checkout-summary-contact__field,
 .mello-checkout-summary-coupon__field {
   display: grid;
   gap: 7px;
   margin-top: 12px;
 }
 
+.mello-checkout-summary-contact__field > span:first-child,
 .mello-checkout-summary-coupon__field > span:first-child {
   color: #333333;
   font-size: 13px;
@@ -1118,6 +1171,7 @@ onUnmounted(() => {
   grid-template-columns: minmax(0, 7fr) minmax(86px, 3fr);
 }
 
+.mello-checkout-summary-contact input,
 .mello-checkout-summary-coupon input {
   appearance: none;
   background: #ffffff;
@@ -1130,15 +1184,20 @@ onUnmounted(() => {
   min-height: 42px;
   outline: 0;
   padding: 0 11px;
-  text-transform: uppercase;
   width: 100%;
 }
 
+.mello-checkout-summary-coupon input {
+  text-transform: uppercase;
+}
+
+.mello-checkout-summary-contact input:focus,
 .mello-checkout-summary-coupon input:focus {
   border-color: var(--checkout-blue);
   box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.18);
 }
 
+.mello-checkout-summary-contact input[aria-invalid="true"],
 .mello-checkout-summary-coupon input[aria-invalid="true"] {
   border-color: #d1242f;
   box-shadow: 0 0 0 2px rgba(209, 36, 47, 0.12);

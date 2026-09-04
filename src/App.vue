@@ -238,6 +238,11 @@ function applyDiscount(discount) {
   showDiscountNotice(discount)
 }
 
+function clearDiscount() {
+  activeDiscount.value = null
+  closeDiscountNotice()
+}
+
 function showDiscountNotice(discount) {
   window.clearTimeout(discountNoticeTimer)
   const emailWasSent = discount.emailSent !== false
@@ -775,6 +780,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :checkout-redirect-error="checkoutRedirectError"
       @checkout="goToStripeCheckout"
       @discount-applied="applyDiscount"
+      @discount-removed="clearDiscount"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"
     />
