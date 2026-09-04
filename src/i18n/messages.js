@@ -735,6 +735,20 @@ export const messages = {
         missingEmail: 'Necesitamos el email de compra para validar este cupón.',
         missingCode: 'Pega el código recibido por email para aplicar el descuento.'
       },
+      notifications: {
+        emailRequiredTitle: 'Email requerido',
+        emailSentTitle: 'Cupón enviado',
+        emailSent: 'Enviamos el cupón a {email}. Copia el código del email y pégalo en el campo de cupón.',
+        couponResentTitle: 'Cupón ya reservado',
+        couponResent: 'Ese email ya tenía un cupón activo. Lo reenviamos a {email}.',
+        emailFailedTitle: 'No pudimos enviar el email',
+        emailFailed: 'El cupón fue reservado para {email}, pero el envío falló. Inténtalo de nuevo en unos minutos.',
+        couponAppliedTitle: 'Descuento aplicado',
+        couponApplied: '{percent}% fue aplicado a tu compra.',
+        couponErrorTitle: 'Revisa el cupón',
+        couponRemovedTitle: 'Cupón quitado',
+        couponRemoved: 'El checkout continuará sin descuento.'
+      },
       payment: {
         title: 'Medios de pago',
         secure: 'Pago seguro',
@@ -761,6 +775,7 @@ export const messages = {
         foot: 'Revisarás los datos finales antes de confirmar el pago.'
       },
       redirectFallback: {
+        title: 'Checkout seguro',
         text: 'El checkout seguro está listo, pero el navegador no abrió la página automáticamente.',
         error: 'No pudimos abrir el checkout seguro. Inténtalo nuevamente.',
         action: 'Abrir checkout'
@@ -1508,6 +1523,20 @@ export const messages = {
         missingEmail: 'We need the purchase email to validate this coupon.',
         missingCode: 'Paste the code received by email to apply the discount.'
       },
+      notifications: {
+        emailRequiredTitle: 'Email required',
+        emailSentTitle: 'Coupon sent',
+        emailSent: 'We sent the coupon to {email}. Copy the code from the email and paste it into the coupon field.',
+        couponResentTitle: 'Coupon already reserved',
+        couponResent: 'That email already had an active coupon. We resent it to {email}.',
+        emailFailedTitle: 'Email could not be sent',
+        emailFailed: 'The coupon was reserved for {email}, but delivery failed. Try again in a few minutes.',
+        couponAppliedTitle: 'Discount applied',
+        couponApplied: '{percent}% was applied to your purchase.',
+        couponErrorTitle: 'Check the coupon',
+        couponRemovedTitle: 'Coupon removed',
+        couponRemoved: 'Checkout will continue without a discount.'
+      },
       payment: {
         title: 'Payment methods',
         secure: 'Secure payment',
@@ -1534,6 +1563,7 @@ export const messages = {
         foot: 'You will review final details before confirming payment.'
       },
       redirectFallback: {
+        title: 'Secure checkout',
         text: 'Secure checkout is ready, but your browser did not open it automatically.',
         error: 'We could not open secure checkout. Please try again.',
         action: 'Open checkout'

@@ -15,7 +15,7 @@ const props = defineProps({
   checkoutRedirectError: { type: String, default: '' }
 })
 
-const emit = defineEmits(['checkout', 'update-quantity', 'remove', 'discount-applied', 'discount-removed'])
+const emit = defineEmits(['checkout', 'update-quantity', 'remove', 'discount-applied', 'discount-removed', 'notify'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
 const COUPON_ERROR_KEYS = {
@@ -154,6 +154,14 @@ function getCouponErrorMessage(error) {
   return messageKey ? t(messageKey) : t('checkout.coupon.invalid')
 }
 
+function notifyCheckout(type, title, message) {
+  emit('notify', { type, title, message })
+}
+
+function notifyCouponError(error) {
+  notifyCheckout('error', t('checkout.notifications.couponErrorTitle'), getCouponErrorMessage(error))
+}
+
 function submitCheckout() {
   if (!canSubmit.value) return
 
@@ -177,6 +185,11 @@ async function sendCouponEmail() {
   if (!hasCheckoutEmail.value) {
     couponErrorMessage.value = t('checkout.couponErrors.missingEmail')
     couponFeedback.value = 'error'
+    notifyCheckout(
+      'error',
+      t('checkout.notifications.emailRequiredTitle'),
+      t('checkout.couponErrors.missingEmail')
+    )
     return
   }
 
@@ -187,12 +200,30 @@ async function sendCouponEmail() {
       email: checkoutCustomerEmail.value
     })
     checkoutEmailInput.value = discount.email || checkoutEmailInput.value
-    couponFeedback.value = hasSavedDiscount.value ? 'applied' : 'sent'
+    couponFeedback.value = 'sent'
     couponErrorMessage.value = ''
+
+    if (discount.emailSent === false) {
+      notifyCheckout(
+        'error',
+        t('checkout.notifications.emailFailedTitle'),
+        t('checkout.notifications.emailFailed', { email: checkoutCustomerEmail.value })
+      )
+      return
+    }
+
+    notifyCheckout(
+      discount.alreadyIssued ? 'info' : 'success',
+      t(discount.alreadyIssued ? 'checkout.notifications.couponResentTitle' : 'checkout.notifications.emailSentTitle'),
+      t(discount.alreadyIssued ? 'checkout.notifications.couponResent' : 'checkout.notifications.emailSent', {
+        email: checkoutCustomerEmail.value
+      })
+    )
   } catch (error) {
     console.warn(error)
     couponErrorMessage.value = getCouponErrorMessage(error)
     couponFeedback.value = 'error'
+    notifyCouponError(error)
   } finally {
     isCouponValidating.value = false
   }
@@ -204,12 +235,22 @@ async function applyCoupon() {
   if (!hasCheckoutEmail.value) {
     couponErrorMessage.value = t('checkout.couponErrors.missingEmail')
     couponFeedback.value = 'error'
+    notifyCheckout(
+      'error',
+      t('checkout.notifications.emailRequiredTitle'),
+      t('checkout.couponErrors.missingEmail')
+    )
     return
   }
 
   if (!normalizedCoupon.value) {
     couponErrorMessage.value = t('checkout.couponErrors.missingCode')
     couponFeedback.value = 'error'
+    notifyCheckout(
+      'error',
+      t('checkout.notifications.couponErrorTitle'),
+      t('checkout.couponErrors.missingCode')
+    )
     return
   }
 
@@ -226,11 +267,17 @@ async function applyCoupon() {
     couponFeedback.value = 'applied'
     couponErrorMessage.value = ''
     emit('discount-applied', discount)
+    notifyCheckout(
+      'success',
+      t('checkout.notifications.couponAppliedTitle'),
+      t('checkout.notifications.couponApplied', { percent: discountPercent.value })
+    )
   } catch (error) {
     console.warn(error)
     appliedDiscount.value = null
     couponErrorMessage.value = getCouponErrorMessage(error)
     couponFeedback.value = 'error'
+    notifyCouponError(error)
   } finally {
     isCouponValidating.value = false
   }
@@ -242,6 +289,11 @@ function removeCoupon() {
   couponErrorMessage.value = ''
   couponFeedback.value = ''
   emit('discount-removed')
+  notifyCheckout(
+    'info',
+    t('checkout.notifications.couponRemovedTitle'),
+    t('checkout.notifications.couponRemoved')
+  )
 }
 
 function handleCouponButton() {

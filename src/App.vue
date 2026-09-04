@@ -25,6 +25,17 @@ import { fetchCheckoutEligibility } from './services/geo'
 import { fetchProducts } from './services/products'
 import { translateStaticDom } from './i18n/domTranslations'
 import { translateProductTitle } from './i18n/productText'
+import {
+  initAnalytics,
+  trackAddToCart,
+  trackBeginCheckout,
+  trackCheckoutAbandoned,
+  trackCheckoutError,
+  trackCheckoutRedirect,
+  trackPageView,
+  trackProductView,
+  trackViewCart
+} from './services/analytics'
 
 const props = defineProps({
   clerkEnabled: {
@@ -85,6 +96,7 @@ let pageLoaderTimer = 0
 let checkoutTransitionTimer = 0
 let pendingCheckoutExitPath = ''
 let discountNoticeTimer = 0
+let trackedProductViewId = ''
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
@@ -223,6 +235,8 @@ function addToCart(payload = {}) {
     promotion: payload.promotion
   }
 
+  trackAddToCart(cartItem.value)
+
   if (payload.checkoutNow) {
     navigateToCheckout()
     return
@@ -244,14 +258,22 @@ function clearDiscount() {
 }
 
 function showDiscountNotice(discount) {
-  window.clearTimeout(discountNoticeTimer)
-  const emailWasSent = discount.emailSent !== false
-  discountNotice.value = {
-    title: t(emailWasSent ? 'home.offer.sentTitle' : 'home.offer.readyTitle'),
-    message: t(emailWasSent ? 'home.offer.sentMessage' : 'home.offer.readyMessage', {
+  notifyUser({
+    type: discount.emailSent === false ? 'info' : 'success',
+    title: t(discount.emailSent !== false ? 'home.offer.sentTitle' : 'home.offer.readyTitle'),
+    message: t(discount.emailSent !== false ? 'home.offer.sentMessage' : 'home.offer.readyMessage', {
       email: discount.email,
       code: discount.code
     })
+  })
+}
+
+function notifyUser(notice) {
+  window.clearTimeout(discountNoticeTimer)
+  discountNotice.value = {
+    type: notice?.type || 'success',
+    title: notice?.title || '',
+    message: notice?.message || ''
   }
   discountNoticeTimer = window.setTimeout(() => {
     discountNotice.value = null
@@ -336,6 +358,7 @@ function persistDiscount(discount) {
 
 function openCart() {
   isCartOpen.value = true
+  trackViewCart(cartItem.value)
 }
 
 function closeCart() {
@@ -395,6 +418,9 @@ function navigateToCheckout() {
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
   showCheckoutTransition()
+  trackBeginCheckout(cartItem.value, {
+    couponCode: activeDiscount.value?.code || ''
+  })
   window.history.pushState({}, '', CHECKOUT_PATH)
   route.value = window.location.pathname
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -412,6 +438,7 @@ function keepCheckout() {
 
 function confirmCheckoutExit() {
   const targetPath = pendingCheckoutExitPath || '/products/wondernest-heightener-gummies-2026'
+  trackCheckoutAbandoned(cartItem.value, 'checkout_exit_confirmed')
   pendingCheckoutExitPath = ''
   isCheckoutExitConfirmVisible.value = false
   window.history.pushState({}, '', targetPath)
@@ -442,6 +469,7 @@ function redirectTrackingToAccountOrders() {
 function handleBeforeUnload(event) {
   if (!shouldConfirmCheckoutExit.value) return
 
+  trackCheckoutAbandoned(cartItem.value, 'checkout_tab_closed')
   event.preventDefault()
   event.returnValue = ''
 }
@@ -497,7 +525,11 @@ function removeCartItem() {
 function shouldClearCartAfterSuccessfulCheckout() {
   if (currentPage.value !== 'checkout-success') return false
 
-  return new URLSearchParams(window.location.search).has('session_id')
+  const params = new URLSearchParams(window.location.search)
+  const hasStripeSession = params.has('session_id')
+  const hasWooPaymentsOrder = params.get('provider') === 'woopayments' && params.has('order_id')
+
+  return hasStripeSession || hasWooPaymentsOrder
 }
 
 function getCheckoutErrorMessage(error) {
@@ -534,7 +566,9 @@ async function goToStripeCheckout(options = {}) {
       options.customerEmail = activeDiscount.value.email
     }
 
-    const checkoutUrl = await createCheckoutSession(cartItem.value, options)
+    const checkout = await createCheckoutSession(cartItem.value, options)
+    const checkoutUrl = checkout.checkoutUrl
+    trackCheckoutRedirect(cartItem.value, checkout)
     checkoutRedirectUrl.value = checkoutUrl
     window.location.assign(checkoutUrl)
 
@@ -544,14 +578,25 @@ async function goToStripeCheckout(options = {}) {
       isCheckoutLoading.value = false
       hideCheckoutTransition()
       checkoutRedirectError.value = t('checkout.redirectFallback.text')
+      notifyUser({
+        type: 'info',
+        title: t('checkout.redirectFallback.title'),
+        message: t('checkout.redirectFallback.text')
+      })
     }, 3500)
   } catch (error) {
     console.error(error)
+    trackCheckoutError(error, cartItem.value)
     if (shouldClearCheckoutDiscount(error)) {
       activeDiscount.value = null
     }
     checkoutRedirectUrl.value = ''
     checkoutRedirectError.value = getCheckoutErrorMessage(error)
+    notifyUser({
+      type: 'error',
+      title: t('checkout.redirectFallback.title'),
+      message: checkoutRedirectError.value
+    })
     isCheckoutLoading.value = false
     hideCheckoutTransition()
   }
@@ -588,7 +633,19 @@ async function scheduleStaticTranslation() {
   })
 }
 
+function trackCurrentProductView() {
+  if (currentPage.value !== 'product' || !currentProduct.value?.id) return
+
+  const viewId = `${currentProduct.value.id}:${currentProduct.value.handle || ''}`
+  if (trackedProductViewId === viewId) return
+
+  trackedProductViewId = viewId
+  trackProductView(currentProduct.value)
+}
+
 onMounted(async () => {
+  initAnalytics()
+  trackPageView(window.location.pathname, document.title)
   scheduleStaticTranslation()
   if (shouldClearCartAfterSuccessfulCheckout()) {
     persistCartItem(null)
@@ -615,6 +672,7 @@ onMounted(async () => {
     }
   })
   isLoading.value = false
+  trackCurrentProductView()
   showPageLoader(260)
   scheduleStaticTranslation()
 
@@ -659,6 +717,11 @@ watch([route, locale], () => {
   showPageLoader(240)
 }, { flush: 'sync' })
 
+watch(route, () => {
+  trackPageView(window.location.pathname, document.title)
+  trackCurrentProductView()
+}, { flush: 'sync' })
+
 watch(isCheckoutTransitionLoading, (active) => {
   document.documentElement.classList.toggle('mello-checkout-loading-lock', active)
 }, { immediate: true })
@@ -691,7 +754,13 @@ watch(activeDiscount, persistDiscount, { deep: true })
     </Teleport>
     <Teleport to="body">
       <Transition name="mello-discount-notice">
-        <aside v-if="discountNotice" class="mello-discount-notice" role="status" aria-live="polite">
+        <aside
+          v-if="discountNotice"
+          class="mello-discount-notice"
+          :class="`is-${discountNotice.type || 'success'}`"
+          role="status"
+          aria-live="polite"
+        >
           <span class="mello-discount-notice__mark" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>
           </span>
@@ -781,6 +850,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       @checkout="goToStripeCheckout"
       @discount-applied="applyDiscount"
       @discount-removed="clearDiscount"
+      @notify="notifyUser"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"
     />
@@ -847,6 +917,15 @@ watch(activeDiscount, persistDiscount, { deep: true })
   height: 36px;
   justify-content: center;
   width: 36px;
+}
+
+.mello-discount-notice.is-info .mello-discount-notice__mark {
+  background: #77cdfa;
+  color: #102f2e;
+}
+
+.mello-discount-notice.is-error .mello-discount-notice__mark {
+  background: #b3261e;
 }
 
 .mello-discount-notice__mark svg {

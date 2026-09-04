@@ -66,7 +66,11 @@ export async function createCheckoutSession(item, options = {}) {
     throw new Error('Checkout URL was not returned by the BFF.')
   }
 
-  return checkoutUrl
+  return {
+    ...data,
+    checkoutUrl,
+    url: checkoutUrl
+  }
 }
 
 function createCheckoutError(response, data = {}) {

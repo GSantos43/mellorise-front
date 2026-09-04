@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { trackPurchase } from '../services/analytics'
 
 const emit = defineEmits(['clear-cart'])
 const { t } = useI18n({ useScope: 'global' })
@@ -13,9 +14,25 @@ const isConfirmedWooPaymentsReturn = computed(() => paymentProvider.value === 'w
 
 onMounted(() => {
   if (sessionId.value || isConfirmedWooPaymentsReturn.value) {
+    trackSuccessOnce()
     emit('clear-cart')
   }
 })
+
+function trackSuccessOnce() {
+  const transactionId = sessionId.value || orderId.value
+  if (!transactionId) return
+
+  const storageKey = `mellorise-purchase-tracked-${transactionId}`
+  if (window.sessionStorage.getItem(storageKey)) return
+
+  window.sessionStorage.setItem(storageKey, 'true')
+  trackPurchase({
+    sessionId: sessionId.value,
+    orderId: orderId.value,
+    provider: paymentProvider.value || (sessionId.value ? 'stripe' : '')
+  })
+}
 </script>
 
 <template>
