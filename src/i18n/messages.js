@@ -709,7 +709,9 @@ export const messages = {
         title: 'Email de compra',
         email: 'Email',
         emailPlaceholder: 'Ingresa tu correo',
-        help: 'Lo usamos para validar cupones y enviar la confirmación del pedido.'
+        help: 'Lo usamos para validar cupones y enviar la confirmación del pedido.',
+        discountBadge: 'Primera compra gana 10% de descuento',
+        discountAction: 'Informa tu email'
       },
       coupon: {
         title: 'Cupón',
@@ -1498,7 +1500,9 @@ export const messages = {
         title: 'Purchase email',
         email: 'Email',
         emailPlaceholder: 'Enter your email',
-        help: 'We use this email to validate coupons and send your order confirmation.'
+        help: 'We use this email to validate coupons and send your order confirmation.',
+        discountBadge: 'First purchase gets 10% off',
+        discountAction: 'Enter your email'
       },
       coupon: {
         title: 'Coupon',

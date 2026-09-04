@@ -538,6 +538,10 @@ onUnmounted(() => {
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
               <h3 id="checkout-contact">{{ t('checkout.contact.title') }}</h3>
             </div>
+            <div class="mello-checkout-email-badge">
+              <span>{{ t('checkout.contact.discountBadge') }}</span>
+              <b>{{ t('checkout.contact.discountAction') }}</b>
+            </div>
             <label class="mello-checkout-summary-contact__field">
               <span>{{ t('checkout.contact.email') }}</span>
               <span class="mello-checkout-summary-contact__row">
@@ -1255,6 +1259,30 @@ onUnmounted(() => {
   margin-top: 12px;
 }
 
+.mello-checkout-email-badge {
+  align-items: center;
+  background: #f4fbff;
+  border: 1px solid rgba(100, 198, 244, 0.28);
+  border-radius: 8px;
+  color: #123233;
+  display: flex;
+  font-size: 13px;
+  font-weight: 680;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 12px;
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+.mello-checkout-email-badge b {
+  color: #173132;
+  font-size: 12px;
+  font-weight: 780;
+  text-align: right;
+  white-space: nowrap;
+}
+
 .mello-checkout-summary-contact__field > span:first-child,
 .mello-checkout-summary-coupon__field > span:first-child {
   color: #333333;
@@ -1582,6 +1610,17 @@ onUnmounted(() => {
   .mello-checkout-summary-coupon button {
     min-height: 46px;
     width: 100%;
+  }
+
+  .mello-checkout-email-badge {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mello-checkout-email-badge b {
+    text-align: left;
+    white-space: normal;
   }
 }
 
