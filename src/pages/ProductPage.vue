@@ -41,18 +41,28 @@ const selectedBundle = ref(1)
 const quantity = ref(1)
 const isPastHero = ref(false)
 const galleryMainRef = ref(null)
+const reviewTrackRef = ref(null)
 const openAccordionIndexes = ref([])
 const isGalleryDragging = ref(false)
 const isGallerySettling = ref(false)
+const isReviewDragging = ref(false)
+const activeReviewIndex = ref(0)
 const galleryDragOffset = ref(0)
 const loadedGalleryImages = ref(new Set())
 const suppressGalleryClick = ref(false)
+const suppressReviewClick = ref(false)
 const isGalleryLightboxOpen = ref(false)
 const isReviewFormOpen = ref(false)
 const isReviewSubmitted = ref(false)
+const selectedPhotoReviewIndex = ref(null)
 let galleryDragStartX = 0
 let galleryDragStartY = 0
 let galleryPointerId = null
+let reviewDragStartX = 0
+let reviewDragStartY = 0
+let reviewDragScrollLeft = 0
+let reviewPointerId = null
+let hasReviewDragMoved = false
 let previousBodyOverflow = ''
 let isBodyScrollLocked = false
 const maxGalleryIndicators = 5
@@ -92,6 +102,9 @@ const photoReviews = [
 ]
 
 const activeProduct = computed(() => props.product || fallbackProduct)
+const selectedPhotoReview = computed(() => (
+  selectedPhotoReviewIndex.value === null ? null : photoReviews[selectedPhotoReviewIndex.value]
+))
 const localizedProductTitle = computed(() => translateProductTitle(activeProduct.value.title, locale.value))
 const productImages = computed(() => activeProduct.value.images?.length ? activeProduct.value.images : [activeProduct.value.image])
 const mainImage = computed(() => productImages.value[selectedImageIndex.value] || activeProduct.value.image)
@@ -142,6 +155,7 @@ const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== 
 const canPurchaseSelectedPack = computed(() => Boolean(selectedPack.value?.isAvailable) && isPurchaseAllowed.value)
 const currentPrice = computed(() => formatMoney(selectedPack.value?.price ?? activeProduct.value.price))
 const compareAtPrice = computed(() => selectedPack.value?.compareAtPrice ? formatMoney(selectedPack.value.compareAtPrice) : '')
+const bundleUnitLabel = computed(() => locale.value === 'en' ? 'un.' : 'frasco')
 const perBottlePrice = computed(() => {
   const pack = selectedPack.value
   const price = Number(pack?.price ?? activeProduct.value.price ?? 0)
@@ -329,6 +343,16 @@ function closeGalleryLightbox() {
   isGalleryLightboxOpen.value = false
 }
 
+function openPhotoReview(index) {
+  if (suppressReviewClick.value || isReviewDragging.value) return
+
+  selectedPhotoReviewIndex.value = clampReviewIndex(index)
+}
+
+function closePhotoReview() {
+  selectedPhotoReviewIndex.value = null
+}
+
 function openReviewForm() {
   isReviewSubmitted.value = false
   isReviewFormOpen.value = true
@@ -345,6 +369,7 @@ function submitReviewForm() {
 function handleGalleryKeydown(event) {
   if (event.key === 'Escape') {
     closeGalleryLightbox()
+    closePhotoReview()
     closeReviewForm()
   }
 }
@@ -409,6 +434,108 @@ function cancelGalleryDrag() {
   galleryPointerId = null
 }
 
+function getReviewCardStride() {
+  const track = reviewTrackRef.value
+  const firstCard = track?.querySelector?.('.gg-photo-review-card')
+  if (!track || !firstCard) return 1
+
+  const styles = window.getComputedStyle(track)
+  const gap = Number.parseFloat(styles.columnGap || styles.gap || '0') || 0
+  return Math.max(1, firstCard.getBoundingClientRect().width + gap)
+}
+
+function clampReviewIndex(index) {
+  return Math.min(Math.max(index, 0), photoReviews.length - 1)
+}
+
+function updateActiveReviewIndex() {
+  const track = reviewTrackRef.value
+  if (!track) return
+
+  activeReviewIndex.value = clampReviewIndex(Math.round(track.scrollLeft / getReviewCardStride()))
+}
+
+function scrollToReview(index, behavior = 'smooth') {
+  const track = reviewTrackRef.value
+  if (!track) return
+
+  const targetIndex = clampReviewIndex(index)
+  activeReviewIndex.value = targetIndex
+  track.scrollTo({
+    left: targetIndex * getReviewCardStride(),
+    behavior
+  })
+}
+
+function startReviewDrag(event) {
+  const track = reviewTrackRef.value
+  if (!track || (event.pointerType === 'mouse' && event.button !== 0)) return
+
+  reviewPointerId = event.pointerId
+  reviewDragStartX = event.clientX
+  reviewDragStartY = event.clientY
+  reviewDragScrollLeft = track.scrollLeft
+  hasReviewDragMoved = false
+  isReviewDragging.value = true
+  track.setPointerCapture?.(event.pointerId)
+}
+
+function moveReviewDrag(event) {
+  const track = reviewTrackRef.value
+  if (!track || !isReviewDragging.value || reviewPointerId !== event.pointerId) return
+
+  const deltaX = event.clientX - reviewDragStartX
+  const deltaY = event.clientY - reviewDragStartY
+  const isHorizontalDrag = Math.abs(deltaX) > 6 && Math.abs(deltaX) > Math.abs(deltaY)
+
+  if (!isHorizontalDrag && Math.abs(deltaY) > 12) {
+    cancelReviewDrag()
+    return
+  }
+
+  if (!isHorizontalDrag) return
+
+  event.preventDefault()
+  hasReviewDragMoved = true
+  track.scrollLeft = reviewDragScrollLeft - deltaX
+  updateActiveReviewIndex()
+}
+
+function finishReviewDrag(event) {
+  const track = reviewTrackRef.value
+  if (!track || !isReviewDragging.value || reviewPointerId !== event.pointerId) return
+
+  track.releasePointerCapture?.(event.pointerId)
+  isReviewDragging.value = false
+  reviewPointerId = null
+
+  if (!hasReviewDragMoved) return
+
+  suppressReviewClick.value = true
+  scrollToReview(Math.round(track.scrollLeft / getReviewCardStride()))
+  window.setTimeout(() => {
+    suppressReviewClick.value = false
+  }, 220)
+}
+
+function cancelReviewDrag() {
+  const track = reviewTrackRef.value
+  if (reviewPointerId !== null) {
+    track?.releasePointerCapture?.(reviewPointerId)
+  }
+
+  isReviewDragging.value = false
+  reviewPointerId = null
+  hasReviewDragMoved = false
+}
+
+function preventReviewClickAfterDrag(event) {
+  if (!suppressReviewClick.value) return
+
+  event.preventDefault()
+  event.stopPropagation()
+}
+
 function updateStickyState() {
   isPastHero.value = window.scrollY > 640
 }
@@ -428,7 +555,9 @@ function buildSelectedCartPayload() {
     quantity: paidQuantity,
     checkoutQuantity: bundle.variationId ? 1 : paidQuantity,
     image: bundle.image || activeProduct.value.image,
-    bundleLabel: `${bundleTitle} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`,
+    bundleLabel: locale.value === 'en'
+      ? `${bundleTitle} | ${bundle.bottles} un. per pack`
+      : `${bundleTitle} | ${bundle.bottles} frasco${bundle.bottles === 1 ? '' : 's'} por pack`,
     promotion: bundle.freeQuantity
       ? {
           code: bundle.paidQuantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
@@ -499,6 +628,7 @@ watch(activeProduct, () => {
   selectedImageIndex.value = 0
   applyRequestedBundle()
   closeGalleryLightbox()
+  closePhotoReview()
   closeReviewForm()
 })
 
@@ -507,8 +637,8 @@ watch(mainImage, (src) => {
   preloadAdjacentGalleryImages()
 }, { immediate: true })
 
-watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) => {
-  if (isLightboxOpen || isFormOpen) {
+watch([isGalleryLightboxOpen, isReviewFormOpen, selectedPhotoReview], ([isLightboxOpen, isFormOpen, photoReview]) => {
+  if (isLightboxOpen || isFormOpen || photoReview) {
     if (!isBodyScrollLocked) {
       previousBodyOverflow = document.body.style.overflow
     }
@@ -690,7 +820,7 @@ watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) 
                 </span>
                 <span class="gg-promo__price">
                   <b>{{ formatMoney(bundle.price) }}</b>
-                  <small>{{ formatMoney(Number(bundle.price || 0) / Math.max(1, bundle.bottles)) }} / frasco</small>
+                  <small>{{ formatMoney(Number(bundle.price || 0) / Math.max(1, bundle.bottles)) }} / {{ bundleUnitLabel }}</small>
                 </span>
               </label>
             </fieldset>
@@ -754,7 +884,7 @@ watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) 
                 <span>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10 12 4l8 6v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg>
                 </span>
-                <strong>3-5 days</strong>
+                <strong>6-10 days</strong>
                 <small>Delivered</small>
               </div>
             </div>
@@ -1185,25 +1315,78 @@ watch([isGalleryLightboxOpen, isReviewFormOpen], ([isLightboxOpen, isFormOpen]) 
           <span>{{ t('product.photoReviews.latest') }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
         </div>
 
-        <div class="gg-photo-reviews__grid">
-          <article v-for="review in photoReviews" :key="review.image" class="gg-photo-review-card">
+        <div class="gg-photo-reviews__dots" aria-label="Review photos">
+          <button
+            v-for="(review, index) in photoReviews"
+            :key="review.image"
+            type="button"
+            :class="{ 'is-active': activeReviewIndex === index }"
+            :aria-label="`Show review ${index + 1}`"
+            :aria-current="activeReviewIndex === index ? 'true' : undefined"
+            @click="scrollToReview(index)"
+          ></button>
+        </div>
+
+        <div
+          ref="reviewTrackRef"
+          class="gg-photo-reviews__grid"
+          :class="{ 'is-dragging': isReviewDragging }"
+          @click.capture="preventReviewClickAfterDrag"
+          @pointerdown="startReviewDrag"
+          @pointermove="moveReviewDrag"
+          @pointerup="finishReviewDrag"
+          @pointercancel="cancelReviewDrag"
+          @pointerleave="finishReviewDrag"
+          @scroll.passive="updateActiveReviewIndex"
+        >
+          <article
+            v-for="(review, index) in photoReviews"
+            :key="review.image"
+            class="gg-photo-review-card"
+            role="button"
+            tabindex="0"
+            :aria-label="`${review.name}: ${t(review.titleKey)}`"
+            @click="openPhotoReview(index)"
+            @keydown.enter.prevent="openPhotoReview(index)"
+            @keydown.space.prevent="openPhotoReview(index)"
+          >
             <div class="gg-photo-review-card__media">
-              <img :src="review.image" :alt="t('product.photoReviews.imageAlt')" width="1024" height="1024" loading="lazy">
+              <img :src="review.image" :alt="t('product.photoReviews.imageAlt')" width="1024" height="1024" loading="lazy" draggable="false">
             </div>
             <div class="gg-photo-review-card__body">
               <div class="gg-photo-review-card__author"><b>{{ review.initial }}</b><span>{{ review.name }} <small>{{ review.flag }}</small></span></div>
               <div class="gg-photo-reviews__stars" :aria-label="t('product.photoReviews.fiveStars')">★★★★★</div>
               <h3>{{ t(review.titleKey) }}</h3>
               <p>{{ t(review.textKey) }}</p>
-              <button class="gg-photo-review-card__reply" type="button" @click="openReviewForm">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a7 7 0 0 1-7 7H8l-5 3 1.7-5.1A7 7 0 1 1 21 12Z"/></svg>
-                {{ t('product.photoReviews.replyButton') }}
-              </button>
             </div>
           </article>
         </div>
       </div>
     </div>
+
+    <Teleport to="body">
+      <Transition name="gg-testimonial-modal">
+        <div v-if="selectedPhotoReview" class="gg-testimonial-modal" role="dialog" aria-modal="true" aria-labelledby="gg-testimonial-modal-title" @click.self="closePhotoReview">
+          <article class="gg-testimonial-modal__card">
+            <button class="gg-testimonial-modal__close" type="button" :aria-label="t('product.reviewForm.closeLabel')" @click="closePhotoReview">
+              <span aria-hidden="true"></span>
+            </button>
+            <div class="gg-testimonial-modal__media">
+              <img :src="selectedPhotoReview.image" :alt="t('product.photoReviews.imageAlt')" width="1024" height="1024" loading="eager">
+            </div>
+            <div class="gg-testimonial-modal__body">
+              <div class="gg-testimonial-modal__author">
+                <b>{{ selectedPhotoReview.initial }}</b>
+                <span>{{ selectedPhotoReview.name }} <small>{{ selectedPhotoReview.flag }}</small></span>
+              </div>
+              <div class="gg-photo-reviews__stars" :aria-label="t('product.photoReviews.fiveStars')">★★★★★</div>
+              <h2 id="gg-testimonial-modal-title">{{ t(selectedPhotoReview.titleKey) }}</h2>
+              <p>{{ t(selectedPhotoReview.textKey) }}</p>
+            </div>
+          </article>
+        </div>
+      </Transition>
+    </Teleport>
 
     <Teleport to="body">
       <Transition name="gg-review-modal">

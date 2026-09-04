@@ -2,6 +2,16 @@ import { getBffUrl } from './bff'
 
 const BFF_URL = getBffUrl()
 
+export class CheckoutRequestError extends Error {
+  constructor(message, options = {}) {
+    super(message)
+    this.name = 'CheckoutRequestError'
+    this.status = options.status || 0
+    this.code = options.code || ''
+    this.userMessage = options.userMessage || message
+  }
+}
+
 export async function createCheckoutSession(item, options = {}) {
   if (!item?.id) {
     throw new Error('Cart item is required to create checkout.')
@@ -44,11 +54,12 @@ export async function createCheckoutSession(item, options = {}) {
     })
   })
 
+  const data = await response.json().catch(() => ({}))
+
   if (!response.ok) {
-    throw new Error(`Checkout request failed: ${response.status}`)
+    throw createCheckoutError(response, data)
   }
 
-  const data = await response.json()
   const checkoutUrl = data.checkoutUrl || data.url || data.paymentUrl
 
   if (!checkoutUrl) {
@@ -56,4 +67,15 @@ export async function createCheckoutSession(item, options = {}) {
   }
 
   return checkoutUrl
+}
+
+function createCheckoutError(response, data = {}) {
+  const rawMessage = Array.isArray(data.message) ? data.message.join(' ') : data.message
+  const message = data.userMessage || rawMessage || `Checkout request failed: ${response.status}`
+
+  return new CheckoutRequestError(message, {
+    status: response.status,
+    code: data.code || data.errorCode || '',
+    userMessage: data.userMessage || rawMessage || message
+  })
 }

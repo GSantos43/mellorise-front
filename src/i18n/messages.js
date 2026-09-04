@@ -671,9 +671,9 @@ export const messages = {
     checkout: {
       eyebrow: 'Checkout seguro',
       title: 'Finaliza tu compra',
-      intro: 'Confirma tu email, cupón y opciones de entrega. El pago se abre en Stripe con el total final.',
+      intro: 'Confirma tu email, cupón y opciones de entrega. El pago se abre con nuestro proveedor seguro y el total final.',
       back: 'Volver al producto',
-      secure: 'Pago protegido por Stripe',
+      secure: 'Pago protegido',
       product: {
         label: 'Producto',
         badge: 'Más vendido'
@@ -719,13 +719,22 @@ export const messages = {
         invalid: 'Cupón inválido o expirado.',
         help: 'Inserta tu cupón y aplícalo antes del pago.'
       },
+      couponErrors: {
+        exhausted: 'Este cupón ya fue usado o agotó su límite. Lo quitamos del checkout; vuelve a tocar pagar para continuar sin descuento.',
+        expired: 'Este cupón expiró. Lo quitamos del checkout; vuelve a tocar pagar para continuar sin descuento.',
+        emailMismatch: 'Este cupón pertenece a otro email. Usa el email correcto o continúa sin descuento.',
+        firstPurchaseOnly: 'Este descuento es solo para la primera compra. Lo quitamos del checkout; vuelve a tocar pagar para continuar.',
+        notFound: 'No encontramos este cupón. Revisa el código o continúa sin descuento.',
+        invalid: 'Este cupón no está disponible. Revisa el código o continúa sin descuento.',
+        missingEmail: 'Necesitamos el email de compra para validar este cupón.'
+      },
       payment: {
         title: 'Medios de pago',
-        secure: 'Stripe seguro',
-        secureTitle: 'Pago seguro con Stripe',
+        secure: 'Pago seguro',
+        secureTitle: 'Pago seguro',
         secureInline: 'Pago seguro vía',
         stripe: 'Tarjeta o wallet',
-        stripeText: 'Tus datos de pago se procesan en Stripe con protección de tarjeta, wallet y checkout cifrado.'
+        stripeText: 'Tus datos de pago se procesan con protección de tarjeta, wallet y checkout cifrado.'
       },
       billing: {
         title: 'Facturación'
@@ -742,7 +751,12 @@ export const messages = {
         saved: 'Ahorraste {amount}',
         pay: 'Pagar y finalizar',
         loading: 'Preparando pago...',
-        foot: 'Revisarás los datos finales antes de confirmar el pago en Stripe.'
+        foot: 'Revisarás los datos finales antes de confirmar el pago.'
+      },
+      redirectFallback: {
+        text: 'El checkout seguro está listo, pero el navegador no abrió la página automáticamente.',
+        error: 'No pudimos abrir el checkout seguro. Inténtalo nuevamente.',
+        action: 'Abrir checkout'
       },
       empty: {
         title: 'Tu carrito está vacío',
@@ -1423,9 +1437,9 @@ export const messages = {
     checkout: {
       eyebrow: 'Secure checkout',
       title: 'Finalize your purchase',
-      intro: 'Confirm your email, coupon, and delivery options. Payment opens in Stripe with the final total.',
+      intro: 'Confirm your email, coupon, and delivery options. Payment opens with our secure provider and the final total.',
       back: 'Back to product',
-      secure: 'Payment protected by Stripe',
+      secure: 'Payment protected',
       product: {
         label: 'Product',
         badge: 'Best seller'
@@ -1471,13 +1485,22 @@ export const messages = {
         invalid: 'Coupon invalid or expired.',
         help: 'Enter your coupon and apply it before payment.'
       },
+      couponErrors: {
+        exhausted: 'This coupon has already been used or reached its limit. We removed it from checkout; tap Pay again to continue without the discount.',
+        expired: 'This coupon has expired. We removed it from checkout; tap Pay again to continue without the discount.',
+        emailMismatch: 'This coupon belongs to another email. Use the correct email or continue without the discount.',
+        firstPurchaseOnly: 'This discount is only for a first purchase. We removed it from checkout; tap Pay again to continue.',
+        notFound: 'We could not find this coupon. Check the code or continue without the discount.',
+        invalid: 'This coupon is not available. Check the code or continue without the discount.',
+        missingEmail: 'We need the purchase email to validate this coupon.'
+      },
       payment: {
         title: 'Payment methods',
-        secure: 'Secure Stripe',
-        secureTitle: 'Payment secure with Stripe',
+        secure: 'Secure payment',
+        secureTitle: 'Secure payment',
         secureInline: 'Secure payment via',
         stripe: 'Card or wallet',
-        stripeText: 'Your payment details are processed by Stripe with encrypted card, wallet, and checkout protection.'
+        stripeText: 'Your payment details are processed with encrypted card, wallet, and checkout protection.'
       },
       billing: {
         title: 'Billing'
@@ -1494,7 +1517,12 @@ export const messages = {
         saved: 'You saved {amount}',
         pay: 'Pay and finish',
         loading: 'Preparing payment...',
-        foot: 'You will review final details before confirming payment in Stripe.'
+        foot: 'You will review final details before confirming payment.'
+      },
+      redirectFallback: {
+        text: 'Secure checkout is ready, but your browser did not open it automatically.',
+        error: 'We could not open secure checkout. Please try again.',
+        action: 'Open checkout'
       },
       empty: {
         title: 'Your cart is empty',

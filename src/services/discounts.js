@@ -4,6 +4,16 @@ const BFF_URL = getBffUrl()
 
 const VISITOR_STORAGE_KEY = 'mellorise-visitor-id-v1'
 
+export class DiscountRequestError extends Error {
+  constructor(message, options = {}) {
+    super(message)
+    this.name = 'DiscountRequestError'
+    this.status = options.status || 0
+    this.code = options.code || ''
+    this.userMessage = options.userMessage || message
+  }
+}
+
 export async function createWelcomeDiscount(options = {}) {
   const response = await fetch(`${BFF_URL}/discounts/welcome`, {
     method: 'POST',
@@ -20,7 +30,11 @@ export async function createWelcomeDiscount(options = {}) {
 
   if (!response.ok) {
     const message = Array.isArray(data.message) ? data.message.join(' ') : data.message
-    throw new Error(message || 'Could not create welcome discount.')
+    throw new DiscountRequestError(message || 'Could not create welcome discount.', {
+      status: response.status,
+      code: data.code || data.errorCode || '',
+      userMessage: data.userMessage || message
+    })
   }
 
   return data
@@ -42,7 +56,11 @@ export async function validateWelcomeDiscount({ code, email }) {
 
   if (!response.ok) {
     const message = Array.isArray(data.message) ? data.message.join(' ') : data.message
-    throw new Error(message || 'Coupon is invalid or expired.')
+    throw new DiscountRequestError(message || 'Coupon is invalid or expired.', {
+      status: response.status,
+      code: data.code || data.errorCode || '',
+      userMessage: data.userMessage || message
+    })
   }
 
   return data

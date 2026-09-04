@@ -34,6 +34,16 @@ const props = defineProps({
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
 const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
 const CHECKOUT_PATH = '/checkout'
+const COUPON_CHECKOUT_ERROR_KEYS = {
+  coupon_exhausted: 'checkout.couponErrors.exhausted',
+  coupon_expired: 'checkout.couponErrors.expired',
+  coupon_email_mismatch: 'checkout.couponErrors.emailMismatch',
+  coupon_first_purchase_only: 'checkout.couponErrors.firstPurchaseOnly',
+  coupon_not_found: 'checkout.couponErrors.notFound',
+  coupon_invalid: 'checkout.couponErrors.invalid',
+  coupon_missing_email: 'checkout.couponErrors.missingEmail',
+  coupon_missing_code: 'checkout.couponErrors.invalid'
+}
 
 const products = ref([])
 const isLoading = ref(true)
@@ -43,6 +53,8 @@ const cartItem = ref(null)
 const activeDiscount = ref(null)
 const isCheckoutLoading = ref(false)
 const isCheckoutTransitionLoading = ref(false)
+const checkoutRedirectUrl = ref('')
+const checkoutRedirectError = ref('')
 const isCheckoutExitConfirmVisible = ref(false)
 const isPageLoading = ref(true)
 const discountNotice = ref(null)
@@ -484,12 +496,27 @@ function shouldClearCartAfterSuccessfulCheckout() {
   return new URLSearchParams(window.location.search).has('session_id')
 }
 
+function getCheckoutErrorMessage(error) {
+  const code = String(error?.code || '')
+  const messageKey = COUPON_CHECKOUT_ERROR_KEYS[code]
+
+  return messageKey ? t(messageKey) : t('checkout.redirectFallback.error')
+}
+
+function shouldClearCheckoutDiscount(error) {
+  const code = String(error?.code || '')
+
+  return Boolean(COUPON_CHECKOUT_ERROR_KEYS[code]) && code !== 'coupon_missing_email'
+}
+
 async function goToStripeCheckout(options = {}) {
   if (!cartItem.value || isCheckoutLoading.value || !isPurchaseAllowed.value) return
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
   isCheckoutLoading.value = true
   isCheckoutTransitionLoading.value = true
+  checkoutRedirectUrl.value = ''
+  checkoutRedirectError.value = ''
 
   try {
     const couponWasProvidedByCheckout = Object.prototype.hasOwnProperty.call(options, 'couponCode')
@@ -504,9 +531,23 @@ async function goToStripeCheckout(options = {}) {
     }
 
     const checkoutUrl = await createCheckoutSession(cartItem.value, options)
-    window.location.href = checkoutUrl
+    checkoutRedirectUrl.value = checkoutUrl
+    window.location.assign(checkoutUrl)
+
+    window.setTimeout(() => {
+      if (document.visibilityState === 'hidden' || window.location.href === checkoutUrl) return
+
+      isCheckoutLoading.value = false
+      hideCheckoutTransition()
+      checkoutRedirectError.value = t('checkout.redirectFallback.text')
+    }, 3500)
   } catch (error) {
     console.error(error)
+    if (shouldClearCheckoutDiscount(error)) {
+      activeDiscount.value = null
+    }
+    checkoutRedirectUrl.value = ''
+    checkoutRedirectError.value = getCheckoutErrorMessage(error)
     isCheckoutLoading.value = false
     hideCheckoutTransition()
   }
@@ -720,6 +761,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <AuthPage
       v-else-if="currentPage === 'tracking' && props.clerkEnabled"
       mode="sign-in"
+      auth-path="/track-order"
       fallback-redirect-path="/account/orders"
     />
     <AccountAuthUnavailablePage v-else-if="currentPage === 'tracking'" />
@@ -729,6 +771,8 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :discount="activeDiscount"
       :checkout-email="checkoutEmail"
       :is-checkout-loading="isCheckoutLoading"
+      :checkout-redirect-url="checkoutRedirectUrl"
+      :checkout-redirect-error="checkoutRedirectError"
       @checkout="goToStripeCheckout"
       @discount-applied="applyDiscount"
       @update-quantity="updateCartQuantity"

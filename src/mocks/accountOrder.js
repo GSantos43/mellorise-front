@@ -2,7 +2,7 @@ export const mockPaidAccountOrder = {
   id: 'mock-paid',
   number: 'MOCK-1027',
   status: 'processing',
-  statusLabel: 'Preparing order',
+  statusLabel: 'Awaiting shipment',
   subtotal: '89.97',
   discountTotal: '9.00',
   shippingTotal: '0.00',
@@ -21,13 +21,7 @@ export const mockPaidAccountOrder = {
     freeQuantity: '1',
     deliveredQuantity: '3',
   },
-  tracking: {
-    code: 'WIIO-MOCK-784512',
-    carrier: 'Wiio fulfillment',
-    url: 'https://www.17track.net/en',
-    status: 'shipped',
-    updatedAt: new Date().toISOString(),
-  },
+  tracking: null,
   items: [
     {
       name: 'MelloRise Heightener Gummies',

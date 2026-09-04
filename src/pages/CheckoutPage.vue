@@ -10,15 +10,29 @@ const props = defineProps({
   item: { type: Object, default: null },
   discount: { type: Object, default: null },
   checkoutEmail: { type: String, default: '' },
-  isCheckoutLoading: { type: Boolean, default: false }
+  isCheckoutLoading: { type: Boolean, default: false },
+  checkoutRedirectUrl: { type: String, default: '' },
+  checkoutRedirectError: { type: String, default: '' }
 })
 
 const emit = defineEmits(['checkout', 'update-quantity', 'remove', 'discount-applied'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
+const COUPON_ERROR_KEYS = {
+  coupon_exhausted: 'checkout.couponErrors.exhausted',
+  coupon_expired: 'checkout.couponErrors.expired',
+  coupon_email_mismatch: 'checkout.couponErrors.emailMismatch',
+  coupon_first_purchase_only: 'checkout.couponErrors.firstPurchaseOnly',
+  coupon_not_found: 'checkout.couponErrors.notFound',
+  coupon_invalid: 'checkout.couponErrors.invalid',
+  coupon_missing_email: 'checkout.couponErrors.missingEmail',
+  coupon_missing_code: 'checkout.couponErrors.invalid'
+}
+
 const couponCode = ref(props.discount?.code || '')
 const appliedDiscount = ref(props.discount)
 const couponFeedback = ref('')
+const couponErrorMessage = ref('')
 const isCouponValidating = ref(false)
 const confettiPieces = ref([])
 let confettiTimer = 0
@@ -97,13 +111,22 @@ const total = computed(() => Math.max(0, subtotal.value - discountTotal.value))
 const totalSavings = computed(() => discountTotal.value)
 const canSubmit = computed(() => Boolean(props.item && !props.isCheckoutLoading))
 const canApplyCoupon = computed(() => Boolean(normalizedCoupon.value && checkoutCustomerEmail.value && !isCouponValidating.value))
+const couponFeedbackMessage = computed(() => couponErrorMessage.value || t('checkout.coupon.invalid'))
 
 watch(
   () => props.discount,
   (discount) => {
-    if (!discount?.code) return
+    if (!discount?.code) {
+      appliedDiscount.value = null
+      if (couponFeedback.value === 'applied') {
+        couponFeedback.value = ''
+      }
+      return
+    }
+
     appliedDiscount.value = discount
     couponCode.value = discount.code
+    couponErrorMessage.value = ''
     couponFeedback.value = 'applied'
   },
   { immediate: true }
@@ -111,8 +134,15 @@ watch(
 
 watch([couponCode, checkoutCustomerEmail], () => {
   if (hasSavedDiscount.value) return
+  couponErrorMessage.value = ''
   couponFeedback.value = ''
 })
+
+function getCouponErrorMessage(error) {
+  const messageKey = COUPON_ERROR_KEYS[String(error?.code || '')]
+
+  return messageKey ? t(messageKey) : t('checkout.coupon.invalid')
+}
 
 function submitCheckout() {
   if (!canSubmit.value) return
@@ -135,6 +165,7 @@ async function applyCoupon() {
   if (isCouponValidating.value) return
 
   if (!normalizedCoupon.value || !checkoutCustomerEmail.value) {
+    couponErrorMessage.value = t('checkout.couponErrors.missingEmail')
     couponFeedback.value = 'error'
     return
   }
@@ -153,6 +184,7 @@ async function applyCoupon() {
   } catch (error) {
     console.warn(error)
     appliedDiscount.value = null
+    couponErrorMessage.value = getCouponErrorMessage(error)
     couponFeedback.value = 'error'
   } finally {
     isCouponValidating.value = false
@@ -410,7 +442,7 @@ onUnmounted(() => {
               {{ t('checkout.coupon.applied', { percent: discountPercent }) }}
             </p>
             <p v-else-if="couponFeedback === 'error'" class="mello-checkout-coupon-error" role="alert">
-              {{ t('checkout.coupon.invalid') }}
+              {{ couponFeedbackMessage }}
             </p>
             <p v-else class="mello-checkout-help">{{ t('checkout.coupon.help') }}</p>
           </section>
@@ -426,6 +458,13 @@ onUnmounted(() => {
             {{ isCheckoutLoading ? t('checkout.summary.loading') : t('checkout.summary.pay') }}
           </button>
 
+          <p v-if="checkoutRedirectError" class="mello-checkout-redirect-warning" role="alert">
+            {{ checkoutRedirectError }}
+            <a v-if="checkoutRedirectUrl" :href="checkoutRedirectUrl" rel="noopener noreferrer">
+              {{ t('checkout.redirectFallback.action') }}
+            </a>
+          </p>
+
           <p class="mello-checkout-secure-note">
             <span aria-hidden="true">
               <svg viewBox="0 0 24 24">
@@ -434,7 +473,7 @@ onUnmounted(() => {
               </svg>
             </span>
             {{ t('checkout.payment.secureInline') }}
-            <img src="/assets/stripe.png" alt="Stripe" width="1600" height="900" loading="eager">
+            <strong>WooPayments / Stripe</strong>
           </p>
         </div>
       </aside>
@@ -1187,6 +1226,27 @@ onUnmounted(() => {
   opacity: 1;
 }
 
+.mello-checkout-redirect-warning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+  color: #7c2d12;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+}
+
+.mello-checkout-redirect-warning a {
+  color: #1d4ed8;
+  display: inline-block;
+  font-weight: 750;
+  margin-left: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .mello-checkout-secure-note {
   align-items: center;
   color: rgba(29, 29, 31, 0.68);
@@ -1220,13 +1280,11 @@ onUnmounted(() => {
   width: 18px;
 }
 
-.mello-checkout-secure-note img {
-  display: inline-block;
-  height: 17px;
-  object-fit: contain;
-  opacity: 0.9;
-  transform: translateY(1px);
-  width: auto;
+.mello-checkout-secure-note strong {
+  color: #173132;
+  font-size: 12px;
+  font-weight: 780;
+  line-height: 1;
 }
 
 .mello-checkout-empty {

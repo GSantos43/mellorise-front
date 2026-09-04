@@ -2658,11 +2658,33 @@ button.gg-image-card {
   margin-top: 20px;
 }
 
+.gg-photo-reviews__grid.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.gg-photo-reviews__dots {
+  display: none;
+}
+
 .gg-photo-review-card {
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 10px 24px rgba(23, 49, 50, 0.1);
+  cursor: pointer;
   overflow: hidden;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.gg-photo-review-card:hover,
+.gg-photo-review-card:focus-visible {
+  box-shadow: 0 16px 36px rgba(23, 49, 50, 0.16);
+  outline: 0;
+  transform: translateY(-2px);
+}
+
+.gg-photo-review-card:focus-visible {
+  box-shadow: 0 0 0 3px rgba(119, 205, 250, 0.36), 0 16px 36px rgba(23, 49, 50, 0.16);
 }
 
 .gg-photo-review-card__media {
@@ -2675,6 +2697,9 @@ button.gg-image-card {
   display: block;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
   width: 100%;
 }
 
@@ -2746,32 +2771,6 @@ button.gg-image-card {
   margin: 10px 0 0;
 }
 
-.gg-photo-review-card__reply {
-  align-items: center;
-  appearance: none;
-  background: transparent;
-  border: 0;
-  color: #555;
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 650;
-  gap: 5px;
-  margin-top: 16px;
-  padding: 0;
-}
-
-.gg-photo-review-card__reply svg {
-  fill: none;
-  height: 16px;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
-  width: 16px;
-}
-
 .gg-photo-reviews__button:hover,
 .gg-photo-reviews__button:focus-visible,
 .gg-review-modal__submit:hover,
@@ -2782,11 +2781,175 @@ button.gg-image-card {
   transform: translateY(-1px);
 }
 
-.gg-photo-review-card__reply:hover,
-.gg-photo-review-card__reply:focus-visible {
+.gg-testimonial-modal {
+  align-items: center;
+  background: rgba(7, 20, 21, 0.62);
+  backdrop-filter: blur(10px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: max(24px, env(safe-area-inset-top)) 18px max(24px, env(safe-area-inset-bottom));
+  position: fixed;
+  z-index: 22000;
+}
+
+.gg-testimonial-modal__card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 32px 110px rgba(7, 20, 21, 0.34);
   color: #071415;
-  outline: 2px solid rgba(119, 205, 250, 0.42);
-  outline-offset: 3px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+  max-height: calc(100svh - 48px);
+  overflow: hidden;
+  position: relative;
+  width: min(100%, 920px);
+}
+
+.gg-testimonial-modal__media {
+  background: #f7f2ea;
+  min-height: 460px;
+}
+
+.gg-testimonial-modal__media img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.gg-testimonial-modal__body {
+  align-content: center;
+  display: grid;
+  justify-items: start;
+  padding: 42px;
+}
+
+.gg-testimonial-modal__author {
+  align-items: center;
+  background: #f7fbfb;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(23, 49, 50, 0.08);
+  display: inline-flex;
+  gap: 8px;
+  min-height: 38px;
+  padding: 4px 14px 4px 4px;
+}
+
+.gg-testimonial-modal__author b {
+  align-items: center;
+  background: #f5b800;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 850;
+  height: 32px;
+  justify-content: center;
+  line-height: 1;
+  width: 32px;
+}
+
+.gg-testimonial-modal__author span {
+  color: #173132;
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.gg-testimonial-modal__author small {
+  color: #687879;
+  font-size: 11px;
+  font-weight: 760;
+  margin-left: 3px;
+}
+
+.gg-testimonial-modal__body .gg-photo-reviews__stars {
+  font-size: 22px;
+  margin-top: 22px;
+}
+
+.gg-testimonial-modal h2 {
+  color: #071415;
+  font-size: clamp(28px, 4.4vw, 44px);
+  font-weight: 820;
+  letter-spacing: 0;
+  line-height: 1.03;
+  margin: 16px 0 0;
+  text-wrap: balance;
+}
+
+.gg-testimonial-modal p {
+  color: #354748;
+  font-size: 17px;
+  font-weight: 520;
+  line-height: 1.5;
+  margin: 18px 0 0;
+}
+
+.gg-testimonial-modal__close {
+  align-items: center;
+  appearance: none;
+  background: rgba(247, 251, 251, 0.92);
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 10px 24px rgba(7, 20, 21, 0.14);
+  cursor: pointer;
+  display: inline-flex;
+  height: 42px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  transition: background 160ms ease, transform 160ms ease;
+  width: 42px;
+  z-index: 2;
+}
+
+.gg-testimonial-modal__close:hover,
+.gg-testimonial-modal__close:focus-visible {
+  background: #fff;
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.gg-testimonial-modal__close span,
+.gg-testimonial-modal__close span::after {
+  background: #071415;
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 2px;
+  width: 15px;
+}
+
+.gg-testimonial-modal__close span {
+  transform: rotate(45deg);
+}
+
+.gg-testimonial-modal__close span::after {
+  transform: rotate(90deg);
+}
+
+.gg-testimonial-modal-enter-active,
+.gg-testimonial-modal-leave-active {
+  transition: opacity 180ms ease, backdrop-filter 220ms ease;
+}
+
+.gg-testimonial-modal-enter-active .gg-testimonial-modal__card,
+.gg-testimonial-modal-leave-active .gg-testimonial-modal__card {
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gg-testimonial-modal-enter-from,
+.gg-testimonial-modal-leave-to {
+  backdrop-filter: blur(0);
+  opacity: 0;
+}
+
+.gg-testimonial-modal-enter-from .gg-testimonial-modal__card,
+.gg-testimonial-modal-leave-to .gg-testimonial-modal__card {
+  transform: translateY(12px) scale(0.985);
 }
 
 .gg-review-modal {
@@ -4732,13 +4895,24 @@ button.gg-image-card {
     gap: 14px;
     margin-left: 0;
     margin-right: 0;
-    margin-top: 16px;
+    margin-top: 14px;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     padding: 0 0 14px;
+    scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
+    touch-action: pan-y;
     width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gg-photo-reviews__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gg-photo-reviews__grid.is-dragging {
+    scroll-behavior: auto;
   }
 
   .gg-photo-review-card {
@@ -4746,6 +4920,12 @@ button.gg-image-card {
     max-width: calc(100vw - 42px);
     min-width: 0;
     scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .gg-photo-review-card:hover,
+  .gg-photo-review-card:focus-visible {
+    transform: none;
   }
 
   .gg-photo-review-card__media {
@@ -4765,9 +4945,91 @@ button.gg-image-card {
     line-height: 1.34;
   }
 
+  .gg-photo-reviews__dots {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  .gg-photo-reviews__dots button {
+    appearance: none;
+    background: rgba(23, 49, 50, 0.18);
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    height: 8px;
+    padding: 0;
+    transition: background 160ms ease, transform 160ms ease;
+    width: 8px;
+  }
+
+  .gg-photo-reviews__dots button.is-active {
+    background: #5a9091;
+    transform: scale(1.02);
+    width: 24px;
+  }
+
+  .gg-photo-reviews__dots button:focus-visible {
+    outline: 2px solid rgba(119, 205, 250, 0.72);
+    outline-offset: 4px;
+  }
+
   .gg-review-modal {
     align-items: end;
     padding: 12px;
+  }
+
+  .gg-testimonial-modal {
+    align-items: end;
+    padding: 12px;
+  }
+
+  .gg-testimonial-modal__card {
+    border-radius: 18px;
+    grid-template-columns: 1fr;
+    max-height: calc(100svh - 24px);
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .gg-testimonial-modal__media {
+    aspect-ratio: 1 / 0.88;
+    min-height: 0;
+  }
+
+  .gg-testimonial-modal__body {
+    padding: 22px 18px 24px;
+  }
+
+  .gg-testimonial-modal__body .gg-photo-reviews__stars {
+    font-size: 19px;
+    margin-top: 18px;
+  }
+
+  .gg-testimonial-modal h2 {
+    font-size: 25px;
+    line-height: 1.08;
+    margin-top: 13px;
+  }
+
+  .gg-testimonial-modal p {
+    font-size: 15px;
+    line-height: 1.48;
+    margin-top: 14px;
+  }
+
+  .gg-testimonial-modal__close {
+    height: 40px;
+    right: 12px;
+    top: 12px;
+    width: 40px;
+  }
+
+  .gg-testimonial-modal-enter-from .gg-testimonial-modal__card,
+  .gg-testimonial-modal-leave-to .gg-testimonial-modal__card {
+    transform: translateY(18px);
   }
 
   .gg-review-modal__card {

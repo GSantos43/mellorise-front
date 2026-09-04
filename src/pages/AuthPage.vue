@@ -13,6 +13,10 @@ const props = defineProps({
   fallbackRedirectPath: {
     type: String,
     default: ''
+  },
+  authPath: {
+    type: String,
+    default: ''
   }
 })
 
@@ -22,6 +26,7 @@ const { user } = useUser()
 
 const isSignUp = computed(() => props.mode === 'sign-up')
 const isClerkLoading = computed(() => !isLoaded.value)
+const clerkRoutePath = computed(() => props.authPath || (isSignUp.value ? '/sign-up' : '/sign-in'))
 const authFallbackRedirectUrl = computed(() => getSafeRedirectPath() || props.fallbackRedirectPath || '/collections/all')
 const authSignInUrl = computed(() => getAuthPath('/sign-in'))
 const authSignUpUrl = computed(() => getAuthPath('/sign-up'))
@@ -156,7 +161,7 @@ onUnmounted(() => {
 
           <SignUp
             v-else-if="isSignUp"
-            path="/sign-up"
+            :path="clerkRoutePath"
             routing="path"
             oauth-flow="redirect"
             :sign-in-url="authSignInUrl"
@@ -169,7 +174,7 @@ onUnmounted(() => {
 
           <SignIn
             v-else
-            path="/sign-in"
+            :path="clerkRoutePath"
             routing="path"
             oauth-flow="redirect"
             :sign-up-url="authSignUpUrl"

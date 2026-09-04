@@ -8,9 +8,11 @@ const { t } = useI18n({ useScope: 'global' })
 const params = computed(() => new URLSearchParams(window.location.search))
 const orderId = computed(() => params.value.get('order_id') || '')
 const sessionId = computed(() => params.value.get('session_id') || '')
+const paymentProvider = computed(() => params.value.get('provider') || '')
+const isConfirmedWooPaymentsReturn = computed(() => paymentProvider.value === 'woopayments' && Boolean(orderId.value))
 
 onMounted(() => {
-  if (sessionId.value) {
+  if (sessionId.value || isConfirmedWooPaymentsReturn.value) {
     emit('clear-cart')
   }
 })
@@ -36,7 +38,7 @@ onMounted(() => {
         </div>
       </dl>
       <p class="mello-checkout-success__note">{{ t('checkoutSuccess.note') }}</p>
-      <a v-if="sessionId" class="mello-checkout-success__button" href="/track-order">
+      <a v-if="sessionId || orderId" class="mello-checkout-success__button" href="/track-order">
         {{ t('checkoutSuccess.trackAction') }}
       </a>
       <a class="mello-checkout-success__button" href="/products/wondernest-heightener-gummies-2026">
