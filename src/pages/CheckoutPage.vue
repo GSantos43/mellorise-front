@@ -3,7 +3,7 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale, supportedLocales } from '../i18n'
 import { formatMoney } from '../services/products'
-import { createWelcomeDiscount } from '../services/discounts'
+import { createWelcomeDiscount, validateWelcomeDiscount } from '../services/discounts'
 import { translateProductTitle } from '../i18n/productText'
 
 const props = defineProps({
@@ -110,12 +110,15 @@ const discountTotal = computed(() => props.item && hasSavedDiscount.value ? subt
 const total = computed(() => Math.max(0, subtotal.value - discountTotal.value))
 const totalSavings = computed(() => discountTotal.value)
 const canSubmit = computed(() => Boolean(props.item && !props.isCheckoutLoading))
-const canApplyCoupon = computed(() => Boolean(hasCheckoutEmail.value && !isCouponValidating.value))
 const canUseEmailDiscountButton = computed(() => Boolean(hasCheckoutEmail.value && !isCouponValidating.value))
+const canApplyCoupon = computed(() => Boolean(normalizedCoupon.value && hasCheckoutEmail.value && !isCouponValidating.value))
 const emailDiscountButtonLabel = computed(() => {
   if (isCouponValidating.value) return t('checkout.coupon.applying')
   return hasSavedDiscount.value ? t('checkout.coupon.emailAgain') : t('checkout.coupon.request')
 })
+const couponButtonLabel = computed(() => (
+  hasSavedDiscount.value ? t('checkout.coupon.remove') : t('checkout.coupon.apply')
+))
 const couponFeedbackMessage = computed(() => couponErrorMessage.value || t('checkout.coupon.invalid'))
 
 watch(
@@ -141,7 +144,6 @@ watch(
 watch(checkoutEmailInput, () => {
   if (hasSavedDiscount.value) return
   appliedDiscount.value = null
-  couponCode.value = ''
   couponErrorMessage.value = ''
   couponFeedback.value = ''
 })
@@ -169,7 +171,7 @@ function setCheckoutQuantity(nextQuantity) {
   emit('update-quantity', Math.max(1, Number(nextQuantity || 1)))
 }
 
-async function applyCoupon() {
+async function sendCouponEmail() {
   if (isCouponValidating.value) return
 
   if (!hasCheckoutEmail.value) {
@@ -184,10 +186,45 @@ async function applyCoupon() {
     const discount = await createWelcomeDiscount({
       email: checkoutCustomerEmail.value
     })
+    checkoutEmailInput.value = discount.email || checkoutEmailInput.value
+    couponFeedback.value = hasSavedDiscount.value ? 'applied' : 'sent'
+    couponErrorMessage.value = ''
+  } catch (error) {
+    console.warn(error)
+    couponErrorMessage.value = getCouponErrorMessage(error)
+    couponFeedback.value = 'error'
+  } finally {
+    isCouponValidating.value = false
+  }
+}
+
+async function applyCoupon() {
+  if (isCouponValidating.value) return
+
+  if (!hasCheckoutEmail.value) {
+    couponErrorMessage.value = t('checkout.couponErrors.missingEmail')
+    couponFeedback.value = 'error'
+    return
+  }
+
+  if (!normalizedCoupon.value) {
+    couponErrorMessage.value = t('checkout.couponErrors.missingCode')
+    couponFeedback.value = 'error'
+    return
+  }
+
+  isCouponValidating.value = true
+
+  try {
+    const discount = await validateWelcomeDiscount({
+      code: normalizedCoupon.value,
+      email: checkoutCustomerEmail.value
+    })
     appliedDiscount.value = discount
     checkoutEmailInput.value = discount.email || checkoutEmailInput.value
     couponCode.value = discount.code
     couponFeedback.value = 'applied'
+    couponErrorMessage.value = ''
     emit('discount-applied', discount)
   } catch (error) {
     console.warn(error)
@@ -459,7 +496,7 @@ onUnmounted(() => {
                   :placeholder="t('checkout.contact.emailPlaceholder')"
                   :aria-invalid="couponFeedback === 'error' && !hasCheckoutEmail"
                 >
-                <button type="button" :disabled="!canUseEmailDiscountButton" @click="applyCoupon">
+                <button type="button" :disabled="!canUseEmailDiscountButton" @click="sendCouponEmail">
                   {{ emailDiscountButtonLabel }}
                 </button>
               </span>
@@ -474,22 +511,24 @@ onUnmounted(() => {
             </div>
             <label class="mello-checkout-summary-coupon__field">
               <span>{{ t('checkout.coupon.label') }}</span>
-              <span class="mello-checkout-summary-coupon__row" :class="{ 'has-action': hasSavedDiscount }">
+              <span class="mello-checkout-summary-coupon__row has-action">
                 <input
                   v-model="couponCode"
                   type="text"
                   autocomplete="off"
                   :placeholder="t('checkout.coupon.placeholder')"
                   :aria-invalid="couponFeedback === 'error'"
-                  readonly
                 >
-                <button v-if="hasSavedDiscount" type="button" @click="handleCouponButton">
-                  {{ t('checkout.coupon.remove') }}
+                <button type="button" :disabled="!hasSavedDiscount && !canApplyCoupon" @click="handleCouponButton">
+                  {{ couponButtonLabel }}
                 </button>
               </span>
             </label>
             <p v-if="hasSavedDiscount && couponFeedback === 'applied'" class="mello-checkout-coupon-applied" role="status">
               {{ t('checkout.coupon.applied', { percent: discountPercent }) }}
+            </p>
+            <p v-else-if="couponFeedback === 'sent'" class="mello-checkout-coupon-applied" role="status">
+              {{ t('checkout.coupon.sent') }}
             </p>
             <p v-else-if="couponFeedback === 'error'" class="mello-checkout-coupon-error" role="alert">
               {{ couponFeedbackMessage }}

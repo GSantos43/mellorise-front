@@ -714,15 +714,16 @@ export const messages = {
       coupon: {
         title: 'Cupón',
         label: 'Descuento disponible',
-        placeholder: 'Tu cupón aparece aquí',
+        placeholder: 'Código recibido por email',
         apply: 'Aplicar',
-        request: 'Pedir descuento',
-        emailAgain: 'Enviar cupón',
+        request: 'Enviar cupón',
+        emailAgain: 'Reenviar cupón',
         remove: 'Quitar',
         applying: 'Verificando...',
         applied: '{percent}% reservado para este email',
+        sent: 'Enviamos tu cupón por email. Copia el código aquí para aplicar el descuento.',
         invalid: 'Cupón inválido o expirado.',
-        help: 'Verificamos si este email aún puede recibir el descuento de primera compra.'
+        help: 'Pide el cupón por email y pega el código aquí antes de pagar.'
       },
       couponErrors: {
         exhausted: 'Este cupón ya fue usado o agotó su límite. Lo quitamos del checkout; vuelve a tocar pagar para continuar sin descuento.',
@@ -731,7 +732,8 @@ export const messages = {
         firstPurchaseOnly: 'Este descuento es solo para la primera compra. Lo quitamos del checkout; vuelve a tocar pagar para continuar.',
         notFound: 'No encontramos este cupón. Revisa el código o continúa sin descuento.',
         invalid: 'Este cupón no está disponible. Revisa el código o continúa sin descuento.',
-        missingEmail: 'Necesitamos el email de compra para validar este cupón.'
+        missingEmail: 'Necesitamos el email de compra para validar este cupón.',
+        missingCode: 'Pega el código recibido por email para aplicar el descuento.'
       },
       payment: {
         title: 'Medios de pago',
@@ -1485,15 +1487,16 @@ export const messages = {
       coupon: {
         title: 'Coupon',
         label: 'Available discount',
-        placeholder: 'Your coupon appears here',
+        placeholder: 'Code received by email',
         apply: 'Apply',
-        request: 'Get discount',
-        emailAgain: 'Email coupon',
+        request: 'Email coupon',
+        emailAgain: 'Resend coupon',
         remove: 'Remove',
         applying: 'Checking...',
         applied: '{percent}% reserved for this email',
+        sent: 'We emailed your coupon. Copy the code here to apply the discount.',
         invalid: 'Coupon invalid or expired.',
-        help: 'We check whether this email can still receive the first-order discount.'
+        help: 'Request the coupon by email, then paste the code here before payment.'
       },
       couponErrors: {
         exhausted: 'This coupon has already been used or reached its limit. We removed it from checkout; tap Pay again to continue without the discount.',
@@ -1502,7 +1505,8 @@ export const messages = {
         firstPurchaseOnly: 'This discount is only for a first purchase. We removed it from checkout; tap Pay again to continue.',
         notFound: 'We could not find this coupon. Check the code or continue without the discount.',
         invalid: 'This coupon is not available. Check the code or continue without the discount.',
-        missingEmail: 'We need the purchase email to validate this coupon.'
+        missingEmail: 'We need the purchase email to validate this coupon.',
+        missingCode: 'Paste the code received by email to apply the discount.'
       },
       payment: {
         title: 'Payment methods',
