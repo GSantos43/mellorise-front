@@ -1279,7 +1279,7 @@ watch([isGalleryLightboxOpen, isReviewFormOpen, selectedPhotoReview], ([isLightb
             <div class="gg-story-card__body"><h3>Uso cotidiano</h3><p>Una presentacion pensada para mantenerse visible y facil de incorporar al dia.</p></div>
           </article>
           <article class="gg-story-card">
-            <div class="gg-story-card__media"><img src="/assets/gummy-lifestyle-3.png" alt="Producto gummy con acabado premium" width="2048" height="2048" loading="lazy"></div>
+            <div class="gg-story-card__media"><img src="/assets/gummy-guided-purchase.png" alt="MelloRise Heightener Gummies com gomitas vermelhas e mensagem sobre suporte ao potencial de crescimento natural" width="1262" height="1262" loading="lazy"></div>
             <div class="gg-story-card__body"><h3>Compra guiada</h3><p>Opciones claras para elegir una unidad, rutina completa o mayor valor.</p></div>
           </article>
         </div>
