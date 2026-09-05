@@ -13,6 +13,9 @@ const summary = ref(null)
 const errorMessage = ref('')
 const isLoading = ref(false)
 const isAuthed = ref(false)
+const latestSeenEventKey = ref('')
+const hasNewEvents = ref(false)
+const newEventsCount = ref(0)
 
 const totalCards = computed(() => summary.value?.totals || [])
 const funnel = computed(() => summary.value?.funnel || [])
@@ -47,12 +50,17 @@ async function login() {
   })
 }
 
-async function loadSummary(credentials = { username: username.value, password: password.value }) {
+async function loadSummary(
+  credentials = { username: username.value, password: password.value },
+  options = {}
+) {
   isLoading.value = true
   errorMessage.value = ''
 
   try {
-    summary.value = await fetchAnalyticsSummary(credentials)
+    const nextSummary = await fetchAnalyticsSummary(credentials)
+    updateNewEventsState(nextSummary, Boolean(options.detectNewEvents))
+    summary.value = nextSummary
     saveAnalyticsAuth(credentials)
     isAuthed.value = true
   } catch (error) {
@@ -67,11 +75,49 @@ async function loadSummary(credentials = { username: username.value, password: p
   }
 }
 
+function refreshSummary() {
+  return loadSummary(undefined, { detectNewEvents: true })
+}
+
 function logout() {
   clearAnalyticsAuth()
   summary.value = null
   password.value = ''
   isAuthed.value = false
+  latestSeenEventKey.value = ''
+  hasNewEvents.value = false
+  newEventsCount.value = 0
+}
+
+function updateNewEventsState(nextSummary, detectNewEvents) {
+  const nextEvents = nextSummary?.recentEvents || []
+  const nextLatestKey = getEventKey(nextEvents[0])
+
+  if (!detectNewEvents || !latestSeenEventKey.value) {
+    hasNewEvents.value = false
+    newEventsCount.value = 0
+    latestSeenEventKey.value = nextLatestKey
+    return
+  }
+
+  const previousLatestIndex = nextEvents.findIndex((event) => getEventKey(event) === latestSeenEventKey.value)
+  const count = previousLatestIndex === -1 ? nextEvents.length : previousLatestIndex
+
+  hasNewEvents.value = count > 0
+  newEventsCount.value = count
+  latestSeenEventKey.value = nextLatestKey
+}
+
+function getEventKey(event) {
+  if (!event) return ''
+
+  return [
+    event.timestamp || '',
+    event.name || '',
+    event.sessionId || '',
+    event.pagePath || '',
+    event.params?.sessionId || ''
+  ].join('|')
 }
 
 function formatPercent(value) {
@@ -156,7 +202,7 @@ function getEventLocation(event) {
             <h2>Store pulse</h2>
             <span>{{ storageLabel }}</span>
           </div>
-          <button class="mello-analytics__primary" type="button" :disabled="isLoading" @click="loadSummary()">
+          <button class="mello-analytics__primary" type="button" :disabled="isLoading" @click="refreshSummary">
             {{ isLoading ? 'Refreshing...' : 'Refresh' }}
           </button>
         </section>
@@ -243,10 +289,10 @@ function getEventLocation(event) {
           </article>
         </section>
 
-        <section class="mello-analytics-panel">
+        <section class="mello-analytics-panel mello-analytics-events-panel" :class="{ 'has-new-events': hasNewEvents }">
           <div class="mello-analytics-panel__head">
             <h3>Recent events</h3>
-            <span>{{ recentEvents.length }} latest</span>
+            <span>{{ hasNewEvents ? `${newEventsCount} new` : `${recentEvents.length} latest` }}</span>
           </div>
           <div class="mello-analytics-table" role="table" aria-label="Recent analytics events">
             <div class="mello-analytics-table__row is-head" role="row">
@@ -490,6 +536,38 @@ function getEventLocation(event) {
 
 .mello-analytics-panel {
   padding: 20px;
+}
+
+.mello-analytics-events-panel {
+  position: relative;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.mello-analytics-events-panel.has-new-events {
+  animation: mello-new-events-pulse 1050ms ease-in-out infinite;
+  background: #fff9e9;
+  border-color: rgba(224, 130, 21, 0.42);
+}
+
+.mello-analytics-events-panel.has-new-events .mello-analytics-panel__head span {
+  background: #f59f24;
+  border-radius: 999px;
+  color: #3a2505;
+  padding: 6px 10px;
+}
+
+@keyframes mello-new-events-pulse {
+  0%,
+  100% {
+    box-shadow: 0 20px 54px rgba(16, 40, 41, 0.08);
+  }
+
+  45% {
+    box-shadow: 0 24px 64px rgba(224, 130, 21, 0.3);
+  }
 }
 
 .mello-analytics-panel h3 {
