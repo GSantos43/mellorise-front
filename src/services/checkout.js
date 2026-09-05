@@ -1,4 +1,5 @@
 import { getBffUrl } from './bff'
+import { getAnalyticsContext } from './analytics'
 
 const BFF_URL = getBffUrl()
 
@@ -50,7 +51,8 @@ export async function createCheckoutSession(item, options = {}) {
       cancelUrl: `${origin}/checkout`,
       customerEmail: options.customerEmail,
       couponCode: options.couponCode,
-      promotion
+      promotion,
+      checkoutAnalytics: getAnalyticsContext()
     })
   })
 

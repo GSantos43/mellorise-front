@@ -133,6 +133,18 @@ export function trackPurchase(params = {}) {
   }, { sendToBackend: true })
 }
 
+export function getAnalyticsContext() {
+  if (typeof window === 'undefined') return {}
+
+  return {
+    clientId: getClientId(),
+    sessionId: getSessionId(),
+    pagePath: window.location.pathname,
+    pageLocation: window.location.href,
+    referrer: document.referrer
+  }
+}
+
 export function trackEvent(name, params = {}, options = {}) {
   if (typeof window === 'undefined' || !name) return
 
