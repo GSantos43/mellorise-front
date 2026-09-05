@@ -773,7 +773,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
 
 <template>
   <main data-template="vue3-store" :class="`mello-route-${currentPage}`" @click="navigate">
-    <SiteHeader v-if="!['checkout', 'checkout-success', 'tracking', 'analytics', 'copy-coupon'].includes(currentPage)" :current-route="route" :clerk-enabled="false" />
+    <SiteHeader v-if="!['checkout', 'checkout-success', 'analytics', 'copy-coupon'].includes(currentPage)" :current-route="route" :clerk-enabled="false" />
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
@@ -900,7 +900,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       :purchase-eligibility="purchaseEligibility"
       @add-to-cart="addToCart"
     />
-    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking', 'analytics', 'copy-coupon'].includes(currentPage)" />
+    <StoreFooter v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'analytics', 'copy-coupon'].includes(currentPage)" />
     <button
       v-if="!['checkout', 'checkout-success', 'sign-in', 'sign-up', 'tracking', 'account-orders', 'account-order-detail', 'analytics', 'copy-coupon'].includes(currentPage)"
       class="mello-floating-cart"
