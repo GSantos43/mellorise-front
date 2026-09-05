@@ -100,6 +100,7 @@ let checkoutTransitionTimer = 0
 let pendingCheckoutExitPath = ''
 let discountNoticeTimer = 0
 let trackedProductViewId = ''
+let trackedCheckoutStartKey = ''
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
@@ -425,12 +426,29 @@ function navigateToCheckout() {
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
   showCheckoutTransition()
-  trackBeginCheckout(cartItem.value, {
-    couponCode: activeDiscount.value?.code || ''
-  })
+  trackCheckoutStartOnce()
   window.history.pushState({}, '', CHECKOUT_PATH)
   route.value = window.location.pathname
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function trackCheckoutStartOnce() {
+  if (!cartItem.value) return
+
+  const key = [
+    cartItem.value.id,
+    cartItem.value.variationId || '',
+    cartItem.value.quantity || 1,
+    cartItem.value.checkoutQuantity || cartItem.value.quantity || 1,
+    activeDiscount.value?.code || ''
+  ].join(':')
+
+  if (key === trackedCheckoutStartKey) return
+  trackedCheckoutStartKey = key
+
+  trackBeginCheckout(cartItem.value, {
+    couponCode: activeDiscount.value?.code || ''
+  })
 }
 
 function requestCheckoutExit(targetPath = '/products/wondernest-heightener-gummies-2026') {
@@ -573,6 +591,7 @@ async function goToStripeCheckout(options = {}) {
       options.customerEmail = activeDiscount.value.email
     }
 
+    trackCheckoutStartOnce()
     const checkout = await createCheckoutSession(cartItem.value, options)
     const checkoutUrl = checkout.checkoutUrl
     trackCheckoutRedirect(cartItem.value, checkout)
