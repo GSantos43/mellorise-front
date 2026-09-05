@@ -523,7 +523,7 @@ function getQuantityPromotion(quantity) {
   if (quantity >= 3) {
     return {
       code: 'BUY_3_GET_2',
-      label: 'Buy 3 Get 2 Free',
+      label: 'Buy 3 Get 5',
       paidQuantity: quantity,
       freeQuantity: 2,
       deliveredQuantity: quantity + 2
@@ -533,7 +533,7 @@ function getQuantityPromotion(quantity) {
   if (quantity === 2) {
     return {
       code: 'BUY_2_GET_1',
-      label: 'Buy 2 Get 1 Free',
+      label: 'Buy 2 Get 3',
       paidQuantity: 2,
       freeQuantity: 1,
       deliveredQuantity: 3

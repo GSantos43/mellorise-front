@@ -18,7 +18,7 @@ const fallbackProducts = [
   },
   {
     id: 2,
-    title: 'Buy 2 Get 1 Free',
+    title: 'Buy 2 Get 3',
     handle: 'buy-2-get-1-free',
     vendor: 'MelloRise',
     price: 79.98,
@@ -27,7 +27,7 @@ const fallbackProducts = [
   },
   {
     id: 3,
-    title: 'Buy 3 Get 2 Free',
+    title: 'Buy 3 Get 5',
     handle: 'buy-3-get-2-free',
     vendor: 'MelloRise',
     price: 119.97,

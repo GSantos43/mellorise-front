@@ -26,7 +26,7 @@ export async function createCheckoutSession(item, options = {}) {
     freeQuantity
       ? {
         code: quantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
-        label: quantity >= 3 ? 'Buy 3 Get 2 Free' : 'Buy 2 Get 1 Free',
+        label: quantity >= 3 ? 'Buy 3 Get 5' : 'Buy 2 Get 3',
         paidQuantity: quantity,
         freeQuantity,
         deliveredQuantity: quantity + freeQuantity

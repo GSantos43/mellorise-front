@@ -18,8 +18,8 @@ export const PRODUCT_BUNDLES = [
   {
     key: 'buy2',
     queryValue: '2',
-    match: ['buy 2 get 1', 'buy 2 get 1 free', '2 get 1', '3 bottles', 'most popular'],
-    title: 'Buy 2 Get 1 Free',
+    match: ['buy 2 get 3', 'buy 2 get 1', 'buy 2 get 1 free', '2 get 3', '2 get 1', '3 bottles', 'most popular'],
+    title: 'Buy 2 Get 3',
     titleKey: 'product.bundleCards.buyTwo.title',
     meta: 'Most Popular',
     metaKey: 'product.bundleCards.buyTwo.meta',
@@ -34,8 +34,8 @@ export const PRODUCT_BUNDLES = [
   {
     key: 'buy3',
     queryValue: '3',
-    match: ['buy 3 get 2', 'buy 3 get 2 free', '3 get 2', '5 bottles', 'best value'],
-    title: 'Buy 3 Get 2 Free',
+    match: ['buy 3 get 5', 'buy 3 get 2', 'buy 3 get 2 free', '3 get 5', '3 get 2', '5 bottles', 'best value'],
+    title: 'Buy 3 Get 5',
     titleKey: 'product.bundleCards.buyThree.title',
     meta: 'Best Value',
     metaKey: 'product.bundleCards.buyThree.meta',

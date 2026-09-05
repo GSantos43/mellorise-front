@@ -16,7 +16,7 @@ export const mockPaidAccountOrder = {
   },
   promotion: {
     code: 'BUY_2_GET_1',
-    label: 'Buy 2 Get 1',
+    label: 'Buy 2 Get 3',
     paidQuantity: '2',
     freeQuantity: '1',
     deliveredQuantity: '3',

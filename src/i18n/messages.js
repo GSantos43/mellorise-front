@@ -179,12 +179,12 @@ export const messages = {
           meta: 'Rutina inicial'
         },
         buyTwo: {
-          title: 'Buy 2 Get 1 Free',
+          title: 'Buy 2 Get 3',
           meta: 'Más popular',
           badge: 'Más popular'
         },
         buyThree: {
-          title: 'Buy 3 Get 2 Free',
+          title: 'Buy 3 Get 5',
           meta: 'Mejor valor',
           badge: 'Mejor valor'
         }
@@ -970,12 +970,12 @@ export const messages = {
           meta: 'Starter routine'
         },
         buyTwo: {
-          title: 'Buy 2 Get 1 Free',
+          title: 'Buy 2 Get 3',
           meta: 'Most popular',
           badge: 'Most popular'
         },
         buyThree: {
-          title: 'Buy 3 Get 2 Free',
+          title: 'Buy 3 Get 5',
           meta: 'Best value',
           badge: 'Best value'
         }
@@ -1488,13 +1488,13 @@ export const messages = {
       },
       upsell: {
         buyTwoBadge: 'Recommended offer',
-        buyTwoTitle: 'Buy 2, get 1 free',
+        buyTwoTitle: 'Buy 2, get 3',
         buyTwoText: 'Move to 2 paid bottles to receive 3 total and lower the cost per bottle.',
-        buyTwoAction: 'Activate Buy 2 Get 1 Free',
+        buyTwoAction: 'Activate Buy 2 Get 3',
         buyThreeBadge: 'Best savings',
-        buyThreeTitle: 'Buy 3, get 2 free',
-        buyThreeText: 'You already unlocked Buy 2 Get 1 Free. Move to 3 paid bottles to receive 5 total.',
-        buyThreeAction: 'Activate Buy 3 Get 2 Free'
+        buyThreeTitle: 'Buy 3, get 5',
+        buyThreeText: 'You already unlocked Buy 2 Get 3. Move to 3 paid bottles to receive 5 total.',
+        buyThreeAction: 'Activate Buy 3 Get 5'
       },
       contact: {
         title: 'Purchase email',
