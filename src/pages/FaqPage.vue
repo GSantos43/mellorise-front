@@ -38,7 +38,7 @@ const faqSections = [
     title: 'Cancellations & Address Updates',
     body: [
       'Need to cancel or correct your order?',
-      'You can do so <strong>within 24 hours</strong> of purchase by emailing us at <strong>hello@mellorise.com</strong> with the subject line: <strong>"CANCEL MY ORDER"</strong> or <strong>"ADDRESS UPDATE"</strong>.',
+      'You can do so <strong>within 24 hours</strong> of purchase by emailing us at <strong>mellorise.support@gmail.com</strong> with the subject line: <strong>"CANCEL MY ORDER"</strong> or <strong>"ADDRESS UPDATE"</strong>.',
       'After 24 hours or once your order ships, changes are no longer possible.'
     ]
   },
