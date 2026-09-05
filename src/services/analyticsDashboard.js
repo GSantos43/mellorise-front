@@ -23,8 +23,13 @@ export function clearAnalyticsAuth() {
   window.sessionStorage.removeItem(ANALYTICS_AUTH_KEY)
 }
 
-export async function fetchAnalyticsSummary(credentials) {
-  const response = await fetch(`${BFF_URL}/analytics/summary`, {
+export async function fetchAnalyticsSummary(credentials, filters = {}) {
+  const url = new URL(`${BFF_URL}/analytics/summary`)
+
+  if (filters.from) url.searchParams.set('from', filters.from)
+  if (filters.to) url.searchParams.set('to', filters.to)
+
+  const response = await fetch(url.toString(), {
     headers: {
       Authorization: `Basic ${window.btoa(`${credentials.username}:${credentials.password}`)}`
     }

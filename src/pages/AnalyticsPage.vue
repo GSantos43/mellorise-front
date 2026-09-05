@@ -16,6 +16,19 @@ const isAuthed = ref(false)
 const latestSeenEventKey = ref('')
 const hasNewEvents = ref(false)
 const newEventsCount = ref(0)
+const datePreset = ref('all')
+const specificDate = ref(toDateInputValue(new Date()))
+const rangeFromDate = ref(toDateInputValue(getDateDaysAgo(6)))
+const rangeToDate = ref(toDateInputValue(new Date()))
+
+const datePresetOptions = [
+  { value: 'all', label: 'All' },
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: 'This week' },
+  { value: 'last7', label: 'Last 7 days' },
+  { value: 'day', label: 'Specific day' },
+  { value: 'range', label: 'Range' }
+]
 
 const totalCards = computed(() => summary.value?.totals || [])
 const funnel = computed(() => summary.value?.funnel || [])
@@ -27,6 +40,15 @@ const topCities = computed(() => summary.value?.topCities || [])
 const storageLabel = computed(() => {
   if (!summary.value?.storage?.enabled) return 'Storage file is not configured'
   return summary.value.storage.filePath
+})
+const activeDateLabel = computed(() => {
+  if (datePreset.value === 'all') return 'All saved events'
+  if (datePreset.value === 'today') return 'Today'
+  if (datePreset.value === 'week') return 'This week'
+  if (datePreset.value === 'last7') return 'Last 7 days'
+  if (datePreset.value === 'day') return formatShortDate(specificDate.value)
+  if (datePreset.value === 'range') return `${formatShortDate(rangeFromDate.value)} - ${formatShortDate(rangeToDate.value)}`
+  return 'Filtered'
 })
 
 onMounted(() => {
@@ -58,7 +80,7 @@ async function loadSummary(
   errorMessage.value = ''
 
   try {
-    const nextSummary = await fetchAnalyticsSummary(credentials)
+    const nextSummary = await fetchAnalyticsSummary(credentials, getDateFilterPayload())
     updateNewEventsState(nextSummary, Boolean(options.detectNewEvents))
     summary.value = nextSummary
     saveAnalyticsAuth(credentials)
@@ -77,6 +99,24 @@ async function loadSummary(
 
 function refreshSummary() {
   return loadSummary(undefined, { detectNewEvents: true })
+}
+
+function applyDatePreset(nextPreset) {
+  datePreset.value = nextPreset
+  hasNewEvents.value = false
+  newEventsCount.value = 0
+  latestSeenEventKey.value = ''
+
+  if (nextPreset !== 'day' && nextPreset !== 'range' && isAuthed.value) {
+    void loadSummary()
+  }
+}
+
+function applyCustomDateFilter() {
+  hasNewEvents.value = false
+  newEventsCount.value = 0
+  latestSeenEventKey.value = ''
+  return loadSummary()
 }
 
 function logout() {
@@ -133,6 +173,105 @@ function formatDate(value) {
     hour: '2-digit',
     minute: '2-digit'
   }).format(new Date(value))
+}
+
+function formatShortDate(value) {
+  if (!value) return 'Select date'
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric'
+  }).format(new Date(`${value}T12:00:00`))
+}
+
+function getDateFilterPayload() {
+  const range = getDateRange()
+  return {
+    from: range.from ? range.from.toISOString() : '',
+    to: range.to ? range.to.toISOString() : ''
+  }
+}
+
+function getDateRange() {
+  const now = new Date()
+
+  if (datePreset.value === 'today') {
+    return {
+      from: startOfDay(now),
+      to: endOfDay(now)
+    }
+  }
+
+  if (datePreset.value === 'week') {
+    return {
+      from: startOfWeek(now),
+      to: endOfDay(now)
+    }
+  }
+
+  if (datePreset.value === 'last7') {
+    return {
+      from: startOfDay(getDateDaysAgo(6)),
+      to: endOfDay(now)
+    }
+  }
+
+  if (datePreset.value === 'day') {
+    const selected = parseDateInput(specificDate.value)
+    return selected
+      ? { from: startOfDay(selected), to: endOfDay(selected) }
+      : { from: null, to: null }
+  }
+
+  if (datePreset.value === 'range') {
+    const from = parseDateInput(rangeFromDate.value)
+    const to = parseDateInput(rangeToDate.value)
+    return {
+      from: from ? startOfDay(from) : null,
+      to: to ? endOfDay(to) : null
+    }
+  }
+
+  return { from: null, to: null }
+}
+
+function parseDateInput(value) {
+  if (!value) return null
+  const date = new Date(`${value}T12:00:00`)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function toDateInputValue(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function getDateDaysAgo(days) {
+  const date = new Date()
+  date.setDate(date.getDate() - days)
+  return date
+}
+
+function startOfDay(date) {
+  const nextDate = new Date(date)
+  nextDate.setHours(0, 0, 0, 0)
+  return nextDate
+}
+
+function endOfDay(date) {
+  const nextDate = new Date(date)
+  nextDate.setHours(23, 59, 59, 999)
+  return nextDate
+}
+
+function startOfWeek(date) {
+  const nextDate = startOfDay(date)
+  const day = nextDate.getDay()
+  nextDate.setDate(nextDate.getDate() - day)
+  return nextDate
 }
 
 function getEventDetail(event) {
@@ -200,11 +339,50 @@ function getEventLocation(event) {
           <div>
             <p>Generated {{ formatDate(summary?.generatedAt) }}</p>
             <h2>Store pulse</h2>
+            <span>{{ activeDateLabel }} · {{ summary?.storage?.eventCount || 0 }} events shown of {{ summary?.storage?.totalEventCount || summary?.storage?.eventCount || 0 }} saved</span>
             <span>{{ storageLabel }}</span>
           </div>
           <button class="mello-analytics__primary" type="button" :disabled="isLoading" @click="refreshSummary">
             {{ isLoading ? 'Refreshing...' : 'Refresh' }}
           </button>
+        </section>
+
+        <section class="mello-analytics-filters" aria-label="Date filters">
+          <div class="mello-analytics-filters__presets">
+            <button
+              v-for="option in datePresetOptions"
+              :key="option.value"
+              type="button"
+              :class="{ 'is-active': datePreset === option.value }"
+              @click="applyDatePreset(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+
+          <div v-if="datePreset === 'day'" class="mello-analytics-filters__custom">
+            <label>
+              <span>Day</span>
+              <input v-model="specificDate" type="date">
+            </label>
+            <button class="mello-analytics__primary" type="button" :disabled="isLoading" @click="applyCustomDateFilter">
+              Apply day
+            </button>
+          </div>
+
+          <div v-else-if="datePreset === 'range'" class="mello-analytics-filters__custom">
+            <label>
+              <span>From</span>
+              <input v-model="rangeFromDate" type="date">
+            </label>
+            <label>
+              <span>To</span>
+              <input v-model="rangeToDate" type="date">
+            </label>
+            <button class="mello-analytics__primary" type="button" :disabled="isLoading" @click="applyCustomDateFilter">
+              Apply range
+            </button>
+          </div>
         </section>
 
         <p v-if="errorMessage" class="mello-analytics__error" role="alert">{{ errorMessage }}</p>
@@ -430,8 +608,10 @@ function getEventLocation(event) {
 }
 
 .mello-analytics-login input:focus-visible,
+.mello-analytics-filters input:focus-visible,
 .mello-analytics__primary:focus-visible,
-.mello-analytics__ghost:focus-visible {
+.mello-analytics__ghost:focus-visible,
+.mello-analytics-filters__presets button:focus-visible {
   outline: 3px solid rgba(119, 205, 250, 0.44);
   outline-offset: 2px;
 }
@@ -498,6 +678,78 @@ function getEventLocation(event) {
   margin-top: 10px;
   overflow-wrap: anywhere;
   text-transform: none;
+}
+
+.mello-analytics-filters {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(16, 40, 41, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(16, 40, 41, 0.06);
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.mello-analytics-filters__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mello-analytics-filters__presets button {
+  appearance: none;
+  background: #f6fbfb;
+  border: 1px solid rgba(16, 40, 41, 0.08);
+  border-radius: 999px;
+  color: #345051;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 780;
+  min-height: 40px;
+  padding: 0 14px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.mello-analytics-filters__presets button.is-active {
+  background: #133130;
+  border-color: #133130;
+  color: #ffffff;
+}
+
+.mello-analytics-filters__custom {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mello-analytics-filters__custom label {
+  display: grid;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.mello-analytics-filters__custom label span {
+  color: #102829;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.mello-analytics-filters input {
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.16);
+  border-radius: 8px;
+  color: #102829;
+  font: inherit;
+  font-size: 0.96rem;
+  font-weight: 650;
+  min-height: 48px;
+  padding: 0 12px;
 }
 
 .mello-analytics-grid {
@@ -743,6 +995,21 @@ function getEventLocation(event) {
 
   .mello-analytics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mello-analytics-filters {
+    padding: 14px;
+  }
+
+  .mello-analytics-filters__presets {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mello-analytics-filters__presets button,
+  .mello-analytics-filters__custom .mello-analytics__primary,
+  .mello-analytics-filters__custom label {
+    width: 100%;
   }
 
   .mello-analytics-stat {
