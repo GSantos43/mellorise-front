@@ -20,6 +20,7 @@ const recentEvents = computed(() => summary.value?.recentEvents || [])
 const topPages = computed(() => summary.value?.topPages || [])
 const topProducts = computed(() => summary.value?.topProducts || [])
 const checkoutErrors = computed(() => summary.value?.checkoutErrors || [])
+const topCities = computed(() => summary.value?.topCities || [])
 const storageLabel = computed(() => {
   if (!summary.value?.storage?.enabled) return 'Storage file is not configured'
   return summary.value.storage.filePath
@@ -98,6 +99,19 @@ function getEventDetail(event) {
   }
 
   return event.pagePath || event.params?.provider || '-'
+}
+
+function getEventLocation(event) {
+  const geo = event.geo || {}
+  const location = [
+    geo.city,
+    geo.region,
+    geo.countryCode || geo.country
+  ]
+    .filter(Boolean)
+    .join(', ')
+
+  return location || 'Unknown'
 }
 </script>
 
@@ -216,6 +230,17 @@ function getEventDetail(event) {
               <li v-if="!checkoutErrors.length" class="is-empty">No checkout errors logged.</li>
             </ul>
           </article>
+
+          <article class="mello-analytics-panel">
+            <h3>Top cities</h3>
+            <ul class="mello-analytics-list">
+              <li v-for="item in topCities" :key="item.key">
+                <span>{{ item.label }}</span>
+                <strong>{{ item.value }}</strong>
+              </li>
+              <li v-if="!topCities.length" class="is-empty">No city data yet.</li>
+            </ul>
+          </article>
         </section>
 
         <section class="mello-analytics-panel">
@@ -228,12 +253,16 @@ function getEventDetail(event) {
               <span role="columnheader">Time</span>
               <span role="columnheader">Event</span>
               <span role="columnheader">Detail</span>
+              <span role="columnheader">Location</span>
+              <span role="columnheader">IP</span>
               <span role="columnheader">Session</span>
             </div>
             <div v-for="event in recentEvents" :key="`${event.timestamp}-${event.name}-${event.sessionId}`" class="mello-analytics-table__row" role="row">
               <span role="cell">{{ formatDate(event.timestamp) }}</span>
               <strong role="cell">{{ event.name }}</strong>
               <span role="cell">{{ getEventDetail(event) }}</span>
+              <span role="cell">{{ getEventLocation(event) }}</span>
+              <span role="cell">{{ event.ip || '-' }}</span>
               <span role="cell">{{ event.sessionId || '-' }}</span>
             </div>
             <p v-if="!recentEvents.length" class="mello-analytics-empty">No events saved yet.</p>
@@ -456,7 +485,7 @@ function getEventDetail(event) {
 }
 
 .mello-analytics-columns {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .mello-analytics-panel {
@@ -565,7 +594,7 @@ function getEventDetail(event) {
   border-top: 1px solid rgba(16, 40, 41, 0.07);
   display: grid;
   gap: 14px;
-  grid-template-columns: 130px 180px minmax(0, 1fr) 220px;
+  grid-template-columns: 130px 170px minmax(180px, 1fr) 190px 150px 220px;
   min-height: 50px;
   padding: 0 14px;
 }
@@ -608,7 +637,7 @@ function getEventDetail(event) {
   }
 
   .mello-analytics-table__row {
-    min-width: 760px;
+    min-width: 1040px;
   }
 }
 
