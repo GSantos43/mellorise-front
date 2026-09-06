@@ -2,6 +2,11 @@ import { getBffUrl } from './bff'
 import { getAnalyticsContext } from './analytics'
 
 const BFF_URL = getBffUrl()
+const PRIMARY_PRODUCT_HANDLE = 'mellorise-heightener-gummies-2026'
+const LEGACY_PRODUCT_HANDLES = new Set([
+  'wondernest-heightener-gummies-2026',
+  '9-in-1-natural-growth-bone-support-gummies-for-kids-teens'
+])
 
 export class CheckoutRequestError extends Error {
   constructor(message, options = {}) {
@@ -14,7 +19,9 @@ export class CheckoutRequestError extends Error {
 }
 
 export async function createCheckoutSession(item, options = {}) {
-  if (!item?.id) {
+  const productId = getCheckoutProductId(item)
+
+  if (!productId) {
     throw new Error('Cart item is required to create checkout.')
   }
 
@@ -87,13 +94,13 @@ function buildCheckoutPayload({
   return compactObject({
     cart: [
       compactObject({
-        productId: Number(item.id),
+        productId,
         variationId: item.variationId ? Number(item.variationId) : undefined,
         quantity: checkoutQuantity
       })
     ],
     successUrl: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancelUrl: `${origin}/products/${item.handle || 'mellorise-heightener-gummies-2026'}`,
+    cancelUrl: `${origin}/products/${getCheckoutCancelHandle(item)}`,
     customerEmail: options.customerEmail,
     couponCode: options.couponCode,
     shippingProtection: options.shippingProtection,
@@ -101,6 +108,12 @@ function buildCheckoutPayload({
     promotion,
     checkoutAnalytics
   })
+}
+
+function getCheckoutProductId(item) {
+  const productId = Number(item?.id ?? item?.productId ?? item?.product?.id ?? 0)
+
+  return Number.isFinite(productId) && productId > 0 ? productId : 0
 }
 
 function postCheckoutSession(payload) {
@@ -111,6 +124,16 @@ function postCheckoutSession(payload) {
     },
     body: JSON.stringify(payload)
   })
+}
+
+function getCheckoutCancelHandle(item) {
+  const handle = String(item?.handle || '').trim()
+
+  if (!handle || LEGACY_PRODUCT_HANDLES.has(handle)) {
+    return PRIMARY_PRODUCT_HANDLE
+  }
+
+  return handle
 }
 
 function normalizeCheckoutResponse(data = {}) {

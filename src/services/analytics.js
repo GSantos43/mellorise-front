@@ -104,7 +104,7 @@ export function trackCheckoutRedirect(item, response = {}) {
     value: Number(response.total || 0),
     currency: response.currency || 'USD',
     items: item?.id ? [toAnalyticsItem(item)] : []
-  }, { sendToBackend: true })
+  }, { sendToBackend: true, beacon: true })
 }
 
 export function trackCheckoutError(error, item) {

@@ -4,8 +4,11 @@ const BFF_URL = getBffUrl()
 const API_URL = `${BFF_URL}/products`
 const PRODUCT_CACHE_KEY = 'mellorise-products-cache-v1'
 const PRODUCT_CACHE_TTL = 10 * 60 * 1000
-const LEGACY_PRODUCT_HANDLE = 'wondernest-heightener-gummies-2026'
 const PRIMARY_PRODUCT_HANDLE = 'mellorise-heightener-gummies-2026'
+const LEGACY_PRODUCT_HANDLES = new Set([
+  'wondernest-heightener-gummies-2026',
+  '9-in-1-natural-growth-bone-support-gummies-for-kids-teens'
+])
 
 const fallbackProducts = [
   {
@@ -123,7 +126,8 @@ function normalizeProduct(product) {
     '/assets/frasco.png'
 
   const rawHandle = product.handle ?? product.slug ?? product.id
-  const handle = String(rawHandle) === LEGACY_PRODUCT_HANDLE ? PRIMARY_PRODUCT_HANDLE : rawHandle
+  const normalizedHandle = String(rawHandle || '').trim()
+  const handle = LEGACY_PRODUCT_HANDLES.has(normalizedHandle) ? PRIMARY_PRODUCT_HANDLE : rawHandle
 
   return {
     id: product.id ?? product._id ?? product.handle ?? product.slug,

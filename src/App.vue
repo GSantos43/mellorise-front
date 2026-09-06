@@ -48,8 +48,12 @@ const props = defineProps({
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
 const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
 const CHECKOUT_PATH = '/checkout'
-const LEGACY_PRODUCT_PATH = '/products/wondernest-heightener-gummies-2026'
+const PRIMARY_PRODUCT_HANDLE = 'mellorise-heightener-gummies-2026'
 const PRIMARY_PRODUCT_PATH = '/products/mellorise-heightener-gummies-2026'
+const LEGACY_PRODUCT_HANDLES = new Set([
+  'wondernest-heightener-gummies-2026',
+  '9-in-1-natural-growth-bone-support-gummies-for-kids-teens'
+])
 const COUPON_CHECKOUT_ERROR_KEYS = {
   coupon_exhausted: 'checkout.couponErrors.exhausted',
   coupon_expired: 'checkout.couponErrors.expired',
@@ -104,9 +108,7 @@ let trackedProductViewId = ''
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
-  const normalizedSlug = slug === 'wondernest-heightener-gummies-2026'
-    ? 'mellorise-heightener-gummies-2026'
-    : slug
+  const normalizedSlug = normalizeProductHandle(slug)
   return products.value.find((product) => String(product.handle) === normalizedSlug) || products.value[0]
 })
 
@@ -148,7 +150,8 @@ const shouldConfirmCheckoutExit = computed(() => (
 ))
 
 function normalizeLegacyProductRoute() {
-  if (route.value !== LEGACY_PRODUCT_PATH) return
+  const handle = route.value.split('/products/')[1]
+  if (!LEGACY_PRODUCT_HANDLES.has(handle)) return
 
   window.history.replaceState(
     {},
@@ -156,6 +159,13 @@ function normalizeLegacyProductRoute() {
     `${PRIMARY_PRODUCT_PATH}${window.location.search}${window.location.hash}`
   )
   route.value = window.location.pathname
+}
+
+function normalizeProductHandle(handle) {
+  const normalizedHandle = String(handle || '').trim()
+  return LEGACY_PRODUCT_HANDLES.has(normalizedHandle)
+    ? PRIMARY_PRODUCT_HANDLE
+    : normalizedHandle
 }
 const documentTitle = computed(() => {
   if (currentPage.value === 'product' && currentProduct.value?.title) {
@@ -243,15 +253,19 @@ function addToCart(payload = {}) {
   const product = payload.product || currentProduct.value
   if (!product) return
 
+  const productId = Number(payload.id ?? payload.productId ?? product.id ?? product._id ?? 0)
+  if (!Number.isFinite(productId) || productId <= 0) return
+
   const quantity = Number(payload.quantity || 1)
   const price = Number(payload.price ?? product.price ?? 0)
   const unitPrice = Number(payload.unitPrice ?? payload.price ?? product.price ?? 0)
   const lineTotal = Number(payload.lineTotal ?? payload.bundleTotal ?? price * quantity)
+  const handle = normalizeProductHandle(payload.handle || product.handle || PRIMARY_PRODUCT_HANDLE)
 
   cartItem.value = {
-    id: product.id,
+    id: productId,
     variationId: payload.variationId,
-    handle: product.handle,
+    handle,
     title: product.title,
     image: payload.image || product.image || product.images?.[0] || '/assets/frasco.png',
     price,
@@ -328,13 +342,14 @@ function readSavedCartItem() {
     const savedCartItem = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || 'null')
     const quantity = Math.min(3, Math.max(1, Number(savedCartItem?.quantity || 1)))
     const price = Number(savedCartItem?.price ?? 0)
+    const productId = Number(savedCartItem?.id ?? savedCartItem?.productId ?? 0)
 
-    if (!savedCartItem?.id || !savedCartItem?.title || !Number.isFinite(price)) return null
+    if (!productId || !savedCartItem?.title || !Number.isFinite(price)) return null
 
     return {
-      id: savedCartItem.id,
+      id: productId,
       variationId: savedCartItem.variationId ?? null,
-      handle: savedCartItem.handle || '',
+      handle: normalizeProductHandle(savedCartItem.handle || PRIMARY_PRODUCT_HANDLE),
       title: savedCartItem.title,
       image: savedCartItem.image || '/assets/frasco.png',
       price,
