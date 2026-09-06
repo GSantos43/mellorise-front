@@ -20,8 +20,9 @@ const datePreset = ref('all')
 const specificDate = ref(toDateInputValue(new Date()))
 const rangeFromDate = ref(toDateInputValue(getDateDaysAgo(6)))
 const rangeToDate = ref(toDateInputValue(new Date()))
+const eventTypeFilter = ref('all')
 const eventsPage = ref(1)
-const eventsPerPage = ref(50)
+const eventsPerPage = ref(15)
 
 const datePresetOptions = [
   { value: 'all', label: 'All' },
@@ -43,7 +44,6 @@ const eventsPagination = computed(() => summary.value?.events || {
   from: 0,
   to: 0
 })
-const eventPageSizeOptions = [25, 50, 100, 200]
 const topPages = computed(() => summary.value?.topPages || [])
 const topProducts = computed(() => summary.value?.topProducts || [])
 const checkoutErrors = computed(() => summary.value?.checkoutErrors || [])
@@ -67,6 +67,17 @@ const eventRangeLabel = computed(() => {
 
   return `${pagination.from}-${pagination.to} of ${pagination.total}`
 })
+const eventTypeOptions = computed(() => [
+  {
+    key: 'all',
+    label: 'All actions',
+    value: (summary.value?.eventTypes || []).reduce((total, item) => total + Number(item.value || 0), 0)
+  },
+  ...(summary.value?.eventTypes || []).map((item) => ({
+    ...item,
+    label: formatEventName(item.label)
+  }))
+])
 
 onMounted(() => {
   const savedAuth = readAnalyticsAuth()
@@ -210,6 +221,7 @@ function getAnalyticsFilterPayload() {
   return {
     from: range.from ? range.from.toISOString() : '',
     to: range.to ? range.to.toISOString() : '',
+    eventType: eventTypeFilter.value,
     page: eventsPage.value,
     perPage: eventsPerPage.value
   }
@@ -227,6 +239,14 @@ function goToEventsPage(page) {
 
 function changeEventsPerPage() {
   resetEventsPagination()
+  return loadSummary()
+}
+
+function applyEventTypeFilter(nextType) {
+  eventTypeFilter.value = nextType || 'all'
+  resetEventsPagination()
+  hasNewEvents.value = false
+  newEventsCount.value = 0
   return loadSummary()
 }
 
@@ -321,6 +341,12 @@ function getEventDetail(event) {
   }
 
   return event.pagePath || event.params?.provider || '-'
+}
+
+function formatEventName(value) {
+  return String(value || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function getEventLocation(event) {
@@ -509,16 +535,23 @@ function getEventLocation(event) {
             <h3>All events</h3>
             <span>{{ hasNewEvents ? `${newEventsCount} new` : eventRangeLabel }}</span>
           </div>
+          <div class="mello-analytics-action-filter" aria-label="Action filters">
+            <button
+              v-for="option in eventTypeOptions"
+              :key="option.key"
+              type="button"
+              :class="{ 'is-active': eventTypeFilter === option.key }"
+              :disabled="isLoading"
+              @click="applyEventTypeFilter(option.key)"
+            >
+              <span>{{ option.label }}</span>
+              <strong>{{ option.value }}</strong>
+            </button>
+          </div>
           <div class="mello-analytics-pagination" aria-label="Analytics event pagination">
-            <label>
-              <span>Rows</span>
-              <select v-model.number="eventsPerPage" :disabled="isLoading" @change="changeEventsPerPage">
-                <option v-for="size in eventPageSizeOptions" :key="size" :value="size">{{ size }}</option>
-              </select>
-            </label>
             <div class="mello-analytics-pagination__status">
               <strong>Page {{ eventsPagination.page }} of {{ eventsPagination.totalPages }}</strong>
-              <span>{{ eventRangeLabel }} · oldest first</span>
+              <span>{{ eventRangeLabel }} · 15 per page · oldest first</span>
             </div>
             <div class="mello-analytics-pagination__buttons">
               <button type="button" :disabled="isLoading || eventsPagination.page <= 1" @click="goToEventsPage(1)">First</button>
@@ -537,12 +570,12 @@ function getEventLocation(event) {
               <span role="columnheader">Session</span>
             </div>
             <div v-for="event in recentEvents" :key="`${event.timestamp}-${event.name}-${event.sessionId}`" class="mello-analytics-table__row" role="row">
-              <span role="cell">{{ formatDate(event.timestamp) }}</span>
-              <strong role="cell">{{ event.name }}</strong>
-              <span role="cell">{{ getEventDetail(event) }}</span>
-              <span role="cell">{{ getEventLocation(event) }}</span>
-              <span role="cell">{{ event.ip || '-' }}</span>
-              <span role="cell">{{ event.sessionId || '-' }}</span>
+              <span role="cell" data-label="Time">{{ formatDate(event.timestamp) }}</span>
+              <strong role="cell" data-label="Event">{{ formatEventName(event.name) }}</strong>
+              <span role="cell" data-label="Detail">{{ getEventDetail(event) }}</span>
+              <span role="cell" data-label="Location">{{ getEventLocation(event) }}</span>
+              <span role="cell" data-label="IP">{{ event.ip || '-' }}</span>
+              <span role="cell" data-label="Session">{{ event.sessionId || '-' }}</span>
             </div>
             <p v-if="!recentEvents.length" class="mello-analytics-empty">No events saved for this page.</p>
           </div>
@@ -899,42 +932,15 @@ function getEventLocation(event) {
   border-radius: 8px;
   display: grid;
   gap: 12px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   margin-bottom: 14px;
   padding: 10px;
 }
 
-.mello-analytics-pagination label {
-  align-items: center;
-  display: inline-flex;
-  gap: 8px;
-}
-
-.mello-analytics-pagination label span,
 .mello-analytics-pagination__status span {
   color: #4f6364;
   font-size: 0.82rem;
   font-weight: 720;
-}
-
-.mello-analytics-pagination select {
-  appearance: none;
-  background: #ffffff;
-  border: 1px solid rgba(16, 40, 41, 0.16);
-  border-radius: 8px;
-  color: #102829;
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 780;
-  min-height: 38px;
-  min-width: 74px;
-  padding: 0 28px 0 10px;
-}
-
-.mello-analytics-pagination select:focus-visible {
-  border-color: #77cdfa;
-  box-shadow: 0 0 0 4px rgba(119, 205, 250, 0.22);
-  outline: 0;
 }
 
 .mello-analytics-pagination__status {
@@ -983,6 +989,73 @@ function getEventLocation(event) {
   cursor: not-allowed;
   opacity: 0.46;
   transform: none;
+}
+
+.mello-analytics-action-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -2px 0 14px;
+}
+
+.mello-analytics-action-filter button {
+  align-items: center;
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.1);
+  border-radius: 999px;
+  color: #345051;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 8px;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.mello-analytics-action-filter button:hover,
+.mello-analytics-action-filter button:focus-visible {
+  border-color: #77cdfa;
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-analytics-action-filter button.is-active {
+  background: #133130;
+  border-color: #133130;
+  color: #ffffff;
+}
+
+.mello-analytics-action-filter button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  transform: none;
+}
+
+.mello-analytics-action-filter span {
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mello-analytics-action-filter strong {
+  align-items: center;
+  background: rgba(119, 205, 250, 0.2);
+  border-radius: 999px;
+  color: inherit;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 850;
+  justify-content: center;
+  min-height: 24px;
+  min-width: 28px;
+  padding: 0 8px;
 }
 
 .mello-analytics-funnel,
@@ -1153,6 +1226,10 @@ function getEventLocation(event) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .mello-analytics-panel {
+    padding: 16px;
+  }
+
   .mello-analytics-filters {
     padding: 14px;
   }
@@ -1171,6 +1248,86 @@ function getEventLocation(event) {
   .mello-analytics-stat {
     min-height: 96px;
     padding: 15px;
+  }
+
+  .mello-analytics-action-filter {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .mello-analytics-action-filter button {
+    border-radius: 8px;
+    justify-content: space-between;
+    min-height: 46px;
+    padding: 0 14px;
+    width: 100%;
+  }
+
+  .mello-analytics-pagination {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .mello-analytics-pagination__buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .mello-analytics-pagination__buttons button {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .mello-analytics-table {
+    background: transparent;
+    border: 0;
+    display: grid;
+    gap: 12px;
+    overflow: visible;
+  }
+
+  .mello-analytics-table__row.is-head {
+    display: none;
+  }
+
+  .mello-analytics-table__row {
+    background: #ffffff;
+    border: 1px solid rgba(16, 40, 41, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 14px 30px rgba(16, 40, 41, 0.06);
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+    min-height: 0;
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .mello-analytics-table__row span,
+  .mello-analytics-table__row strong {
+    align-items: start;
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 78px minmax(0, 1fr);
+    line-height: 1.32;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .mello-analytics-table__row span::before,
+  .mello-analytics-table__row strong::before {
+    color: #6b7e7f;
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .mello-analytics-table__row strong {
+    color: #102829;
   }
 }
 </style>

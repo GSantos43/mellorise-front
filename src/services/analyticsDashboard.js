@@ -28,6 +28,7 @@ export async function fetchAnalyticsSummary(credentials, filters = {}) {
 
   if (filters.from) url.searchParams.set('from', filters.from)
   if (filters.to) url.searchParams.set('to', filters.to)
+  if (filters.eventType && filters.eventType !== 'all') url.searchParams.set('eventType', filters.eventType)
   if (filters.page) url.searchParams.set('page', String(filters.page))
   if (filters.perPage) url.searchParams.set('perPage', String(filters.perPage))
 
