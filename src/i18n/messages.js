@@ -600,6 +600,8 @@ export const messages = {
       checkout: 'Check out',
       checkoutLoading: 'Preparando checkout...',
       regionLock: 'Checkout disponible solo para Estados Unidos por ahora. Brasil esta habilitado temporalmente durante el desarrollo.',
+      freeShippingUnlocked: 'Envio gratis desbloqueado',
+      upsellFreeShipping: 'Desde este bundle, el envio sale gratis.',
       shippingProtection: {
         title: 'Protección de envío',
         text: 'Protege tu pedido contra daños, pérdidas o robo durante el envío.',
@@ -608,7 +610,10 @@ export const messages = {
       discount: {
         label: 'Descuento aplicado',
         newCustomers: '10% para nuevos clientes',
-        checkout: 'Verificar en checkout'
+        checkout: 'Verificar en checkout',
+        applyAction: 'Aplicar ahora',
+        appliedTitle: 'Descuento activado',
+        appliedMessage: 'Tu 10% ya esta aplicado en el carrito. El pago abrira directo en Stripe.'
       }
     },
     checkoutTransition: {
@@ -697,13 +702,13 @@ export const messages = {
       },
       upsell: {
         buyTwoBadge: 'Oferta recomendada',
-        buyTwoTitle: 'Compra 2 y recibe 1 gratis',
+        buyTwoTitle: 'Compra 2 y recibe 3',
         buyTwoText: 'Sube a 2 frascos pagados para recibir 3 en total y reducir el costo por frasco.',
-        buyTwoAction: 'Activar compra 2 y recibe 1',
+        buyTwoAction: 'Activar compra 2 y recibe 3',
         buyThreeBadge: 'Mejor ahorro',
-        buyThreeTitle: 'Compra 3 y recibe 2 gratis',
-        buyThreeText: 'Ya tienes compra 2 y recibe 1 gratis. Sube a 3 frascos pagados para recibir 5 en total.',
-        buyThreeAction: 'Activar compra 3 y recibe 2'
+        buyThreeTitle: 'Compra 3 y recibe 5',
+        buyThreeText: 'Ya desbloqueaste compra 2 y recibe 3. Sube a 3 frascos pagados para recibir 5 en total.',
+        buyThreeAction: 'Activar compra 3 y recibe 5'
       },
       contact: {
         title: 'Email de compra',
@@ -1391,6 +1396,8 @@ export const messages = {
       checkout: 'Check out',
       checkoutLoading: 'Preparing checkout...',
       regionLock: 'Checkout is currently available only in the United States. Brazil is enabled temporarily during development.',
+      freeShippingUnlocked: 'Free shipping unlocked',
+      upsellFreeShipping: 'This bundle unlocks free shipping.',
       shippingProtection: {
         title: 'Shipping protection',
         text: 'Protect your order against damage, loss, or theft during shipping.',
@@ -1399,7 +1406,10 @@ export const messages = {
       discount: {
         label: 'Discount applied',
         newCustomers: '10% for new customers',
-        checkout: 'Check at checkout'
+        checkout: 'Check at checkout',
+        applyAction: 'Apply now',
+        appliedTitle: 'Discount activated',
+        appliedMessage: 'Your 10% is applied in the cart. Payment will open directly in Stripe.'
       }
     },
     checkoutTransition: {

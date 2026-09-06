@@ -31,7 +31,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'update-quantity', 'remove', 'checkout'])
+const emit = defineEmits(['close', 'update-quantity', 'remove', 'checkout', 'apply-discount'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
 const quantity = computed(() => props.item?.quantity || 0)
@@ -46,11 +46,47 @@ const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') :
 const localizedItemTitle = computed(() => translateProductTitle(props.item?.title, locale.value))
 const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
 const checkoutDisabled = computed(() => !props.item || props.isCheckoutLoading || !isPurchaseAllowed.value)
+const hasBundleFreeShipping = computed(() => quantity.value > 1)
+const cartUpsell = computed(() => {
+  if (quantity.value === 1) {
+    return {
+      quantity: 2,
+      badge: 'checkout.upsell.buyTwoBadge',
+      title: 'checkout.upsell.buyTwoTitle',
+      text: 'checkout.upsell.buyTwoText',
+      action: 'checkout.upsell.buyTwoAction'
+    }
+  }
+
+  if (quantity.value === 2) {
+    return {
+      quantity: 3,
+      badge: 'checkout.upsell.buyThreeBadge',
+      title: 'checkout.upsell.buyThreeTitle',
+      text: 'checkout.upsell.buyThreeText',
+      action: 'checkout.upsell.buyThreeAction'
+    }
+  }
+
+  return null
+})
 
 function checkout() {
   if (checkoutDisabled.value) return
 
   emit('checkout')
+}
+
+function applyDiscount() {
+  if (!props.item || props.discount?.code) return
+
+  emit('apply-discount')
+}
+
+function activateCartUpsell() {
+  if (!cartUpsell.value) return
+
+  emit('update-quantity', cartUpsell.value.quantity)
 }
 
 watch(
@@ -91,6 +127,7 @@ onUnmounted(() => {
               <a class="mello-cart-item__title" :href="`/products/${item.handle}`" @click="emit('close')">{{ localizedItemTitle }}</a>
               <span class="mello-cart-item__price">{{ formatMoney(item.unitPrice || item.price) }}</span>
               <span class="mello-cart-item__variant">{{ item.bundleLabel }}</span>
+              <span v-if="hasBundleFreeShipping" class="mello-cart-item__shipping">{{ t('cart.freeShippingUnlocked') }}</span>
 
               <div class="mello-cart-item__actions">
                 <div class="mello-cart-quantity" :aria-label="t('cart.quantity')">
@@ -107,11 +144,27 @@ onUnmounted(() => {
 
             <strong class="mello-cart-item__total">{{ formatMoney(subtotal) }}</strong>
           </article>
+
+          <article v-if="cartUpsell" class="mello-cart-upsell">
+            <div class="mello-cart-upsell__copy">
+              <span>{{ t(cartUpsell.badge) }}</span>
+              <h3>{{ t(cartUpsell.title) }}</h3>
+              <p>{{ t(cartUpsell.text) }}</p>
+              <strong>{{ t('cart.upsellFreeShipping') }}</strong>
+            </div>
+            <button class="mello-cart-upsell__button" type="button" @click="activateCartUpsell">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+              <span>{{ t(cartUpsell.action) }}</span>
+            </button>
+          </article>
         </div>
 
         <div v-else class="mello-cart-drawer__empty">
           <p>{{ t('cart.empty') }}</p>
-          <a href="/products/wondernest-heightener-gummies-2026" @click="emit('close')">{{ t('cart.viewProduct') }}</a>
+          <a href="/products/mellorise-heightener-gummies-2026" @click="emit('close')">{{ t('cart.viewProduct') }}</a>
         </div>
 
         <footer class="mello-cart-drawer__footer">
@@ -151,12 +204,19 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <div v-if="item" class="mello-cart-discount" :class="{ 'is-preview': !discount?.code }">
+          <button
+            v-if="item"
+            class="mello-cart-discount"
+            :class="{ 'is-preview': !discount?.code }"
+            type="button"
+            :disabled="Boolean(discount?.code)"
+            @click="applyDiscount"
+          >
             <span v-if="discount?.code">{{ t('cart.discount.label') }} <strong>{{ discount.code }}</strong></span>
             <span v-else>{{ t('cart.discount.newCustomers') }}</span>
             <b v-if="discount?.code">-{{ formatMoney(discountTotal) }}</b>
-            <b v-else>{{ t('cart.discount.checkout') }}</b>
-          </div>
+            <b v-else>{{ t('cart.discount.applyAction') }}</b>
+          </button>
 
           <p v-if="item && !isPurchaseAllowed" class="mello-cart-region-lock" role="status">
             {{ t('cart.regionLock') }}
@@ -352,7 +412,8 @@ onUnmounted(() => {
 }
 
 .mello-cart-item__price,
-.mello-cart-item__variant {
+.mello-cart-item__variant,
+.mello-cart-item__shipping {
   color: var(--mcart-muted);
   display: block;
   font-size: 12px;
@@ -362,6 +423,12 @@ onUnmounted(() => {
 
 .mello-cart-item__variant {
   margin-top: 2px;
+}
+
+.mello-cart-item__shipping {
+  color: #007a3d;
+  font-weight: 760;
+  margin-top: 4px;
 }
 
 .mello-cart-item__actions {
@@ -430,6 +497,128 @@ onUnmounted(() => {
   text-align: right;
   top: 131px;
   white-space: nowrap;
+}
+
+.mello-cart-upsell {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(119, 205, 250, 0.18), transparent 36%),
+    linear-gradient(135deg, #fbffff 0%, #eefcf9 58%, #f7fbff 100%);
+  border: 1px solid rgba(27, 209, 189, 0.72);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(18, 179, 161, 0.13);
+  color: #102829;
+  display: grid;
+  gap: 13px;
+  margin-top: 18px;
+  overflow: hidden;
+  padding: 14px;
+  position: relative;
+}
+
+.mello-cart-upsell::before {
+  background: linear-gradient(135deg, rgba(49, 214, 176, 0.11), rgba(119, 205, 250, 0) 56%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.mello-cart-upsell::after {
+  animation: melloCartUpsellShine 5.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0) 34%, rgba(255, 255, 255, 0.78) 48%, rgba(119, 205, 250, 0.22) 54%, rgba(255, 255, 255, 0) 68%, transparent 100%);
+  content: "";
+  inset: -42% -34%;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-94%) rotate(2deg);
+}
+
+.mello-cart-upsell__copy,
+.mello-cart-upsell__button {
+  position: relative;
+  z-index: 1;
+}
+
+.mello-cart-upsell__copy span {
+  background: #77cdfa;
+  border-radius: 999px;
+  color: #0f2a2c;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+  margin-bottom: 8px;
+  padding: 6px 9px;
+  text-transform: uppercase;
+}
+
+.mello-cart-upsell h3 {
+  color: #102829;
+  font-family: var(--font-heading-family);
+  font-size: 18px;
+  font-weight: 760;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.mello-cart-upsell p {
+  color: rgba(16, 40, 41, 0.72);
+  font-size: 13px;
+  line-height: 1.38;
+  margin: 6px 0 0;
+}
+
+.mello-cart-upsell__copy strong {
+  color: #007a3d;
+  display: block;
+  font-size: 12px;
+  font-weight: 820;
+  line-height: 1.25;
+  margin-top: 8px;
+}
+
+.mello-cart-upsell__button {
+  align-items: center;
+  appearance: none;
+  background: #31d6b0;
+  border: 0;
+  border-radius: 999px;
+  color: #062626;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  text-align: center;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  width: 100%;
+}
+
+.mello-cart-upsell__button svg {
+  fill: none;
+  flex: 0 0 auto;
+  height: 17px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+  width: 17px;
+}
+
+.mello-cart-upsell__button:hover,
+.mello-cart-upsell__button:focus-visible {
+  background: #47e6c3;
+  box-shadow: 0 12px 24px rgba(20, 155, 128, 0.24), 0 0 0 4px rgba(49, 214, 176, 0.16);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-cart-upsell__button:active {
+  transform: translateY(0) scale(0.99);
 }
 
 .mello-cart-drawer__empty {
@@ -617,10 +806,13 @@ onUnmounted(() => {
 }
 
 .mello-cart-discount {
+  appearance: none;
   align-items: center;
   background: #effaf6;
   border: 1px solid rgba(47, 141, 92, 0.16);
+  border-radius: 8px;
   color: #12312a;
+  cursor: default;
   display: flex;
   font-size: 13px;
   font-weight: 680;
@@ -629,6 +821,9 @@ onUnmounted(() => {
   margin: 0 -7px 12px;
   min-height: 42px;
   padding: 10px 12px;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  width: calc(100% + 14px);
 }
 
 .mello-cart-discount strong {
@@ -647,6 +842,19 @@ onUnmounted(() => {
   background: #f4fbff;
   border-color: rgba(100, 198, 244, 0.28);
   color: #123233;
+  cursor: pointer;
+}
+
+.mello-cart-discount.is-preview:hover,
+.mello-cart-discount.is-preview:focus-visible {
+  border-color: rgba(100, 198, 244, 0.7);
+  box-shadow: 0 10px 26px rgba(100, 198, 244, 0.18);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.mello-cart-discount:disabled {
+  opacity: 1;
 }
 
 .mello-cart-discount.is-preview b {
@@ -714,6 +922,23 @@ onUnmounted(() => {
 .mello-cart-stripe strong {
   color: #635bff;
   font-weight: 850;
+}
+
+@keyframes melloCartUpsellShine {
+  0%, 46% {
+    transform: translateX(-94%) rotate(2deg);
+  }
+
+  72%, 100% {
+    transform: translateX(94%) rotate(2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mello-cart-upsell::after {
+    animation: none;
+    display: none;
+  }
 }
 
 @media (max-width: 520px) {
@@ -787,7 +1012,8 @@ onUnmounted(() => {
   }
 
   .mello-cart-item__price,
-  .mello-cart-item__variant {
+  .mello-cart-item__variant,
+  .mello-cart-item__shipping {
     font-size: 11px;
     margin-top: 4px;
   }
@@ -809,6 +1035,31 @@ onUnmounted(() => {
     line-height: 1;
     position: static;
     text-align: right;
+  }
+
+  .mello-cart-upsell {
+    gap: 11px;
+    margin-top: 14px;
+    padding: 12px;
+  }
+
+  .mello-cart-upsell__copy span {
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+
+  .mello-cart-upsell h3 {
+    font-size: 16px;
+  }
+
+  .mello-cart-upsell p {
+    font-size: 12px;
+  }
+
+  .mello-cart-upsell__button {
+    font-size: 12px;
+    min-height: 40px;
+    padding: 0 12px;
   }
 
   .mello-cart-drawer__footer {

@@ -49,6 +49,8 @@ const props = defineProps({
 const CART_STORAGE_KEY = 'mellorise-cart-v1'
 const DISCOUNT_STORAGE_KEY = 'mellorise-welcome-discount-v1'
 const CHECKOUT_PATH = '/checkout'
+const LEGACY_PRODUCT_PATH = '/products/wondernest-heightener-gummies-2026'
+const PRIMARY_PRODUCT_PATH = '/products/mellorise-heightener-gummies-2026'
 const COUPON_CHECKOUT_ERROR_KEYS = {
   coupon_exhausted: 'checkout.couponErrors.exhausted',
   coupon_expired: 'checkout.couponErrors.expired',
@@ -104,7 +106,10 @@ let trackedCheckoutStartKey = ''
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
-  return products.value.find((product) => String(product.handle) === slug) || products.value[0]
+  const normalizedSlug = slug === 'wondernest-heightener-gummies-2026'
+    ? 'mellorise-heightener-gummies-2026'
+    : slug
+  return products.value.find((product) => String(product.handle) === normalizedSlug) || products.value[0]
 })
 
 const currentPage = computed(() => {
@@ -143,6 +148,17 @@ const shouldConfirmCheckoutExit = computed(() => (
   Boolean(cartItem.value) &&
   !isCheckoutLoading.value
 ))
+
+function normalizeLegacyProductRoute() {
+  if (route.value !== LEGACY_PRODUCT_PATH) return
+
+  window.history.replaceState(
+    {},
+    '',
+    `${PRIMARY_PRODUCT_PATH}${window.location.search}${window.location.hash}`
+  )
+  route.value = window.location.pathname
+}
 const documentTitle = computed(() => {
   if (currentPage.value === 'product' && currentProduct.value?.title) {
     return `${translateProductTitle(currentProduct.value.title, locale.value)} | MelloRise`
@@ -212,6 +228,7 @@ async function navigate(event) {
   event.preventDefault()
   window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`)
   route.value = window.location.pathname
+  normalizeLegacyProductRoute()
 
   if (url.hash) {
     await nextTick()
@@ -254,7 +271,7 @@ function addToCart(payload = {}) {
 }
 
 function applyDiscount(discount) {
-  if (!discount?.code || !discount?.email) return
+  if (!discount?.code) return
 
   activeDiscount.value = discount
   showDiscountNotice(discount)
@@ -266,6 +283,15 @@ function clearDiscount() {
 }
 
 function showDiscountNotice(discount) {
+  if (discount?.source === 'cart_offer') {
+    notifyUser({
+      type: 'success',
+      title: t('cart.discount.appliedTitle'),
+      message: t('cart.discount.appliedMessage')
+    })
+    return
+  }
+
   notifyUser({
     type: discount.emailSent === false ? 'info' : 'success',
     title: t(discount.emailSent !== false ? 'home.offer.sentTitle' : 'home.offer.readyTitle'),
@@ -337,7 +363,7 @@ function readSavedDiscount() {
   try {
     const discount = JSON.parse(window.localStorage.getItem(DISCOUNT_STORAGE_KEY) || 'null')
 
-    if (!discount?.code || !discount?.email) return null
+    if (!discount?.code) return null
 
     if (discount.expiresAt && new Date(discount.expiresAt).getTime() <= Date.now()) {
       window.localStorage.removeItem(DISCOUNT_STORAGE_KEY)
@@ -425,11 +451,18 @@ function navigateToCheckout() {
 
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
-  showCheckoutTransition()
-  trackCheckoutStartOnce()
-  window.history.pushState({}, '', CHECKOUT_PATH)
-  route.value = window.location.pathname
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  goToStripeCheckout()
+}
+
+function applyCartOfferDiscount() {
+  if (!cartItem.value) return
+
+  applyDiscount({
+    code: 'WELCOME10',
+    amount: '10',
+    discountType: 'percent',
+    source: 'cart_offer'
+  })
 }
 
 function trackCheckoutStartOnce() {
@@ -451,8 +484,8 @@ function trackCheckoutStartOnce() {
   })
 }
 
-function requestCheckoutExit(targetPath = '/products/wondernest-heightener-gummies-2026') {
-  pendingCheckoutExitPath = targetPath || '/products/wondernest-heightener-gummies-2026'
+function requestCheckoutExit(targetPath = PRIMARY_PRODUCT_PATH) {
+  pendingCheckoutExitPath = targetPath || PRIMARY_PRODUCT_PATH
   isCheckoutExitConfirmVisible.value = true
 }
 
@@ -462,7 +495,7 @@ function keepCheckout() {
 }
 
 function confirmCheckoutExit() {
-  const targetPath = pendingCheckoutExitPath || '/products/wondernest-heightener-gummies-2026'
+  const targetPath = pendingCheckoutExitPath || PRIMARY_PRODUCT_PATH
   trackCheckoutAbandoned(cartItem.value, 'checkout_exit_confirmed')
   pendingCheckoutExitPath = ''
   isCheckoutExitConfirmVisible.value = false
@@ -481,6 +514,7 @@ function handlePopState() {
   }
 
   route.value = nextPath
+  normalizeLegacyProductRoute()
 }
 
 function redirectTrackingToAccountOrders() {
@@ -586,7 +620,9 @@ async function goToStripeCheckout(options = {}) {
       options.customerEmail = checkoutEmail.value
     }
 
-    if (!couponWasProvidedByCheckout && activeDiscount.value?.code) {
+    if (!couponWasProvidedByCheckout && activeDiscount.value?.source === 'cart_offer') {
+      options.offerCode = activeDiscount.value.code
+    } else if (!couponWasProvidedByCheckout && activeDiscount.value?.code) {
       options.couponCode = activeDiscount.value.code
       options.customerEmail = activeDiscount.value.email
     }
@@ -675,6 +711,7 @@ function shouldTrackCurrentPage() {
 
 onMounted(async () => {
   initAnalytics()
+  normalizeLegacyProductRoute()
   if (shouldTrackCurrentPage()) {
     trackPageView(window.location.pathname, document.title)
   }
@@ -763,7 +800,15 @@ watch(isCheckoutTransitionLoading, (active) => {
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
 watch([route, cartItem, isAuthLoaded, isSignedIn], () => {
   if (currentPage.value !== 'checkout') return
-  ensureCheckoutSession()
+  if (cartItem.value && isPurchaseAllowed.value) {
+    goToStripeCheckout()
+    return
+  }
+
+  if (!cartItem.value) {
+    window.history.replaceState({}, '', PRIMARY_PRODUCT_PATH)
+    route.value = window.location.pathname
+  }
 }, { flush: 'post' })
 // watch([route, isAuthLoaded, isSignedIn], redirectTrackingToAccountOrders, { immediate: true, flush: 'post' })
 watch(documentTitle, updateDocumentTitle, { immediate: true })
@@ -921,6 +966,7 @@ watch(activeDiscount, persistDiscount, { deep: true })
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"
       @checkout="navigateToCheckout"
+      @apply-discount="applyCartOfferDiscount"
     />
   </main>
 </template>

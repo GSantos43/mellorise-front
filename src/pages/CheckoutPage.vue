@@ -414,7 +414,7 @@ onUnmounted(() => {
     <header class="mello-checkout-top">
       <div class="mello-checkout-top__inner">
         <div class="mello-checkout-top__main">
-          <a class="mello-checkout-top__back" href="/products/wondernest-heightener-gummies-2026" :aria-label="t('checkout.back')">
+          <a class="mello-checkout-top__back" href="/products/mellorise-heightener-gummies-2026" :aria-label="t('checkout.back')">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
           </a>
           <a class="mello-checkout-top__logo" href="/" aria-label="MelloRise">
@@ -446,7 +446,7 @@ onUnmounted(() => {
       <img src="/assets/frasco.png" alt="" width="220" height="220" loading="eager">
       <h2>{{ t('checkout.empty.title') }}</h2>
       <p>{{ t('checkout.empty.text') }}</p>
-      <a href="/products/wondernest-heightener-gummies-2026">{{ t('checkout.empty.action') }}</a>
+      <a href="/products/mellorise-heightener-gummies-2026">{{ t('checkout.empty.action') }}</a>
     </div>
 
     <form v-else class="mello-checkout-body" @submit.prevent="submitCheckout">

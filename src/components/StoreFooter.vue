@@ -32,10 +32,10 @@ const { t } = useI18n({ useScope: 'global' })
           <div>
             <h3>{{ t('footer.explore') }}</h3>
             <a href="/">{{ t('footer.home') }}</a>
-            <a href="/products/wondernest-heightener-gummies-2026#beneficios">{{ t('footer.benefits') }}</a>
-            <a href="/products/wondernest-heightener-gummies-2026#rutina">{{ t('footer.routine') }}</a>
-            <a href="/products/wondernest-heightener-gummies-2026#diferencia">{{ t('footer.reviews') }}</a>
-            <a href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('footer.buy') }}</a>
+            <a href="/products/mellorise-heightener-gummies-2026#beneficios">{{ t('footer.benefits') }}</a>
+            <a href="/products/mellorise-heightener-gummies-2026#rutina">{{ t('footer.routine') }}</a>
+            <a href="/products/mellorise-heightener-gummies-2026#diferencia">{{ t('footer.reviews') }}</a>
+            <a href="/products/mellorise-heightener-gummies-2026#comprar">{{ t('footer.buy') }}</a>
           </div>
           <div>
             <h3>{{ t('footer.support') }}</h3>

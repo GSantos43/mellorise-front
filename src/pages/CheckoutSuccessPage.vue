@@ -58,7 +58,7 @@ function trackSuccessOnce() {
       <a v-if="sessionId || orderId" class="mello-checkout-success__button" href="/track-order">
         {{ t('checkoutSuccess.trackAction') }}
       </a>
-      <a class="mello-checkout-success__button" href="/products/wondernest-heightener-gummies-2026">
+      <a class="mello-checkout-success__button" href="/products/mellorise-heightener-gummies-2026">
         {{ t('checkoutSuccess.action') }}
       </a>
     </div>

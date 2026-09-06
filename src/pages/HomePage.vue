@@ -320,7 +320,7 @@ async function claimWelcomeOffer() {
     // emit('discount-created', discount)
     clearPendingOffer()
     closeOffer()
-    window.history.pushState({}, '', '/products/wondernest-heightener-gummies-2026')
+    window.history.pushState({}, '', '/products/mellorise-heightener-gummies-2026')
     window.dispatchEvent(new Event('popstate'))
   } catch (error) {
     offerError.value = error.message || t('home.offer.error')
@@ -433,7 +433,7 @@ onUnmounted(() => {
           <h1 class="gh-title">Apoyo nutricional en una gummy simple</h1>
           <p class="gh-copy">MelloRise acompaña una rutina equilibrada con vitaminas, minerales e ingredientes seleccionados en un formato fácil de incorporar al día.</p>
           <div class="gh-hero__actions">
-            <a class="gh-button" href="/products/wondernest-heightener-gummies-2026">Comprar MelloRise</a>
+            <a class="gh-button" href="/products/mellorise-heightener-gummies-2026">Comprar MelloRise</a>
             <a class="gh-button gh-button--blue" href="#formula">Ver fórmula</a>
             <span class="gh-note">Uso responsable conforme a la etiqueta real del producto.</span>
           </div>
@@ -461,7 +461,7 @@ onUnmounted(() => {
             {{ offerClaimLabel }}
           </button>
         </form>
-        <a v-else class="gh-offer__primary" href="/products/wondernest-heightener-gummies-2026" @click="closeOffer">{{ t('home.offer.shopWithDiscount') }}</a>
+        <a v-else class="gh-offer__primary" href="/products/mellorise-heightener-gummies-2026" @click="closeOffer">{{ t('home.offer.shopWithDiscount') }}</a>
         <button class="gh-offer__secondary" type="button" @click="requestCloseOffer">{{ t('home.offer.dismiss') }}</button>
       </div>
       <div v-else class="gh-offer__card gh-offer__card--confirm">
@@ -576,7 +576,7 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="gh-ingredient-map__cta">
-          <a class="gh-button" href="/products/wondernest-heightener-gummies-2026">Comprar MelloRise Gummies</a>
+          <a class="gh-button" href="/products/mellorise-heightener-gummies-2026">Comprar MelloRise Gummies</a>
         </div>
       </div>
     </div>
@@ -705,7 +705,7 @@ onUnmounted(() => {
             <h2 class="mello-home-cta__title">Dale a tu hijo el apoyo nutricional <span>que merece.</span></h2>
             <p class="mello-home-cta__text">Nutrición diaria práctica con vitaminas, minerales e ingredientes seleccionados en dos gummies deliciosas para una rutina familiar simple.</p>
             <div class="mello-home-cta__actions">
-              <a class="mello-home-cta__button mello-home-cta__button--primary" href="/products/wondernest-heightener-gummies-2026">Comprar MelloRise Gummies</a>
+              <a class="mello-home-cta__button mello-home-cta__button--primary" href="/products/mellorise-heightener-gummies-2026">Comprar MelloRise Gummies</a>
               <a class="mello-home-cta__button mello-home-cta__button--secondary" href="#ingredientes">Ver ingredientes</a>
             </div>
           </div>
@@ -782,7 +782,7 @@ onUnmounted(() => {
         </div>
 
         <div class="mello-compare__cta-wrap">
-          <a class="mello-compare__cta" href="/products/wondernest-heightener-gummies-2026">Ver todos los nutrientes en una gummy</a>
+          <a class="mello-compare__cta" href="/products/mellorise-heightener-gummies-2026">Ver todos los nutrientes en una gummy</a>
         </div>
       </div>
 

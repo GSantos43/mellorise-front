@@ -134,7 +134,7 @@ watch(isMobileMenuOpen, (isOpen) => {
       </nav>
 
       <div class="mello-page-header__actions">
-        <a class="mello-page-header__cta" href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
+        <a class="mello-page-header__cta" href="/products/mellorise-heightener-gummies-2026#comprar">{{ t('nav.cta') }}</a>
         <!-- Auth actions are paused while checkout runs directly through Stripe. -->
         <!-- <AuthMenu v-if="clerkEnabled" /> -->
         <!-- <div v-else class="mello-page-header__auth-fallback">
@@ -214,7 +214,7 @@ watch(isMobileMenuOpen, (isOpen) => {
           </a>
           <a class="mello-mobile-menu__signup" href="/sign-up" @click="closeMobileMenu">{{ t('auth.signUp') }}</a>
         </div> -->
-        <a class="mello-mobile-menu__cta" href="/products/wondernest-heightener-gummies-2026#comprar" @click="closeMobileMenu">{{ t('nav.cta') }}</a>
+        <a class="mello-mobile-menu__cta" href="/products/mellorise-heightener-gummies-2026#comprar" @click="closeMobileMenu">{{ t('nav.cta') }}</a>
       </div>
     </aside>
   </div>

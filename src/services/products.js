@@ -4,12 +4,14 @@ const BFF_URL = getBffUrl()
 const API_URL = `${BFF_URL}/products`
 const PRODUCT_CACHE_KEY = 'mellorise-products-cache-v1'
 const PRODUCT_CACHE_TTL = 10 * 60 * 1000
+const LEGACY_PRODUCT_HANDLE = 'wondernest-heightener-gummies-2026'
+const PRIMARY_PRODUCT_HANDLE = 'mellorise-heightener-gummies-2026'
 
 const fallbackProducts = [
   {
     id: 1,
     title: '9-In-1 Natural Growth & Bone Support Gummies For Kids & Teens',
-    handle: 'wondernest-heightener-gummies-2026',
+    handle: PRIMARY_PRODUCT_HANDLE,
     vendor: 'MelloRise',
     price: 39.99,
     compareAtPrice: 59.99,
@@ -120,10 +122,13 @@ function normalizeProduct(product) {
     product.images?.[0] ||
     '/assets/frasco.png'
 
+  const rawHandle = product.handle ?? product.slug ?? product.id
+  const handle = String(rawHandle) === LEGACY_PRODUCT_HANDLE ? PRIMARY_PRODUCT_HANDLE : rawHandle
+
   return {
     id: product.id ?? product._id ?? product.handle ?? product.slug,
     title: product.title ?? product.name ?? '9-In-1 Natural Growth & Bone Support Gummies For Kids & Teens',
-    handle: product.handle ?? product.slug ?? product.id,
+    handle,
     vendor: product.vendor ?? product.brand ?? 'MelloRise',
     price: product.price ?? product.variants?.[0]?.price ?? 39.99,
     compareAtPrice: product.compareAtPrice ?? product.compare_at_price ?? product.variants?.[0]?.compareAtPrice,

@@ -48,9 +48,10 @@ export async function createCheckoutSession(item, options = {}) {
         }
       ],
       successUrl: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${origin}/checkout`,
+      cancelUrl: `${origin}/products/${item.handle || 'mellorise-heightener-gummies-2026'}`,
       customerEmail: options.customerEmail,
       couponCode: options.couponCode,
+      offerCode: options.offerCode,
       promotion,
       checkoutAnalytics: getAnalyticsContext()
     })

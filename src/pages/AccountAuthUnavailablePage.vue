@@ -10,7 +10,7 @@ const { t } = useI18n({ useScope: 'global' })
       <p>{{ t('account.eyebrow') }}</p>
       <h1>{{ t('account.authUnavailableTitle') }}</h1>
       <span>{{ t('account.authUnavailableText') }}</span>
-      <a href="/products/wondernest-heightener-gummies-2026#comprar">{{ t('account.emptyAction') }}</a>
+      <a href="/products/mellorise-heightener-gummies-2026#comprar">{{ t('account.emptyAction') }}</a>
     </div>
   </section>
 </template>
