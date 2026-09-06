@@ -550,8 +550,10 @@ function buildSelectedCartPayload() {
   return {
     product: activeProduct.value,
     variationId: bundle.variationId,
-    price: unitPrice,
+    price: bundlePrice,
     unitPrice,
+    lineTotal: bundlePrice,
+    bundleTotal: bundlePrice,
     quantity: paidQuantity,
     checkoutQuantity: bundle.variationId ? 1 : paidQuantity,
     image: bundle.image || activeProduct.value.image,

@@ -49,7 +49,7 @@ const localeOptions = computed(() => supportedLocales.map((value) => ({
 
 const quantity = computed(() => Math.max(0, Number(props.item?.quantity || 0)))
 const localizedItemTitle = computed(() => translateProductTitle(props.item?.title, locale.value))
-const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
+const subtotal = computed(() => Number(props.item?.lineTotal ?? props.item?.bundleTotal ?? (Number(props.item?.price || 0) * quantity.value)))
 const unitPrice = computed(() => Number(props.item?.unitPrice || props.item?.price || 0))
 const bonusBottleCount = computed(() => {
   if (quantity.value >= 3) return 2

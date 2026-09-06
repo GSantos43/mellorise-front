@@ -244,16 +244,22 @@ function addToCart(payload = {}) {
   if (!product) return
 
   const quantity = Number(payload.quantity || 1)
+  const price = Number(payload.price ?? product.price ?? 0)
+  const unitPrice = Number(payload.unitPrice ?? payload.price ?? product.price ?? 0)
+  const lineTotal = Number(payload.lineTotal ?? payload.bundleTotal ?? price * quantity)
+
   cartItem.value = {
     id: product.id,
     variationId: payload.variationId,
     handle: product.handle,
     title: product.title,
     image: payload.image || product.image || product.images?.[0] || '/assets/frasco.png',
-    price: Number(payload.price ?? product.price ?? 0),
-    unitPrice: Number(payload.unitPrice ?? payload.price ?? product.price ?? 0),
+    price,
+    unitPrice,
+    lineTotal,
+    bundleTotal: Number(payload.bundleTotal ?? lineTotal),
     quantity,
-    checkoutQuantity: Number(payload.checkoutQuantity || quantity),
+    checkoutQuantity: Math.min(3, Math.max(1, Number(payload.checkoutQuantity || quantity))),
     bundleLabel: payload.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`,
     promotion: payload.promotion
   }
@@ -320,7 +326,7 @@ function closeDiscountNotice() {
 function readSavedCartItem() {
   try {
     const savedCartItem = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || 'null')
-    const quantity = Math.max(1, Number(savedCartItem?.quantity || 1))
+    const quantity = Math.min(3, Math.max(1, Number(savedCartItem?.quantity || 1)))
     const price = Number(savedCartItem?.price ?? 0)
 
     if (!savedCartItem?.id || !savedCartItem?.title || !Number.isFinite(price)) return null
@@ -333,8 +339,10 @@ function readSavedCartItem() {
       image: savedCartItem.image || '/assets/frasco.png',
       price,
       unitPrice: Number(savedCartItem.unitPrice ?? price),
+      lineTotal: Number(savedCartItem.lineTotal ?? savedCartItem.bundleTotal ?? price * quantity),
+      bundleTotal: savedCartItem.bundleTotal !== undefined ? Number(savedCartItem.bundleTotal) : undefined,
       quantity,
-      checkoutQuantity: Number(savedCartItem.checkoutQuantity || quantity),
+      checkoutQuantity: Math.min(3, Math.max(1, Number(savedCartItem.checkoutQuantity || quantity))),
       bundleLabel: savedCartItem.bundleLabel || `${quantity} frasco${quantity === 1 ? '' : 's'}`,
       promotion: savedCartItem.promotion
     }
@@ -505,7 +513,7 @@ function handleBeforeUnload(event) {
 
 function updateCartQuantity(quantity) {
   if (!cartItem.value) return
-  const nextQuantity = Math.max(1, Number(quantity || 1))
+  const nextQuantity = Math.min(3, Math.max(1, Number(quantity || 1)))
   const nextPromotion = getQuantityPromotion(nextQuantity)
   const keepsSelectedBundleVariation =
     cartItem.value.variationId &&
@@ -516,11 +524,24 @@ function updateCartQuantity(quantity) {
     variationId: keepsSelectedBundleVariation ? cartItem.value.variationId : undefined,
     quantity: nextQuantity,
     checkoutQuantity: keepsSelectedBundleVariation ? 1 : nextQuantity,
+    lineTotal: keepsSelectedBundleVariation
+      ? Number(cartItem.value.bundleTotal ?? cartItem.value.lineTotal ?? 0)
+      : getCartLineTotalForQuantity(
+          nextQuantity,
+          Number(cartItem.value.unitPrice || cartItem.value.price || 0),
+        ),
+    bundleTotal: keepsSelectedBundleVariation ? cartItem.value.bundleTotal : undefined,
     bundleLabel: nextPromotion
       ? `${nextPromotion.label} | ${nextPromotion.deliveredQuantity} frascos por pack`
       : `${nextQuantity} frasco${nextQuantity === 1 ? '' : 's'}`,
     promotion: nextPromotion
   }
+}
+
+function getCartLineTotalForQuantity(quantity, unitPrice) {
+  if (quantity >= 3) return 99.98
+  if (quantity === 2) return 79.98
+  return Number(unitPrice || 0)
 }
 
 function getQuantityPromotion(quantity) {

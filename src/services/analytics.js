@@ -67,7 +67,7 @@ export function trackAddToCart(item) {
 
   trackEvent('add_to_cart', {
     currency: 'USD',
-    value: Number(item.price || 0) * Number(item.quantity || 1),
+    value: getAnalyticsItemValue(item),
     items: [toAnalyticsItem(item)]
   }, { sendToBackend: true })
 }
@@ -77,7 +77,7 @@ export function trackViewCart(item) {
 
   trackEvent('view_cart', {
     currency: 'USD',
-    value: Number(item.price || 0) * Number(item.quantity || 1),
+    value: getAnalyticsItemValue(item),
     items: [toAnalyticsItem(item)]
   }, { sendToBackend: true })
 }
@@ -87,7 +87,7 @@ export function trackBeginCheckout(item, options = {}) {
 
   trackEvent('begin_checkout', {
     currency: 'USD',
-    value: Number(item.price || 0) * Number(item.quantity || 1),
+    value: getAnalyticsItemValue(item),
     coupon: options.couponCode || '',
     source: options.source || 'checkout',
     page_path: options.pagePath || window.location.pathname,
@@ -122,7 +122,7 @@ export function trackCheckoutAbandoned(item, reason = 'left_checkout') {
   trackEvent('checkout_abandoned', {
     reason,
     currency: 'USD',
-    value: Number(item.price || 0) * Number(item.quantity || 1),
+    value: getAnalyticsItemValue(item),
     items: [toAnalyticsItem(item)]
   }, { sendToBackend: true, beacon: true })
 }
@@ -211,6 +211,10 @@ function toAnalyticsItem(item, overrides = {}) {
     promotion_name: item.promotion?.label || item.promotion?.code || '',
     ...overrides
   }
+}
+
+function getAnalyticsItemValue(item) {
+  return Number(item?.lineTotal ?? item?.bundleTotal ?? (Number(item?.price || 0) * Number(item?.quantity || 1)))
 }
 
 function getClientId() {

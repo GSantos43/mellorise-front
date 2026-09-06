@@ -22,14 +22,14 @@ export async function createCheckoutSession(item, options = {}) {
   const checkoutSource = options.checkoutSource || options.source || 'direct_checkout'
   const checkoutPagePath = options.checkoutPagePath || '/checkout'
   const checkoutPageLocation = options.checkoutPageLocation || `${origin}${checkoutPagePath}`
-  const quantity = Number(item.quantity || 1)
-  const checkoutQuantity = Number(item.checkoutQuantity || quantity)
-  const freeQuantity = quantity >= 3 ? 2 : quantity === 2 ? 1 : 0
+  const quantity = Math.min(3, Math.max(1, Number(item.quantity || 1)))
+  const checkoutQuantity = Math.min(3, Math.max(1, Number(item.checkoutQuantity || quantity)))
+  const freeQuantity = quantity === 3 ? 2 : quantity === 2 ? 1 : 0
   const promotion = item.promotion || (
     freeQuantity
       ? {
-        code: quantity >= 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
-        label: quantity >= 3 ? 'Buy 3 Get 5' : 'Buy 2 Get 3',
+        code: quantity === 3 ? 'BUY_3_GET_2' : 'BUY_2_GET_1',
+        label: quantity === 3 ? 'Buy 3 Get 5' : 'Buy 2 Get 3',
         paidQuantity: quantity,
         freeQuantity,
         deliveredQuantity: quantity + freeQuantity

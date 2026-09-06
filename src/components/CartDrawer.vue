@@ -35,7 +35,7 @@ const emit = defineEmits(['close', 'update-quantity', 'remove', 'checkout'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
 const quantity = computed(() => props.item?.quantity || 0)
-const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
+const subtotal = computed(() => Number(props.item?.lineTotal ?? props.item?.bundleTotal ?? (Number(props.item?.price || 0) * quantity.value)))
 const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount || 0)))
 const discountTotal = computed(() => props.item && props.discount?.code ? subtotal.value * (discountPercent.value / 100) : 0)
 const isShippingProtectionEnabled = ref(false)
@@ -140,7 +140,7 @@ onUnmounted(() => {
                 <div class="mello-cart-quantity" :aria-label="t('cart.quantity')">
                   <button type="button" :aria-label="t('cart.decrease')" @click="emit('update-quantity', Math.max(1, quantity - 1))">−</button>
                   <span>{{ quantity }}</span>
-                  <button type="button" :aria-label="t('cart.increase')" @click="emit('update-quantity', quantity + 1)">+</button>
+                  <button type="button" :disabled="quantity >= 3" :aria-label="t('cart.increase')" @click="emit('update-quantity', Math.min(3, quantity + 1))">+</button>
                 </div>
 
                 <button class="mello-cart-item__remove" type="button" :aria-label="t('cart.remove')" @click="emit('remove')">
