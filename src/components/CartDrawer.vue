@@ -54,6 +54,7 @@ const bundleValueLabel = computed(() => {
   if (quantity.value === 2) return t('cart.bundleValue.buyTwo')
   return t('cart.bundleValue.buyOne')
 })
+const quickAnswerItems = ['shipping', 'bundle', 'security', 'support']
 const cartUpsell = computed(() => {
   if (quantity.value === 1) {
     return {
@@ -224,6 +225,23 @@ onUnmounted(() => {
           <p v-if="item && !isPurchaseAllowed" class="mello-cart-region-lock" role="status">
             {{ t('cart.regionLock') }}
           </p>
+
+          <section v-if="item" class="mello-cart-answers" :aria-label="t('cart.quickAnswers.title')">
+            <h3>{{ t('cart.quickAnswers.title') }}</h3>
+            <ul>
+              <li v-for="answer in quickAnswerItems" :key="answer">
+                <span aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="m20 6-11 11-5-5" />
+                  </svg>
+                </span>
+                <div>
+                  <strong>{{ t(`cart.quickAnswers.${answer}.title`) }}</strong>
+                  <small>{{ t(`cart.quickAnswers.${answer}.text`) }}</small>
+                </div>
+              </li>
+            </ul>
+          </section>
 
           <button class="mello-cart-checkout" type="button" :disabled="checkoutDisabled" @click="checkout">
             {{ isCheckoutLoading ? t('cart.checkoutLoading') : `${t('cart.checkout')} • ${formatMoney(checkoutTotal)}` }}
@@ -888,6 +906,79 @@ onUnmounted(() => {
   padding: 9px 11px;
 }
 
+.mello-cart-answers {
+  border-top: 1px solid var(--mcart-line);
+  margin: 0 0 12px;
+  padding-top: 12px;
+}
+
+.mello-cart-answers h3 {
+  color: #102829;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1.15;
+  margin: 0 0 9px;
+}
+
+.mello-cart-answers ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mello-cart-answers li {
+  align-items: flex-start;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 22px minmax(0, 1fr);
+}
+
+.mello-cart-answers li > span {
+  align-items: center;
+  background: #e9fbf5;
+  border-radius: 999px;
+  color: #007a3d;
+  display: inline-flex;
+  height: 22px;
+  justify-content: center;
+  margin-top: 1px;
+  width: 22px;
+}
+
+.mello-cart-answers svg {
+  fill: none;
+  height: 13px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.3;
+  width: 13px;
+}
+
+.mello-cart-answers strong,
+.mello-cart-answers small {
+  display: block;
+  min-width: 0;
+}
+
+.mello-cart-answers strong {
+  color: #102829;
+  font-size: 12px;
+  font-weight: 820;
+  line-height: 1.18;
+}
+
+.mello-cart-answers small {
+  color: rgba(16, 40, 41, 0.66);
+  font-size: 11px;
+  font-weight: 560;
+  line-height: 1.28;
+  margin-top: 2px;
+}
+
 .mello-cart-checkout {
   align-items: center;
   appearance: none;
@@ -1111,6 +1202,38 @@ onUnmounted(() => {
 
   .mello-shipping-protection__content p {
     font-size: 12px;
+  }
+
+  .mello-cart-answers {
+    margin-bottom: 10px;
+    padding-top: 10px;
+  }
+
+  .mello-cart-answers h3 {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+
+  .mello-cart-answers ul {
+    gap: 6px;
+  }
+
+  .mello-cart-answers li {
+    gap: 7px;
+    grid-template-columns: 20px minmax(0, 1fr);
+  }
+
+  .mello-cart-answers li > span {
+    height: 20px;
+    width: 20px;
+  }
+
+  .mello-cart-answers strong {
+    font-size: 11.5px;
+  }
+
+  .mello-cart-answers small {
+    font-size: 10.5px;
   }
 
   .mello-cart-checkout {

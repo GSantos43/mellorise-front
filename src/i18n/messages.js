@@ -615,6 +615,25 @@ export const messages = {
         text: 'Protege tu pedido contra daños, pérdidas o robo durante el envío.',
         toggle: 'Activar protección de envío'
       },
+      quickAnswers: {
+        title: 'Respuestas rápidas antes de pagar',
+        shipping: {
+          title: 'Envío gratis desde 2 frascos',
+          text: 'Los bundles llegan a Stripe con envío gratis de 6 a 10 días hábiles.'
+        },
+        bundle: {
+          title: 'Tu bonus ya está incluido',
+          text: 'Buy 2 Get 3 y Buy 3 Get 5 muestran el pack pago y el bonus gratis en Stripe.'
+        },
+        security: {
+          title: 'Pago seguro con Stripe',
+          text: 'Tarjeta, wallet y Link se procesan en el checkout cifrado de Stripe.'
+        },
+        support: {
+          title: 'Soporte después de comprar',
+          text: 'La confirmación y ayuda del pedido llegan por email.'
+        }
+      },
       discount: {
         label: 'Descuento aplicado',
         newCustomers: '10% para nuevos clientes',
@@ -1418,6 +1437,25 @@ export const messages = {
         title: 'Shipping protection',
         text: 'Protect your order against damage, loss, or theft during shipping.',
         toggle: 'Toggle shipping protection'
+      },
+      quickAnswers: {
+        title: 'Quick answers before you pay',
+        shipping: {
+          title: 'Free shipping from 2+ bottles',
+          text: 'Bundles are sent to Stripe with free 6-10 business day shipping.'
+        },
+        bundle: {
+          title: 'Your bonus is included',
+          text: 'Buy 2 Get 3 and Buy 3 Get 5 show the paid pack plus free bonus in Stripe.'
+        },
+        security: {
+          title: 'Secure Stripe payment',
+          text: 'Card, wallet, and Link payments are processed on encrypted Stripe checkout.'
+        },
+        support: {
+          title: 'Questions after buying',
+          text: 'Order confirmation and support are handled by email.'
+        }
       },
       discount: {
         label: 'Discount applied',
