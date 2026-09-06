@@ -86,6 +86,7 @@ function buildCheckoutPayload({
   checkoutQuantity,
   promotion
 }) {
+  const productId = getCheckoutProductId(item)
   const checkoutAnalytics = compactObject(getAnalyticsContext({
     pagePath: checkoutPagePath,
     pageLocation: checkoutPageLocation
