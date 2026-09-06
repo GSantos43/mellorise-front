@@ -20,6 +20,8 @@ const datePreset = ref('all')
 const specificDate = ref(toDateInputValue(new Date()))
 const rangeFromDate = ref(toDateInputValue(getDateDaysAgo(6)))
 const rangeToDate = ref(toDateInputValue(new Date()))
+const eventsPage = ref(1)
+const eventsPerPage = ref(50)
 
 const datePresetOptions = [
   { value: 'all', label: 'All' },
@@ -32,7 +34,16 @@ const datePresetOptions = [
 
 const totalCards = computed(() => summary.value?.totals || [])
 const funnel = computed(() => summary.value?.funnel || [])
-const recentEvents = computed(() => summary.value?.recentEvents || [])
+const recentEvents = computed(() => summary.value?.events?.items || summary.value?.recentEvents || [])
+const eventsPagination = computed(() => summary.value?.events || {
+  page: eventsPage.value,
+  perPage: eventsPerPage.value,
+  total: 0,
+  totalPages: 1,
+  from: 0,
+  to: 0
+})
+const eventPageSizeOptions = [25, 50, 100, 200]
 const topPages = computed(() => summary.value?.topPages || [])
 const topProducts = computed(() => summary.value?.topProducts || [])
 const checkoutErrors = computed(() => summary.value?.checkoutErrors || [])
@@ -49,6 +60,12 @@ const activeDateLabel = computed(() => {
   if (datePreset.value === 'day') return formatShortDate(specificDate.value)
   if (datePreset.value === 'range') return `${formatShortDate(rangeFromDate.value)} - ${formatShortDate(rangeToDate.value)}`
   return 'Filtered'
+})
+const eventRangeLabel = computed(() => {
+  const pagination = eventsPagination.value
+  if (!pagination.total) return '0 events'
+
+  return `${pagination.from}-${pagination.to} of ${pagination.total}`
 })
 
 onMounted(() => {
@@ -80,7 +97,7 @@ async function loadSummary(
   errorMessage.value = ''
 
   try {
-    const nextSummary = await fetchAnalyticsSummary(credentials, getDateFilterPayload())
+    const nextSummary = await fetchAnalyticsSummary(credentials, getAnalyticsFilterPayload())
     updateNewEventsState(nextSummary, Boolean(options.detectNewEvents))
     summary.value = nextSummary
     saveAnalyticsAuth(credentials)
@@ -103,6 +120,7 @@ function refreshSummary() {
 
 function applyDatePreset(nextPreset) {
   datePreset.value = nextPreset
+  resetEventsPagination()
   hasNewEvents.value = false
   newEventsCount.value = 0
   latestSeenEventKey.value = ''
@@ -113,6 +131,7 @@ function applyDatePreset(nextPreset) {
 }
 
 function applyCustomDateFilter() {
+  resetEventsPagination()
   hasNewEvents.value = false
   newEventsCount.value = 0
   latestSeenEventKey.value = ''
@@ -127,11 +146,11 @@ function logout() {
   latestSeenEventKey.value = ''
   hasNewEvents.value = false
   newEventsCount.value = 0
+  resetEventsPagination()
 }
 
 function updateNewEventsState(nextSummary, detectNewEvents) {
-  const nextEvents = nextSummary?.recentEvents || []
-  const nextLatestKey = getEventKey(nextEvents[0])
+  const nextLatestKey = getEventKey(nextSummary?.latestEvent)
 
   if (!detectNewEvents || !latestSeenEventKey.value) {
     hasNewEvents.value = false
@@ -140,8 +159,9 @@ function updateNewEventsState(nextSummary, detectNewEvents) {
     return
   }
 
-  const previousLatestIndex = nextEvents.findIndex((event) => getEventKey(event) === latestSeenEventKey.value)
-  const count = previousLatestIndex === -1 ? nextEvents.length : previousLatestIndex
+  const nextTotal = Number(nextSummary?.events?.total || nextSummary?.storage?.eventCount || 0)
+  const previousTotal = Number(summary.value?.events?.total || summary.value?.storage?.eventCount || 0)
+  const count = Math.max(0, nextTotal - previousTotal)
 
   hasNewEvents.value = count > 0
   newEventsCount.value = count
@@ -185,12 +205,29 @@ function formatShortDate(value) {
   }).format(new Date(`${value}T12:00:00`))
 }
 
-function getDateFilterPayload() {
+function getAnalyticsFilterPayload() {
   const range = getDateRange()
   return {
     from: range.from ? range.from.toISOString() : '',
-    to: range.to ? range.to.toISOString() : ''
+    to: range.to ? range.to.toISOString() : '',
+    page: eventsPage.value,
+    perPage: eventsPerPage.value
   }
+}
+
+function resetEventsPagination() {
+  eventsPage.value = 1
+}
+
+function goToEventsPage(page) {
+  const totalPages = Number(eventsPagination.value?.totalPages || 1)
+  eventsPage.value = Math.min(totalPages, Math.max(1, Number(page || 1)))
+  return loadSummary()
+}
+
+function changeEventsPerPage() {
+  resetEventsPagination()
+  return loadSummary()
 }
 
 function getDateRange() {
@@ -469,10 +506,28 @@ function getEventLocation(event) {
 
         <section class="mello-analytics-panel mello-analytics-events-panel" :class="{ 'has-new-events': hasNewEvents }">
           <div class="mello-analytics-panel__head">
-            <h3>Recent events</h3>
-            <span>{{ hasNewEvents ? `${newEventsCount} new` : `${recentEvents.length} latest` }}</span>
+            <h3>All events</h3>
+            <span>{{ hasNewEvents ? `${newEventsCount} new` : eventRangeLabel }}</span>
           </div>
-          <div class="mello-analytics-table" role="table" aria-label="Recent analytics events">
+          <div class="mello-analytics-pagination" aria-label="Analytics event pagination">
+            <label>
+              <span>Rows</span>
+              <select v-model.number="eventsPerPage" :disabled="isLoading" @change="changeEventsPerPage">
+                <option v-for="size in eventPageSizeOptions" :key="size" :value="size">{{ size }}</option>
+              </select>
+            </label>
+            <div class="mello-analytics-pagination__status">
+              <strong>Page {{ eventsPagination.page }} of {{ eventsPagination.totalPages }}</strong>
+              <span>{{ eventRangeLabel }} · oldest first</span>
+            </div>
+            <div class="mello-analytics-pagination__buttons">
+              <button type="button" :disabled="isLoading || eventsPagination.page <= 1" @click="goToEventsPage(1)">First</button>
+              <button type="button" :disabled="isLoading || eventsPagination.page <= 1" @click="goToEventsPage(eventsPagination.page - 1)">Prev</button>
+              <button type="button" :disabled="isLoading || eventsPagination.page >= eventsPagination.totalPages" @click="goToEventsPage(eventsPagination.page + 1)">Next</button>
+              <button type="button" :disabled="isLoading || eventsPagination.page >= eventsPagination.totalPages" @click="goToEventsPage(eventsPagination.totalPages)">Last</button>
+            </div>
+          </div>
+          <div class="mello-analytics-table" role="table" aria-label="Analytics events">
             <div class="mello-analytics-table__row is-head" role="row">
               <span role="columnheader">Time</span>
               <span role="columnheader">Event</span>
@@ -489,7 +544,7 @@ function getEventLocation(event) {
               <span role="cell">{{ event.ip || '-' }}</span>
               <span role="cell">{{ event.sessionId || '-' }}</span>
             </div>
-            <p v-if="!recentEvents.length" class="mello-analytics-empty">No events saved yet.</p>
+            <p v-if="!recentEvents.length" class="mello-analytics-empty">No events saved for this page.</p>
           </div>
         </section>
       </main>
@@ -837,6 +892,99 @@ function getEventLocation(event) {
   margin-bottom: 16px;
 }
 
+.mello-analytics-pagination {
+  align-items: center;
+  background: #f6fbfb;
+  border: 1px solid rgba(16, 40, 41, 0.08);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin-bottom: 14px;
+  padding: 10px;
+}
+
+.mello-analytics-pagination label {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.mello-analytics-pagination label span,
+.mello-analytics-pagination__status span {
+  color: #4f6364;
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.mello-analytics-pagination select {
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.16);
+  border-radius: 8px;
+  color: #102829;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 780;
+  min-height: 38px;
+  min-width: 74px;
+  padding: 0 28px 0 10px;
+}
+
+.mello-analytics-pagination select:focus-visible {
+  border-color: #77cdfa;
+  box-shadow: 0 0 0 4px rgba(119, 205, 250, 0.22);
+  outline: 0;
+}
+
+.mello-analytics-pagination__status {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mello-analytics-pagination__status strong {
+  color: #102829;
+  font-size: 0.95rem;
+  font-weight: 850;
+}
+
+.mello-analytics-pagination__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: flex-end;
+}
+
+.mello-analytics-pagination__buttons button {
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid rgba(16, 40, 41, 0.14);
+  border-radius: 8px;
+  color: #102829;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  min-height: 36px;
+  padding: 0 11px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.mello-analytics-pagination__buttons button:hover,
+.mello-analytics-pagination__buttons button:focus-visible {
+  border-color: #77cdfa;
+  box-shadow: 0 8px 20px rgba(16, 40, 41, 0.08);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.mello-analytics-pagination__buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  transform: none;
+}
+
 .mello-analytics-funnel,
 .mello-analytics-list {
   display: grid;
@@ -964,6 +1112,14 @@ function getEventLocation(event) {
 
   .mello-analytics-table {
     overflow-x: auto;
+  }
+
+  .mello-analytics-pagination {
+    grid-template-columns: 1fr;
+  }
+
+  .mello-analytics-pagination__buttons {
+    justify-content: flex-start;
   }
 
   .mello-analytics-table__row {
