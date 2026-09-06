@@ -51,8 +51,8 @@ export async function createCheckoutSession(item, options = {}) {
   const response = await postCheckoutSession(payload)
   let data = await response.json().catch(() => ({}))
 
-  if (!response.ok && shouldRetryWithoutNewestFields(response, data)) {
-    const retryResponse = await postCheckoutSession(toLegacyCheckoutPayload(payload))
+  if (!response.ok && shouldRetryWithoutNewestFields(response, data, payload)) {
+    const retryResponse = await postCheckoutSession(toCompatibleCheckoutPayload(payload, data))
     data = await retryResponse.json().catch(() => ({}))
 
     if (!retryResponse.ok) {
@@ -127,14 +127,20 @@ function normalizeCheckoutResponse(data = {}) {
   }
 }
 
-function shouldRetryWithoutNewestFields(response, data = {}) {
+function shouldRetryWithoutNewestFields(response, data = {}, payload = {}) {
   if (response.status !== 400) return false
 
-  const message = Array.isArray(data.message) ? data.message.join(' ') : String(data.message || '')
-  return /property (source|offerCode|promotion) should not exist/i.test(message)
+  const rejectedProperties = getRejectedPayloadProperties(data)
+
+  if (payload.promotion && rejectedProperties.has('promotion')) {
+    return false
+  }
+
+  return ['source', 'offerCode', 'promotion'].some((property) => rejectedProperties.has(property))
 }
 
-function toLegacyCheckoutPayload(payload) {
+function toCompatibleCheckoutPayload(payload, data = {}) {
+  const rejectedProperties = getRejectedPayloadProperties(data)
   const nextPayload = {
     ...payload,
     checkoutAnalytics: payload.checkoutAnalytics
@@ -142,13 +148,33 @@ function toLegacyCheckoutPayload(payload) {
       : undefined
   }
 
-  delete nextPayload.offerCode
-  delete nextPayload.promotion
+  if (rejectedProperties.has('offerCode')) {
+    delete nextPayload.offerCode
+  }
+
+  if (!payload.promotion && rejectedProperties.has('promotion')) {
+    delete nextPayload.promotion
+  }
+
   if (nextPayload.checkoutAnalytics) {
     delete nextPayload.checkoutAnalytics.source
   }
 
   return compactObject(nextPayload)
+}
+
+function getRejectedPayloadProperties(data = {}) {
+  const message = Array.isArray(data.message) ? data.message.join(' ') : String(data.message || '')
+  const properties = new Set()
+  const pattern = /property ([a-zA-Z0-9_]+) should not exist/gi
+  let match = pattern.exec(message)
+
+  while (match) {
+    properties.add(match[1])
+    match = pattern.exec(message)
+  }
+
+  return properties
 }
 
 function compactObject(value) {
@@ -163,11 +189,14 @@ function compactObject(value) {
 
 function createCheckoutError(response, data = {}) {
   const rawMessage = Array.isArray(data.message) ? data.message.join(' ') : data.message
-  const message = data.userMessage || rawMessage || `Checkout request failed: ${response.status}`
+  const compatibilityMessage = /property promotion should not exist/i.test(String(rawMessage || ''))
+    ? 'Secure checkout is being updated. Please try again in a minute.'
+    : ''
+  const message = data.userMessage || compatibilityMessage || rawMessage || `Checkout request failed: ${response.status}`
 
   return new CheckoutRequestError(message, {
     status: response.status,
     code: data.code || data.errorCode || '',
-    userMessage: data.userMessage || rawMessage || message
+    userMessage: data.userMessage || compatibilityMessage || rawMessage || message
   })
 }
