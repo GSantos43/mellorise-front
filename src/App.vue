@@ -263,7 +263,7 @@ function addToCart(payload = {}) {
   trackAddToCart(cartItem.value)
 
   if (payload.checkoutNow) {
-    navigateToCheckout()
+    navigateToCheckout({ source: 'product_buy_now' })
     return
   }
 
@@ -437,7 +437,7 @@ function ensureCheckoutSession(targetPath = CHECKOUT_PATH) {
   return Boolean(cartItem.value)
 }
 
-function navigateToCheckout() {
+function navigateToCheckout(options = {}) {
   if (!cartItem.value || !isPurchaseAllowed.value) return
   closeCart()
 
@@ -451,7 +451,9 @@ function navigateToCheckout() {
 
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
 
-  goToStripeCheckout()
+  goToStripeCheckout({
+    checkoutSource: options.source || 'cart_checkout'
+  })
 }
 
 function applyCartOfferDiscount() {
@@ -465,7 +467,7 @@ function applyCartOfferDiscount() {
   })
 }
 
-function trackCheckoutStartOnce() {
+function trackCheckoutStartOnce(source = 'checkout') {
   if (!cartItem.value) return
 
   const key = [
@@ -473,14 +475,18 @@ function trackCheckoutStartOnce() {
     cartItem.value.variationId || '',
     cartItem.value.quantity || 1,
     cartItem.value.checkoutQuantity || cartItem.value.quantity || 1,
-    activeDiscount.value?.code || ''
+    activeDiscount.value?.code || '',
+    source
   ].join(':')
 
   if (key === trackedCheckoutStartKey) return
   trackedCheckoutStartKey = key
 
   trackBeginCheckout(cartItem.value, {
-    couponCode: activeDiscount.value?.code || ''
+    couponCode: activeDiscount.value?.code || '',
+    source,
+    pagePath: CHECKOUT_PATH,
+    pageLocation: `${window.location.origin}${CHECKOUT_PATH}`
   })
 }
 
@@ -607,6 +613,7 @@ function shouldClearCheckoutDiscount(error) {
 async function goToStripeCheckout(options = {}) {
   if (!cartItem.value || isCheckoutLoading.value || !isPurchaseAllowed.value) return
   if (!ensureCheckoutSession(CHECKOUT_PATH)) return
+  const checkoutSource = options.checkoutSource || 'checkout'
 
   isCheckoutLoading.value = true
   isCheckoutTransitionLoading.value = true
@@ -627,8 +634,13 @@ async function goToStripeCheckout(options = {}) {
       options.customerEmail = activeDiscount.value.email
     }
 
-    trackCheckoutStartOnce()
-    const checkout = await createCheckoutSession(cartItem.value, options)
+    trackCheckoutStartOnce(checkoutSource)
+    const checkout = await createCheckoutSession(cartItem.value, {
+      ...options,
+      checkoutSource,
+      checkoutPagePath: CHECKOUT_PATH,
+      checkoutPageLocation: `${window.location.origin}${CHECKOUT_PATH}`
+    })
     const checkoutUrl = checkout.checkoutUrl
     trackCheckoutRedirect(cartItem.value, checkout)
     checkoutRedirectUrl.value = checkoutUrl

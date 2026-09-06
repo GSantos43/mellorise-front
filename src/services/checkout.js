@@ -19,6 +19,9 @@ export async function createCheckoutSession(item, options = {}) {
   }
 
   const origin = window.location.origin
+  const checkoutSource = options.checkoutSource || options.source || 'direct_checkout'
+  const checkoutPagePath = options.checkoutPagePath || '/checkout'
+  const checkoutPageLocation = options.checkoutPageLocation || `${origin}${checkoutPagePath}`
   const quantity = Number(item.quantity || 1)
   const checkoutQuantity = Number(item.checkoutQuantity || quantity)
   const freeQuantity = quantity >= 3 ? 2 : quantity === 2 ? 1 : 0
@@ -53,7 +56,11 @@ export async function createCheckoutSession(item, options = {}) {
       couponCode: options.couponCode,
       offerCode: options.offerCode,
       promotion,
-      checkoutAnalytics: getAnalyticsContext()
+      checkoutAnalytics: getAnalyticsContext({
+        pagePath: checkoutPagePath,
+        pageLocation: checkoutPageLocation,
+        source: checkoutSource
+      })
     })
   })
 

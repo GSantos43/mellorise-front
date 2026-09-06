@@ -89,6 +89,9 @@ export function trackBeginCheckout(item, options = {}) {
     currency: 'USD',
     value: Number(item.price || 0) * Number(item.quantity || 1),
     coupon: options.couponCode || '',
+    source: options.source || 'checkout',
+    page_path: options.pagePath || window.location.pathname,
+    page_location: options.pageLocation || window.location.href,
     items: [toAnalyticsItem(item)]
   }, { sendToBackend: true })
 }
@@ -133,15 +136,16 @@ export function trackPurchase(params = {}) {
   }, { sendToBackend: true })
 }
 
-export function getAnalyticsContext() {
+export function getAnalyticsContext(overrides = {}) {
   if (typeof window === 'undefined') return {}
 
   return {
     clientId: getClientId(),
     sessionId: getSessionId(),
-    pagePath: window.location.pathname,
-    pageLocation: window.location.href,
-    referrer: document.referrer
+    pagePath: overrides.pagePath || window.location.pathname,
+    pageLocation: overrides.pageLocation || window.location.href,
+    referrer: overrides.referrer ?? document.referrer,
+    source: overrides.source || ''
   }
 }
 
@@ -178,8 +182,8 @@ function sendBackendEvent(name, params, beacon = false) {
     name,
     clientId: params.client_id,
     sessionId: params.session_id,
-    pagePath: window.location.pathname,
-    pageLocation: window.location.href,
+    pagePath: params.page_path || window.location.pathname,
+    pageLocation: params.page_location || window.location.href,
     referrer: document.referrer,
     params
   })
