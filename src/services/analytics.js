@@ -102,6 +102,9 @@ export function trackCheckoutRedirect(item, response = {}) {
     session_id: response.sessionId || '',
     order_id: response.orderId || '',
     source: response.source || response.checkoutSource || '',
+    page_path: response.pagePath || '/checkout',
+    page_location: response.pageLocation || `${window.location.origin}/checkout`,
+    total: Number(response.total || 0),
     value: Number(response.total || 0),
     currency: response.currency || 'USD',
     items: item?.id ? [toAnalyticsItem(item)] : []
