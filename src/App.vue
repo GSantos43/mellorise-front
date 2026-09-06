@@ -603,7 +603,8 @@ async function goToStripeCheckout(options = {}) {
     }
 
     if (!couponWasProvidedByCheckout && activeDiscount.value?.source === 'cart_offer') {
-      options.offerCode = activeDiscount.value.code
+      delete options.offerCode
+      delete options.couponCode
     } else if (!couponWasProvidedByCheckout && activeDiscount.value?.code) {
       options.couponCode = activeDiscount.value.code
       options.customerEmail = activeDiscount.value.email
