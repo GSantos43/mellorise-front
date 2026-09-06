@@ -540,7 +540,7 @@ function updateCartQuantity(quantity) {
 
 function getCartLineTotalForQuantity(quantity, unitPrice) {
   if (quantity >= 3) return 99.98
-  if (quantity === 2) return 79.98
+  if (quantity === 2) return 74.98
   return Number(unitPrice || 0)
 }
 

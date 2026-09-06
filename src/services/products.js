@@ -23,7 +23,7 @@ const fallbackProducts = [
     title: 'Buy 2 Get 3',
     handle: 'buy-2-get-1-free',
     vendor: 'MelloRise',
-    price: 79.98,
+    price: 74.98,
     compareAtPrice: 119.97,
     image: '/assets/three.png'
   },
