@@ -189,7 +189,7 @@ function sendBackendEvent(name, params, beacon = false) {
     params
   })
 
-  if (beacon && navigator.sendBeacon) {
+  if (beacon && navigator.sendBeacon && isSameOrigin(BFF_URL)) {
     navigator.sendBeacon(`${BFF_URL}/analytics/events`, new Blob([payload], { type: 'application/json' }))
     return
   }
@@ -200,6 +200,14 @@ function sendBackendEvent(name, params, beacon = false) {
     body: payload,
     keepalive: beacon
   }).catch(() => {})
+}
+
+function isSameOrigin(url) {
+  try {
+    return new URL(url, window.location.href).origin === window.location.origin
+  } catch {
+    return false
+  }
 }
 
 function toAnalyticsItem(item, overrides = {}) {
