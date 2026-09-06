@@ -81,8 +81,7 @@ function buildCheckoutPayload({
 }) {
   const checkoutAnalytics = compactObject(getAnalyticsContext({
     pagePath: checkoutPagePath,
-    pageLocation: checkoutPageLocation,
-    source: checkoutSource
+    pageLocation: checkoutPageLocation
   }))
 
   return compactObject({
@@ -131,7 +130,7 @@ function shouldRetryWithoutNewestFields(response, data = {}) {
   if (response.status !== 400) return false
 
   const message = Array.isArray(data.message) ? data.message.join(' ') : String(data.message || '')
-  return /property (wetrackedId|offerCode|promotion) should not exist/i.test(message)
+  return /property (source|offerCode|promotion) should not exist/i.test(message)
 }
 
 function toLegacyCheckoutPayload(payload) {
@@ -145,7 +144,7 @@ function toLegacyCheckoutPayload(payload) {
   delete nextPayload.offerCode
   delete nextPayload.promotion
   if (nextPayload.checkoutAnalytics) {
-    delete nextPayload.checkoutAnalytics.wetrackedId
+    delete nextPayload.checkoutAnalytics.source
   }
 
   return compactObject(nextPayload)

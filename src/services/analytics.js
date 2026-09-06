@@ -7,12 +7,8 @@ const SESSION_STARTED_AT_KEY = 'mellorise-analytics-session-started-at-v1'
 const SESSION_TTL_MS = 30 * 60 * 1000
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || ''
 const GTM_ID = import.meta.env.VITE_GTM_ID || ''
-const WETRACKED_ENABLED = String(import.meta.env.VITE_WETRACKED_ENABLED || '').toLowerCase() === 'true'
-const WETRACKED_SITE = import.meta.env.VITE_WETRACKED_SITE || ''
-const WETRACKED_COOKIE_NAME = '_wtp'
 
 let scriptsLoaded = false
-let wetrackedLoaded = false
 
 export function initAnalytics() {
   if (typeof window === 'undefined' || scriptsLoaded) return
@@ -44,8 +40,6 @@ export function initAnalytics() {
       session_id: sessionId
     })
   }
-
-  loadWetrackedPixel()
 
   scriptsLoaded = true
 }
@@ -151,8 +145,7 @@ export function getAnalyticsContext(overrides = {}) {
     pagePath: overrides.pagePath || window.location.pathname,
     pageLocation: overrides.pageLocation || window.location.href,
     referrer: overrides.referrer ?? document.referrer,
-    source: overrides.source || '',
-    wetrackedId: getCookieValue(WETRACKED_COOKIE_NAME)
+    source: overrides.source || ''
   }
 }
 
@@ -218,52 +211,6 @@ function toAnalyticsItem(item, overrides = {}) {
     promotion_name: item.promotion?.label || item.promotion?.code || '',
     ...overrides
   }
-}
-
-function loadWetrackedPixel() {
-  if (!WETRACKED_ENABLED || wetrackedLoaded || typeof document === 'undefined') return
-
-  const site = normalizeWetrackedSite(WETRACKED_SITE || window.location.hostname)
-  if (!site) return
-
-  window['wt:plugin:version'] = window['wt:plugin:version'] || 'mellorise-headless'
-  window['wt:init'] = window['wt:init'] || function initWetracked(params = {}) {
-    const searchParams = new URLSearchParams()
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        searchParams.set(key, value)
-      }
-    })
-
-    return fetch(`https://pixel.wetracked.io/woo/${site}/init?${searchParams.toString()}`, {
-      keepalive: true
-    }).catch(() => {})
-  }
-
-  const script = document.createElement('script')
-  script.id = 'mellorise-wetracked-events'
-  script.async = true
-  script.src = `https://pixel.wetracked.io/woo/${site}/events.js`
-  ;(document.body || document.head).appendChild(script)
-  wetrackedLoaded = true
-}
-
-function normalizeWetrackedSite(site) {
-  return String(site || '')
-    .replace(/^https?:\/\//i, '')
-    .split('/')[0]
-    .trim()
-    .toLowerCase()
-}
-
-function getCookieValue(name) {
-  if (typeof document === 'undefined') return ''
-
-  return document.cookie
-    .split(';')
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(`${name}=`))
-    ?.slice(name.length + 1) || ''
 }
 
 function getClientId() {
