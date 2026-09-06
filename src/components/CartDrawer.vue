@@ -47,6 +47,11 @@ const localizedItemTitle = computed(() => translateProductTitle(props.item?.titl
 const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
 const checkoutDisabled = computed(() => !props.item || props.isCheckoutLoading || !isPurchaseAllowed.value)
 const hasBundleFreeShipping = computed(() => quantity.value > 1)
+const bundleValueLabel = computed(() => {
+  if (quantity.value >= 3) return t('cart.bundleValue.buyThree')
+  if (quantity.value === 2) return t('cart.bundleValue.buyTwo')
+  return t('cart.bundleValue.buyOne')
+})
 const cartUpsell = computed(() => {
   if (quantity.value === 1) {
     return {
@@ -127,7 +132,9 @@ onUnmounted(() => {
               <a class="mello-cart-item__title" :href="`/products/${item.handle}`" @click="emit('close')">{{ localizedItemTitle }}</a>
               <span class="mello-cart-item__price">{{ formatMoney(item.unitPrice || item.price) }}</span>
               <span class="mello-cart-item__variant">{{ item.bundleLabel }}</span>
-              <span v-if="hasBundleFreeShipping" class="mello-cart-item__shipping">{{ t('cart.freeShippingUnlocked') }}</span>
+              <span class="mello-cart-item__shipping" :class="{ 'is-locked': !hasBundleFreeShipping }">
+                {{ hasBundleFreeShipping ? t('cart.freeShippingUnlocked') : t('cart.freeShippingPrompt') }}
+              </span>
 
               <div class="mello-cart-item__actions">
                 <div class="mello-cart-quantity" :aria-label="t('cart.quantity')">
@@ -160,6 +167,16 @@ onUnmounted(() => {
               <span>{{ t(cartUpsell.action) }}</span>
             </button>
           </article>
+
+          <div class="mello-cart-bundle-proof" :class="{ 'is-unlocked': hasBundleFreeShipping }">
+            <span aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M5 12.5 9 16l10-10"/><path d="M3 7h13v10H3z"/><path d="M16 10h3l2 3v4h-5z"/><path d="M7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/><path d="M18 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+            </span>
+            <div>
+              <strong>{{ bundleValueLabel }}</strong>
+              <small>{{ hasBundleFreeShipping ? t('cart.freeShippingStripe') : t('cart.freeShippingNudge') }}</small>
+            </div>
+          </div>
         </div>
 
         <div v-else class="mello-cart-drawer__empty">
@@ -431,6 +448,10 @@ onUnmounted(() => {
   margin-top: 4px;
 }
 
+.mello-cart-item__shipping.is-locked {
+  color: #775200;
+}
+
 .mello-cart-item__actions {
   align-items: center;
   display: flex;
@@ -619,6 +640,70 @@ onUnmounted(() => {
 
 .mello-cart-upsell__button:active {
   transform: translateY(0) scale(0.99);
+}
+
+.mello-cart-bundle-proof {
+  align-items: center;
+  background: #fff8e8;
+  border: 1px solid rgba(245, 166, 35, 0.32);
+  border-radius: 8px;
+  color: #102829;
+  display: grid;
+  gap: 11px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  margin-top: 12px;
+  padding: 12px;
+}
+
+.mello-cart-bundle-proof.is-unlocked {
+  background: #effaf6;
+  border-color: rgba(0, 122, 61, 0.18);
+}
+
+.mello-cart-bundle-proof > span {
+  align-items: center;
+  background: #ffffff;
+  border-radius: 999px;
+  color: #c47a00;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.mello-cart-bundle-proof.is-unlocked > span {
+  color: #007a3d;
+}
+
+.mello-cart-bundle-proof svg {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+  width: 22px;
+}
+
+.mello-cart-bundle-proof strong,
+.mello-cart-bundle-proof small {
+  display: block;
+  min-width: 0;
+}
+
+.mello-cart-bundle-proof strong {
+  color: #102829;
+  font-size: 13px;
+  font-weight: 820;
+  line-height: 1.18;
+}
+
+.mello-cart-bundle-proof small {
+  color: rgba(16, 40, 41, 0.68);
+  font-size: 12px;
+  font-weight: 560;
+  line-height: 1.3;
+  margin-top: 3px;
 }
 
 .mello-cart-drawer__empty {

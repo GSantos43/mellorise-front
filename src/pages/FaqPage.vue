@@ -70,6 +70,10 @@ function toggleFaq(index) {
           At <strong>MelloRise</strong>, we’re dedicated to ensuring your order is handled with care and delivered on time.
           Here’s everything you need to know:
         </p>
+        <div class="mello-faq-main__cta">
+          <span>Free shipping starts with 2+ bottles</span>
+          <a href="/products/mellorise-heightener-gummies-2026#comprar">Choose your bundle</a>
+        </div>
 
         <div class="mello-faq-list">
           <article
@@ -98,6 +102,11 @@ function toggleFaq(index) {
               </div>
             </div>
           </article>
+        </div>
+        <div class="mello-faq-final-cta">
+          <strong>Ready to order?</strong>
+          <p>Pick Buy 2 Get 3 or Buy 3 Get 5 to unlock free shipping, then finish with secure Stripe checkout.</p>
+          <a href="/products/mellorise-heightener-gummies-2026#comprar">Go to the offer</a>
         </div>
       </div>
     </main>
@@ -157,8 +166,69 @@ function toggleFaq(index) {
   font-weight: 900;
 }
 
+.mello-faq-main__cta {
+  align-items: center;
+  background: #effaf6;
+  border: 1px solid rgba(0, 122, 61, 0.14);
+  border-radius: 10px;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin: 24px auto 0;
+  max-width: 640px;
+  padding: 14px 16px;
+}
+
+.mello-faq-main__cta span {
+  color: #12312a;
+  font-size: 14px;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.mello-faq-main__cta a,
+.mello-faq-final-cta a {
+  align-items: center;
+  background: #12312a;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 820;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  text-decoration: none;
+}
+
 .mello-faq-list {
-  margin-top: 18px;
+  margin-top: 24px;
+}
+
+.mello-faq-final-cta {
+  background: linear-gradient(135deg, #f4fbff 0%, #effaf6 100%);
+  border: 1px solid rgba(95, 150, 144, 0.18);
+  border-radius: 12px;
+  margin-top: 28px;
+  padding: 22px;
+  text-align: center;
+}
+
+.mello-faq-final-cta strong {
+  color: #102829;
+  display: block;
+  font-size: 24px;
+  font-weight: 820;
+  line-height: 1.1;
+}
+
+.mello-faq-final-cta p {
+  color: #4c6265;
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 10px auto 16px;
+  max-width: 470px;
 }
 
 .mello-faq-item {
@@ -289,6 +359,17 @@ function toggleFaq(index) {
   .mello-faq-item__summary,
   .mello-faq-item__content {
     font-size: 16px;
+  }
+
+  .mello-faq-main__cta {
+    align-items: stretch;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mello-faq-main__cta a,
+  .mello-faq-final-cta a {
+    width: 100%;
   }
 
 }

@@ -601,7 +601,15 @@ export const messages = {
       checkoutLoading: 'Preparando checkout...',
       regionLock: 'Checkout disponible solo para Estados Unidos por ahora. Brasil esta habilitado temporalmente durante el desarrollo.',
       freeShippingUnlocked: 'Envio gratis desbloqueado',
-      upsellFreeShipping: 'Desde este bundle, el envio sale gratis.',
+      freeShippingPrompt: 'Agrega 1 frasco más y el envío sale gratis',
+      freeShippingStripe: 'Se enviará a Stripe como Free shipping.',
+      freeShippingNudge: 'El envío gratis se desbloquea desde 2 frascos.',
+      upsellFreeShipping: 'Desde 2 frascos, el envío sale gratis en Stripe.',
+      bundleValue: {
+        buyOne: 'Mejora a un bundle para desbloquear más valor',
+        buyTwo: 'Buy 2 Get 3 + envío gratis desbloqueado',
+        buyThree: 'Buy 3 Get 5 + envío gratis desbloqueado'
+      },
       shippingProtection: {
         title: 'Protección de envío',
         text: 'Protege tu pedido contra daños, pérdidas o robo durante el envío.',
@@ -703,11 +711,11 @@ export const messages = {
       upsell: {
         buyTwoBadge: 'Oferta recomendada',
         buyTwoTitle: 'Compra 2 y recibe 3',
-        buyTwoText: 'Sube a 2 frascos pagados para recibir 3 en total y reducir el costo por frasco.',
+        buyTwoText: 'Sube a 2 frascos pagados para recibir 3 en total, reducir el costo por frasco y liberar envío gratis.',
         buyTwoAction: 'Activar compra 2 y recibe 3',
         buyThreeBadge: 'Mejor ahorro',
         buyThreeTitle: 'Compra 3 y recibe 5',
-        buyThreeText: 'Ya desbloqueaste compra 2 y recibe 3. Sube a 3 frascos pagados para recibir 5 en total.',
+        buyThreeText: 'Ya desbloqueaste envío gratis. Sube a 3 frascos pagados para recibir 5 en total y maximizar el ahorro.',
         buyThreeAction: 'Activar compra 3 y recibe 5'
       },
       contact: {
@@ -1397,7 +1405,15 @@ export const messages = {
       checkoutLoading: 'Preparing checkout...',
       regionLock: 'Checkout is currently available only in the United States. Brazil is enabled temporarily during development.',
       freeShippingUnlocked: 'Free shipping unlocked',
-      upsellFreeShipping: 'This bundle unlocks free shipping.',
+      freeShippingPrompt: 'Add 1 more bottle to unlock free shipping',
+      freeShippingStripe: 'This will be sent to Stripe as Free shipping.',
+      freeShippingNudge: 'Free shipping unlocks from 2 bottles.',
+      upsellFreeShipping: 'From 2 bottles, Stripe checkout gets free shipping.',
+      bundleValue: {
+        buyOne: 'Upgrade to a bundle to unlock more value',
+        buyTwo: 'Buy 2 Get 3 + free shipping unlocked',
+        buyThree: 'Buy 3 Get 5 + free shipping unlocked'
+      },
       shippingProtection: {
         title: 'Shipping protection',
         text: 'Protect your order against damage, loss, or theft during shipping.',
@@ -1499,11 +1515,11 @@ export const messages = {
       upsell: {
         buyTwoBadge: 'Recommended offer',
         buyTwoTitle: 'Buy 2, get 3',
-        buyTwoText: 'Move to 2 paid bottles to receive 3 total and lower the cost per bottle.',
+        buyTwoText: 'Move to 2 paid bottles to receive 3 total, lower the cost per bottle, and unlock free shipping.',
         buyTwoAction: 'Activate Buy 2 Get 3',
         buyThreeBadge: 'Best savings',
         buyThreeTitle: 'Buy 3, get 5',
-        buyThreeText: 'You already unlocked Buy 2 Get 3. Move to 3 paid bottles to receive 5 total.',
+        buyThreeText: 'Free shipping is already unlocked. Move to 3 paid bottles to receive 5 total and maximize savings.',
         buyThreeAction: 'Activate Buy 3 Get 5'
       },
       contact: {

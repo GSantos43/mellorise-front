@@ -23,7 +23,7 @@ export const PRODUCT_BUNDLES = [
     titleKey: 'product.bundleCards.buyTwo.title',
     meta: 'Most Popular',
     metaKey: 'product.bundleCards.buyTwo.meta',
-    shippingKey: 'product.bundles.shipping.standard',
+    shippingKey: 'product.bundles.shipping.free',
     image: '/assets/three.png',
     badge: 'Most Popular',
     badgeKey: 'product.bundleCards.buyTwo.badge',

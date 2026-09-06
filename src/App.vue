@@ -30,7 +30,6 @@ import { translateProductTitle } from './i18n/productText'
 import {
   initAnalytics,
   trackAddToCart,
-  trackBeginCheckout,
   trackCheckoutAbandoned,
   trackCheckoutError,
   trackCheckoutRedirect,
@@ -102,7 +101,6 @@ let checkoutTransitionTimer = 0
 let pendingCheckoutExitPath = ''
 let discountNoticeTimer = 0
 let trackedProductViewId = ''
-let trackedCheckoutStartKey = ''
 
 const currentProduct = computed(() => {
   const slug = route.value.split('/products/')[1]
@@ -467,29 +465,6 @@ function applyCartOfferDiscount() {
   })
 }
 
-function trackCheckoutStartOnce(source = 'checkout') {
-  if (!cartItem.value) return
-
-  const key = [
-    cartItem.value.id,
-    cartItem.value.variationId || '',
-    cartItem.value.quantity || 1,
-    cartItem.value.checkoutQuantity || cartItem.value.quantity || 1,
-    activeDiscount.value?.code || '',
-    source
-  ].join(':')
-
-  if (key === trackedCheckoutStartKey) return
-  trackedCheckoutStartKey = key
-
-  trackBeginCheckout(cartItem.value, {
-    couponCode: activeDiscount.value?.code || '',
-    source,
-    pagePath: CHECKOUT_PATH,
-    pageLocation: `${window.location.origin}${CHECKOUT_PATH}`
-  })
-}
-
 function requestCheckoutExit(targetPath = PRIMARY_PRODUCT_PATH) {
   pendingCheckoutExitPath = targetPath || PRIMARY_PRODUCT_PATH
   isCheckoutExitConfirmVisible.value = true
@@ -634,7 +609,6 @@ async function goToStripeCheckout(options = {}) {
       options.customerEmail = activeDiscount.value.email
     }
 
-    trackCheckoutStartOnce(checkoutSource)
     const checkout = await createCheckoutSession(cartItem.value, {
       ...options,
       checkoutSource,
@@ -810,12 +784,8 @@ watch(isCheckoutTransitionLoading, (active) => {
 }, { immediate: true })
 
 watch([route, locale, isLoading, products, currentProduct], scheduleStaticTranslation, { flush: 'post' })
-watch([route, cartItem, isAuthLoaded, isSignedIn], () => {
+watch([route, cartItem], () => {
   if (currentPage.value !== 'checkout') return
-  if (cartItem.value && isPurchaseAllowed.value) {
-    goToStripeCheckout()
-    return
-  }
 
   if (!cartItem.value) {
     window.history.replaceState({}, '', PRIMARY_PRODUCT_PATH)
