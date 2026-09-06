@@ -551,7 +551,7 @@ function getEventLocation(event) {
           <div class="mello-analytics-pagination" aria-label="Analytics event pagination">
             <div class="mello-analytics-pagination__status">
               <strong>Page {{ eventsPagination.page }} of {{ eventsPagination.totalPages }}</strong>
-              <span>{{ eventRangeLabel }} · 15 per page · oldest first</span>
+              <span>{{ eventRangeLabel }} · 15 per page · newest first</span>
             </div>
             <div class="mello-analytics-pagination__buttons">
               <button type="button" :disabled="isLoading || eventsPagination.page <= 1" @click="goToEventsPage(1)">First</button>
