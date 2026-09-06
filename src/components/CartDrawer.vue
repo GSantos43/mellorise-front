@@ -1055,10 +1055,10 @@ onUnmounted(() => {
     bottom: 0;
     box-shadow: 0 -18px 56px rgba(7, 20, 21, 0.2);
     grid-template-rows: auto auto minmax(0, 1fr) auto;
-    height: min(84vh, 720px);
-    height: min(84dvh, 720px);
-    max-height: calc(100dvh - 10px);
-    min-height: min(620px, calc(100dvh - 10px));
+    height: min(96vh, 820px);
+    height: min(96dvh, 820px);
+    max-height: calc(100dvh - 4px);
+    min-height: min(720px, calc(100dvh - 4px));
     right: 0;
     top: auto;
     transform: translateY(105%);
@@ -1095,7 +1095,7 @@ onUnmounted(() => {
   }
 
   .mello-cart-drawer__body {
-    padding: 14px 15px 10px;
+    padding: 14px 15px 14px;
   }
 
   .mello-cart-item {
@@ -1247,6 +1247,13 @@ onUnmounted(() => {
 
   .mello-cart-stripe span {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 520px) and (max-height: 760px) {
+  .mello-cart-drawer__panel {
+    height: calc(100dvh - 4px);
+    min-height: 0;
   }
 }
 </style>
