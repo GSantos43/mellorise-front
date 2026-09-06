@@ -89,7 +89,8 @@ function buildCheckoutPayload({
   const productId = getCheckoutProductId(item)
   const checkoutAnalytics = compactObject(getAnalyticsContext({
     pagePath: checkoutPagePath,
-    pageLocation: checkoutPageLocation
+    pageLocation: checkoutPageLocation,
+    source: checkoutSource
   }))
 
   return compactObject({

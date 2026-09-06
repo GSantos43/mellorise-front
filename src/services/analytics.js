@@ -101,6 +101,7 @@ export function trackCheckoutRedirect(item, response = {}) {
     provider: response.provider || 'stripe',
     session_id: response.sessionId || '',
     order_id: response.orderId || '',
+    source: response.source || response.checkoutSource || '',
     value: Number(response.total || 0),
     currency: response.currency || 'USD',
     items: item?.id ? [toAnalyticsItem(item)] : []

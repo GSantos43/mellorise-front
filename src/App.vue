@@ -642,7 +642,10 @@ async function goToStripeCheckout(options = {}) {
       checkoutPageLocation: `${window.location.origin}${CHECKOUT_PATH}`
     })
     const checkoutUrl = checkout.checkoutUrl
-    trackCheckoutRedirect(cartItem.value, checkout)
+    trackCheckoutRedirect(cartItem.value, {
+      ...checkout,
+      source: checkoutSource
+    })
     checkoutRedirectUrl.value = checkoutUrl
     window.location.assign(checkoutUrl)
 
