@@ -39,14 +39,16 @@ const subtotal = computed(() => Number(props.item?.price || 0) * quantity.value)
 const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount || 0)))
 const discountTotal = computed(() => props.item && props.discount?.code ? subtotal.value * (discountPercent.value / 100) : 0)
 const isShippingProtectionEnabled = ref(false)
+const standardShippingPrice = 3.99
 const shippingProtectionPrice = 3.5
+const hasBundleFreeShipping = computed(() => quantity.value > 1)
+const shippingTotal = computed(() => props.item && !hasBundleFreeShipping.value ? standardShippingPrice : 0)
 const shippingProtectionTotal = computed(() => props.item && isShippingProtectionEnabled.value ? shippingProtectionPrice : 0)
-const checkoutTotal = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingProtectionTotal.value)
+const checkoutTotal = computed(() => Math.max(0, subtotal.value - discountTotal.value) + shippingTotal.value + shippingProtectionTotal.value)
 const itemCountLabel = computed(() => quantity.value === 1 ? t('cart.oneItem') : t('cart.manyItems', { count: quantity.value }))
 const localizedItemTitle = computed(() => translateProductTitle(props.item?.title, locale.value))
 const isPurchaseAllowed = computed(() => props.purchaseEligibility?.allowed !== false)
 const checkoutDisabled = computed(() => !props.item || props.isCheckoutLoading || !isPurchaseAllowed.value)
-const hasBundleFreeShipping = computed(() => quantity.value > 1)
 const bundleValueLabel = computed(() => {
   if (quantity.value >= 3) return t('cart.bundleValue.buyThree')
   if (quantity.value === 2) return t('cart.bundleValue.buyTwo')
@@ -79,7 +81,11 @@ const cartUpsell = computed(() => {
 function checkout() {
   if (checkoutDisabled.value) return
 
-  emit('checkout')
+  emit('checkout', {
+    shippingProtection: {
+      enabled: isShippingProtectionEnabled.value
+    }
+  })
 }
 
 function activateCartUpsell() {

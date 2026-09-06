@@ -96,6 +96,7 @@ function buildCheckoutPayload({
     cancelUrl: `${origin}/products/${item.handle || 'mellorise-heightener-gummies-2026'}`,
     customerEmail: options.customerEmail,
     couponCode: options.couponCode,
+    shippingProtection: options.shippingProtection,
     offerCode: options.offerCode,
     promotion,
     checkoutAnalytics
