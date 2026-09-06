@@ -31,7 +31,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'update-quantity', 'remove', 'checkout', 'apply-discount'])
+const emit = defineEmits(['close', 'update-quantity', 'remove', 'checkout'])
 const { t, locale } = useI18n({ useScope: 'global' })
 
 const quantity = computed(() => props.item?.quantity || 0)
@@ -80,12 +80,6 @@ function checkout() {
   if (checkoutDisabled.value) return
 
   emit('checkout')
-}
-
-function applyDiscount() {
-  if (!props.item || props.discount?.code) return
-
-  emit('apply-discount')
 }
 
 function activateCartUpsell() {
@@ -220,20 +214,6 @@ onUnmounted(() => {
               <span></span>
             </button>
           </div>
-
-          <button
-            v-if="item"
-            class="mello-cart-discount"
-            :class="{ 'is-preview': !discount?.code }"
-            type="button"
-            :disabled="Boolean(discount?.code)"
-            @click="applyDiscount"
-          >
-            <span v-if="discount?.code">{{ t('cart.discount.label') }} <strong>{{ discount.code }}</strong></span>
-            <span v-else>{{ t('cart.discount.newCustomers') }}</span>
-            <b v-if="discount?.code">-{{ formatMoney(discountTotal) }}</b>
-            <b v-else>{{ t('cart.discount.applyAction') }}</b>
-          </button>
 
           <p v-if="item && !isPurchaseAllowed" class="mello-cart-region-lock" role="status">
             {{ t('cart.regionLock') }}
@@ -888,65 +868,6 @@ onUnmounted(() => {
 
 .mello-shipping-protection__toggle.is-active span {
   transform: translateX(16px);
-}
-
-.mello-cart-discount {
-  appearance: none;
-  align-items: center;
-  background: #effaf6;
-  border: 1px solid rgba(47, 141, 92, 0.16);
-  border-radius: 8px;
-  color: #12312a;
-  cursor: default;
-  display: flex;
-  font-size: 13px;
-  font-weight: 680;
-  gap: 12px;
-  justify-content: space-between;
-  margin: 0 -7px 12px;
-  min-height: 42px;
-  padding: 10px 12px;
-  text-align: left;
-  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
-  width: calc(100% + 14px);
-}
-
-.mello-cart-discount strong {
-  color: #006f12;
-  font-weight: 760;
-}
-
-.mello-cart-discount b {
-  color: #006f12;
-  font-size: 14px;
-  font-weight: 760;
-  white-space: nowrap;
-}
-
-.mello-cart-discount.is-preview {
-  background: #f4fbff;
-  border-color: rgba(100, 198, 244, 0.28);
-  color: #123233;
-  cursor: pointer;
-}
-
-.mello-cart-discount.is-preview:hover,
-.mello-cart-discount.is-preview:focus-visible {
-  border-color: rgba(100, 198, 244, 0.7);
-  box-shadow: 0 10px 26px rgba(100, 198, 244, 0.18);
-  outline: none;
-  transform: translateY(-1px);
-}
-
-.mello-cart-discount:disabled {
-  opacity: 1;
-}
-
-.mello-cart-discount.is-preview b {
-  color: var(--mcart-teal);
-  font-size: 12px;
-  font-weight: 780;
-  text-align: right;
 }
 
 .mello-cart-region-lock {

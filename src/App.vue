@@ -454,17 +454,6 @@ function navigateToCheckout(options = {}) {
   })
 }
 
-function applyCartOfferDiscount() {
-  if (!cartItem.value) return
-
-  applyDiscount({
-    code: 'WELCOME10',
-    amount: '10',
-    discountType: 'percent',
-    source: 'cart_offer'
-  })
-}
-
 function requestCheckoutExit(targetPath = PRIMARY_PRODUCT_PATH) {
   pendingCheckoutExitPath = targetPath || PRIMARY_PRODUCT_PATH
   isCheckoutExitConfirmVisible.value = true
@@ -942,14 +931,13 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <CartDrawer
       :is-open="isCartOpen"
       :item="cartItem"
-      :discount="activeDiscount"
+      :discount="null"
       :is-checkout-loading="isCheckoutLoading"
       :purchase-eligibility="purchaseEligibility"
       @close="closeCart"
       @update-quantity="updateCartQuantity"
       @remove="removeCartItem"
       @checkout="navigateToCheckout"
-      @apply-discount="applyCartOfferDiscount"
     />
   </main>
 </template>

@@ -444,41 +444,6 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="gh-offer is-visible" :hidden="!isOfferVisible" role="dialog" aria-modal="true" :aria-label="isOfferExitConfirmVisible ? t('home.offerConfirm.ariaLabel') : t('home.offer.ariaLabel')">
-      <button class="gh-offer__shade" type="button" :aria-label="isOfferExitConfirmVisible ? t('home.offerConfirm.keep') : t('home.offer.close')" @click="isOfferExitConfirmVisible ? keepOffer() : requestCloseOffer()"></button>
-      <div v-if="!isOfferExitConfirmVisible" class="gh-offer__card">
-        <button class="gh-offer__close" type="button" :aria-label="t('home.offer.close')" @click="requestCloseOffer">
-          <span></span>
-        </button>
-        <img class="gh-offer__logo" src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
-        <p class="gh-offer__kicker">{{ t('home.offer.kicker') }}</p>
-        <h2 class="gh-offer__title">{{ t('home.offer.title') }}</h2>
-        <p class="gh-offer__discount">10% OFF</p>
-        <p class="gh-offer__subtitle">{{ props.activeDiscount?.code ? t('home.offer.alreadySaved') : t('home.offer.subtitle') }}</p>
-        <form v-if="!props.activeDiscount?.code" class="gh-offer__form" @submit.prevent="claimWelcomeOffer">
-          <p v-if="offerError" class="gh-offer__error">{{ offerError }}</p>
-          <button class="gh-offer__primary" type="submit" :disabled="isOfferSubmitting || !isAuthLoaded">
-            {{ offerClaimLabel }}
-          </button>
-        </form>
-        <a v-else class="gh-offer__primary" href="/products/mellorise-heightener-gummies-2026" @click="closeOffer">{{ t('home.offer.shopWithDiscount') }}</a>
-        <button class="gh-offer__secondary" type="button" @click="requestCloseOffer">{{ t('home.offer.dismiss') }}</button>
-      </div>
-      <div v-else class="gh-offer__card gh-offer__card--confirm">
-        <button class="gh-offer__close" type="button" :aria-label="t('home.offerConfirm.keep')" @click="keepOffer">
-          <span></span>
-        </button>
-        <img class="gh-offer__logo" src="/assets/logo-oficial.png" alt="MelloRise" width="1268" height="500" loading="eager">
-        <p class="gh-offer__loss">{{ t('home.offerConfirm.loss') }}</p>
-        <h2 class="gh-offer__title">{{ t('home.offerConfirm.title') }}</h2>
-        <p class="gh-offer__subtitle gh-offer__subtitle--confirm">{{ t('home.offerConfirm.subtitle') }}</p>
-        <div class="gh-offer__decision">
-          <button class="gh-offer__primary" type="button" @click="keepOffer">{{ t('home.offerConfirm.keep') }}</button>
-          <button class="gh-offer__secondary gh-offer__secondary--danger" type="button" @click="confirmCloseOffer">{{ t('home.offerConfirm.lose') }}</button>
-        </div>
-      </div>
-    </div>
-
     <div class="gh-strip">
       <div class="gh-strip__track" aria-label="Beneficios principales">
         <div v-for="group in 2" :key="group" class="gh-strip__group" :aria-hidden="group === 2">
