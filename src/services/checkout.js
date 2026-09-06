@@ -37,39 +37,83 @@ export async function createCheckoutSession(item, options = {}) {
       : undefined
   )
 
-  const response = await fetch(`${BFF_URL}/checkout/session`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      cart: [
-        {
-          productId: Number(item.id),
-          variationId: item.variationId ? Number(item.variationId) : undefined,
-          quantity: checkoutQuantity
-        }
-      ],
-      successUrl: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${origin}/products/${item.handle || 'mellorise-heightener-gummies-2026'}`,
-      customerEmail: options.customerEmail,
-      couponCode: options.couponCode,
-      offerCode: options.offerCode,
-      promotion,
-      checkoutAnalytics: getAnalyticsContext({
-        pagePath: checkoutPagePath,
-        pageLocation: checkoutPageLocation,
-        source: checkoutSource
-      })
-    })
+  const payload = buildCheckoutPayload({
+    item,
+    options,
+    origin,
+    checkoutPagePath,
+    checkoutPageLocation,
+    checkoutSource,
+    checkoutQuantity,
+    promotion
   })
 
-  const data = await response.json().catch(() => ({}))
+  const response = await postCheckoutSession(payload)
+  let data = await response.json().catch(() => ({}))
+
+  if (!response.ok && shouldRetryWithoutNewestFields(response, data)) {
+    const retryResponse = await postCheckoutSession(toLegacyCheckoutPayload(payload))
+    data = await retryResponse.json().catch(() => ({}))
+
+    if (!retryResponse.ok) {
+      throw createCheckoutError(retryResponse, data)
+    }
+
+    return normalizeCheckoutResponse(data)
+  }
 
   if (!response.ok) {
     throw createCheckoutError(response, data)
   }
 
+  return normalizeCheckoutResponse(data)
+}
+
+function buildCheckoutPayload({
+  item,
+  options,
+  origin,
+  checkoutPagePath,
+  checkoutPageLocation,
+  checkoutSource,
+  checkoutQuantity,
+  promotion
+}) {
+  const checkoutAnalytics = compactObject(getAnalyticsContext({
+    pagePath: checkoutPagePath,
+    pageLocation: checkoutPageLocation,
+    source: checkoutSource
+  }))
+
+  return compactObject({
+    cart: [
+      compactObject({
+        productId: Number(item.id),
+        variationId: item.variationId ? Number(item.variationId) : undefined,
+        quantity: checkoutQuantity
+      })
+    ],
+    successUrl: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancelUrl: `${origin}/products/${item.handle || 'mellorise-heightener-gummies-2026'}`,
+    customerEmail: options.customerEmail,
+    couponCode: options.couponCode,
+    offerCode: options.offerCode,
+    promotion,
+    checkoutAnalytics
+  })
+}
+
+function postCheckoutSession(payload) {
+  return fetch(`${BFF_URL}/checkout/session`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+}
+
+function normalizeCheckoutResponse(data = {}) {
   const checkoutUrl = data.checkoutUrl || data.url || data.paymentUrl
 
   if (!checkoutUrl) {
@@ -81,6 +125,40 @@ export async function createCheckoutSession(item, options = {}) {
     checkoutUrl,
     url: checkoutUrl
   }
+}
+
+function shouldRetryWithoutNewestFields(response, data = {}) {
+  if (response.status !== 400) return false
+
+  const message = Array.isArray(data.message) ? data.message.join(' ') : String(data.message || '')
+  return /property (wetrackedId|offerCode|promotion) should not exist/i.test(message)
+}
+
+function toLegacyCheckoutPayload(payload) {
+  const nextPayload = {
+    ...payload,
+    checkoutAnalytics: payload.checkoutAnalytics
+      ? { ...payload.checkoutAnalytics }
+      : undefined
+  }
+
+  delete nextPayload.offerCode
+  delete nextPayload.promotion
+  if (nextPayload.checkoutAnalytics) {
+    delete nextPayload.checkoutAnalytics.wetrackedId
+  }
+
+  return compactObject(nextPayload)
+}
+
+function compactObject(value) {
+  return Object.fromEntries(
+    Object.entries(value).filter(([, entryValue]) => (
+      entryValue !== undefined &&
+      entryValue !== null &&
+      entryValue !== ''
+    ))
+  )
 }
 
 function createCheckoutError(response, data = {}) {
