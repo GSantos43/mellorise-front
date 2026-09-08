@@ -136,6 +136,7 @@ const accountOrderId = computed(() => {
 const cartCount = computed(() => Math.max(0, Number(cartItem.value?.quantity || 0)))
 const isPurchaseAllowed = computed(() => purchaseEligibility.value?.allowed !== false)
 const hasCheckoutSession = computed(() => true)
+const hasCheckoutRedirectFallback = computed(() => Boolean(checkoutRedirectUrl.value && checkoutRedirectError.value))
 const checkoutEmail = computed(() => (
   // Clerk email hydration is paused while checkout runs without login.
   // user.value?.primaryEmailAddress?.emailAddress ||
@@ -653,7 +654,6 @@ async function goToStripeCheckout(options = {}) {
       if (document.visibilityState === 'hidden' || window.location.href === checkoutUrl) return
 
       isCheckoutLoading.value = false
-      hideCheckoutTransition()
       checkoutRedirectError.value = t('checkout.redirectFallback.text')
       notifyUser({
         type: 'info',
@@ -833,11 +833,29 @@ watch(activeDiscount, persistDiscount, { deep: true })
     <PageLoader :active="isPageLoading" />
     <Teleport to="body">
       <Transition name="mello-checkout-transition" appear>
-        <div v-if="isCheckoutTransitionLoading" class="mello-checkout-transition" role="status" aria-live="polite" aria-busy="true">
+        <div
+          v-if="isCheckoutTransitionLoading || hasCheckoutRedirectFallback"
+          class="mello-checkout-transition"
+          :class="{ 'has-fallback': hasCheckoutRedirectFallback }"
+          role="status"
+          aria-live="polite"
+          :aria-busy="isCheckoutTransitionLoading && !hasCheckoutRedirectFallback"
+        >
           <div class="mello-checkout-transition__card">
-            <span class="mello-checkout-transition__spinner" aria-hidden="true"></span>
+            <span
+              v-if="!hasCheckoutRedirectFallback"
+              class="mello-checkout-transition__spinner"
+              aria-hidden="true"
+            ></span>
             <strong>{{ t('checkoutTransition.title') }}</strong>
-            <small>{{ t('checkoutTransition.text') }}</small>
+            <small>{{ hasCheckoutRedirectFallback ? checkoutRedirectError : t('checkoutTransition.text') }}</small>
+            <a
+              v-if="hasCheckoutRedirectFallback"
+              class="mello-checkout-transition__action"
+              :href="checkoutRedirectUrl"
+            >
+              {{ t('checkout.redirectFallback.action') }}
+            </a>
           </div>
         </div>
       </Transition>
@@ -1191,6 +1209,28 @@ watch(activeDiscount, persistDiscount, { deep: true })
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
+}
+
+.mello-checkout-transition__action {
+  align-items: center;
+  background: #006f12;
+  border-radius: 10px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 820;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 4px;
+  min-height: 46px;
+  padding: 0 18px;
+  text-decoration: none;
+  width: 100%;
+}
+
+.mello-checkout-transition__action:focus-visible {
+  box-shadow: 0 0 0 4px rgba(119, 205, 250, 0.28);
+  outline: 0;
 }
 
 .mello-checkout-loading-lock,

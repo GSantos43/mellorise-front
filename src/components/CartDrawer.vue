@@ -739,6 +739,9 @@ onUnmounted(() => {
   border-top: 1px solid var(--mcart-line);
   overscroll-behavior: contain;
   padding: 0 15px 18px;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
   touch-action: pan-y;
 }
 
@@ -1166,6 +1169,7 @@ onUnmounted(() => {
   }
 
   .mello-cart-drawer__footer {
+    box-shadow: 0 -14px 28px rgba(7, 20, 21, 0.08);
     padding: 0 15px max(12px, env(safe-area-inset-bottom));
   }
 
