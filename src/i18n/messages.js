@@ -337,10 +337,10 @@ export const messages = {
     },
     home: {
       offer: {
-        ariaLabel: 'Oferta de bienvenida',
-        kicker: 'Oferta de bienvenida',
-        title: '¿Te gustaría ahorrar en tu primera orden?',
-        subtitle: 'Entra para recibir tu cupón por email.',
+        ariaLabel: 'Oferta limitada MelloRise',
+        kicker: 'Oferta limitada',
+        title: 'Compra 3 y lleva 2 gratis',
+        subtitle: 'El timer corre: asegura el bundle de mejor valor antes de volver al precio regular.',
         alreadySaved: 'Tu descuento está listo',
         emailLabel: 'Email para reservar el cupón',
         emailPlaceholder: 'Ingresa tu correo',
@@ -354,9 +354,13 @@ export const messages = {
         readyTitle: 'Cupón listo',
         readyMessage: 'El email no salió. Usa el código {code} en el checkout.',
         closeNotice: 'Cerrar aviso',
-        dismiss: 'No, prefiero continuar',
+        dismiss: 'Seguir mirando',
         close: 'Cerrar oferta',
-        shopWithDiscount: 'Comprar con descuento'
+        shopWithDiscount: 'Ver oferta ahora',
+        timerLabel: 'Oferta termina en {time}',
+        hours: 'Hrs',
+        minutes: 'Mins',
+        seconds: 'Segs'
       },
       offerConfirm: {
         ariaLabel: 'Confirmar pérdida del descuento',
@@ -1171,10 +1175,10 @@ export const messages = {
     },
     home: {
       offer: {
-        ariaLabel: 'Welcome offer',
-        kicker: 'Welcome offer',
-        title: 'Want to save on your first order?',
-        subtitle: 'Sign in to receive your coupon by email.',
+        ariaLabel: 'Limited MelloRise offer',
+        kicker: 'Limited offer',
+        title: 'Buy 3 Get 2 Free',
+        subtitle: 'The timer is running: lock the best-value bundle before it returns to regular pricing.',
         alreadySaved: 'Your discount is ready',
         emailLabel: 'Email to reserve your coupon',
         emailPlaceholder: 'Enter your email',
@@ -1188,9 +1192,13 @@ export const messages = {
         readyTitle: 'Coupon ready',
         readyMessage: 'The email was not sent. Use code {code} at checkout.',
         closeNotice: 'Close notification',
-        dismiss: 'No, I prefer to continue',
+        dismiss: 'Keep browsing',
         close: 'Close offer',
-        shopWithDiscount: 'Shop with discount'
+        shopWithDiscount: 'View offer now',
+        timerLabel: 'Offer ends in {time}',
+        hours: 'Hrs',
+        minutes: 'Mins',
+        seconds: 'Secs'
       },
       offerConfirm: {
         ariaLabel: 'Confirm discount loss',

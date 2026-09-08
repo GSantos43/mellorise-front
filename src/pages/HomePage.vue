@@ -180,6 +180,7 @@ const OFFER_LOAD_COUNT_KEY = 'mellorise-offer-load-count'
 const PENDING_OFFER_KEY = 'mellorise-pending-welcome-discount'
 const isOfferVisible = ref(false)
 const isOfferExitConfirmVisible = ref(false)
+const homeOfferRemainingSeconds = ref(30 * 60)
 const offerError = ref('')
 const isOfferSubmitting = ref(false)
 const openHomeFaqIndex = ref(null)
@@ -188,10 +189,35 @@ const densityCard = ref(null)
 const isDensityVisible = ref(false)
 let densityObserver
 let revealObserver
+let homeOfferDelayTimer = 0
+let homeOfferCountdownTimer = 0
+const HOME_OFFER_DELAY_MS = 10 * 1000
+const HOME_OFFER_DURATION_MS = 30 * 60 * 1000
+const HOME_OFFER_TIMER_STORAGE_KEY = 'mellorise-offer-expires-at'
 const signedInEmail = computed(() => '')
 const offerClaimLabel = computed(() => {
   if (isOfferSubmitting.value || !isAuthLoaded.value) return t('home.offer.loading')
   return isSignedIn.value ? t('home.offer.claim') : t('home.offer.signInClaim')
+})
+const homeOfferTimerText = computed(() => {
+  const minutes = Math.floor(homeOfferRemainingSeconds.value / 60)
+  const seconds = homeOfferRemainingSeconds.value % 60
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+})
+const homeOfferTimerParts = computed(() => {
+  const totalSeconds = Math.max(0, homeOfferRemainingSeconds.value)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  return [
+    { key: 'hours', value: hours, label: t('home.offer.hours') },
+    { key: 'minutes', value: minutes, label: t('home.offer.minutes') },
+    { key: 'seconds', value: seconds, label: t('home.offer.seconds') }
+  ].map((part) => ({
+    ...part,
+    value: String(part.value).padStart(2, '0')
+  }))
 })
 
 const revealSelectors = [
@@ -274,12 +300,7 @@ function closeOffer() {
 }
 
 function requestCloseOffer() {
-  if (props.activeDiscount?.code) {
-    closeOffer()
-    return
-  }
-
-  isOfferExitConfirmVisible.value = true
+  closeOffer()
 }
 
 function keepOffer() {
@@ -379,9 +400,29 @@ function toggleHomeFaq(index) {
   openHomeFaqIndex.value = isHomeFaqOpen(index) ? null : index
 }
 
+function getHomeOfferExpiry() {
+  if (typeof window === 'undefined') return Date.now() + HOME_OFFER_DURATION_MS
+
+  const savedExpiry = Number(window.sessionStorage.getItem(HOME_OFFER_TIMER_STORAGE_KEY) || 0)
+  if (savedExpiry > Date.now()) return savedExpiry
+
+  const nextExpiry = Date.now() + HOME_OFFER_DURATION_MS
+  window.sessionStorage.setItem(HOME_OFFER_TIMER_STORAGE_KEY, String(nextExpiry))
+  return nextExpiry
+}
+
+function updateHomeOfferCountdown(expiry) {
+  const remainingMs = Math.max(0, expiry - Date.now())
+  homeOfferRemainingSeconds.value = Math.ceil(remainingMs / 1000)
+}
+
 onMounted(() => {
-  isOfferVisible.value = shouldResumePendingOffer() || shouldShowOffer()
-  resumePendingOffer()
+  const offerExpiry = getHomeOfferExpiry()
+  updateHomeOfferCountdown(offerExpiry)
+  homeOfferCountdownTimer = window.setInterval(() => updateHomeOfferCountdown(offerExpiry), 1000)
+  homeOfferDelayTimer = window.setTimeout(() => {
+    isOfferVisible.value = true
+  }, HOME_OFFER_DELAY_MS)
   setupScrollReveal()
 
   if (!densityCard.value) return
@@ -411,6 +452,14 @@ watch([isAuthLoaded, isSignedIn], () => {
 })
 
 onUnmounted(() => {
+  if (homeOfferDelayTimer) {
+    window.clearTimeout(homeOfferDelayTimer)
+  }
+
+  if (homeOfferCountdownTimer) {
+    window.clearInterval(homeOfferCountdownTimer)
+  }
+
   densityObserver?.disconnect()
   revealObserver?.disconnect()
 })
@@ -793,10 +842,206 @@ onUnmounted(() => {
         </div>
       </div>
     </section>
+
+    <Teleport to="body">
+      <Transition name="gh-home-offer">
+        <div
+          v-if="isOfferVisible"
+          class="gh-offer gh-offer--home-deal is-visible"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="t('home.offer.ariaLabel')"
+        >
+          <button class="gh-offer__shade" type="button" :aria-label="t('home.offer.close')" @click="requestCloseOffer"></button>
+          <article class="gh-offer__card gh-offer__card--home-deal">
+            <button class="gh-offer__close" type="button" :aria-label="t('home.offer.close')" @click="requestCloseOffer">
+              <span aria-hidden="true"></span>
+            </button>
+            <span class="gh-offer__kicker">{{ t('home.offer.kicker') }}</span>
+            <h2 class="gh-offer__title">{{ t('home.offer.title') }}</h2>
+            <p class="gh-offer__subtitle">{{ t('home.offer.subtitle') }}</p>
+            <img class="gh-offer__product" src="/assets/derram.png" alt="MelloRise Heightener Gummies" width="900" height="900" loading="eager">
+            <div class="gh-offer__timer" :aria-label="t('home.offer.timerLabel', { time: homeOfferTimerText })">
+              <span v-for="part in homeOfferTimerParts" :key="part.key">
+                <b>{{ part.value }}</b>
+                <small>{{ part.label }}</small>
+              </span>
+            </div>
+            <a class="gh-offer__primary" href="/products/mellorise-heightener-gummies-2026#comprar" @click="closeOffer">
+              {{ t('home.offer.shopWithDiscount') }}
+            </a>
+            <button class="gh-offer__secondary" type="button" @click="requestCloseOffer">
+              {{ t('home.offer.dismiss') }}
+            </button>
+          </article>
+        </div>
+      </Transition>
+    </Teleport>
   </section>
 </template>
 
 <style>
+.gh-offer--home-deal {
+  position: fixed;
+}
+
+.gh-offer--home-deal .gh-offer__shade {
+  background: rgba(7, 20, 21, 0.66);
+  border: 0;
+  cursor: pointer;
+}
+
+.gh-offer__card--home-deal {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(119, 205, 250, 0.22), transparent 30%),
+    radial-gradient(circle at 86% 18%, rgba(255, 102, 0, 0.24), transparent 34%),
+    #071415;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  box-sizing: border-box;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+  color: #ffffff;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 34px 34px 30px;
+  width: min(460px, 100%);
+}
+
+.gh-offer__card--home-deal .gh-offer__close {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  height: 40px;
+  width: 40px;
+}
+
+.gh-offer__card--home-deal .gh-offer__close span,
+.gh-offer__card--home-deal .gh-offer__close span::after {
+  background: #ffffff;
+  height: 2px;
+  width: 19px;
+}
+
+.gh-offer__card--home-deal .gh-offer__kicker {
+  background: rgba(255, 102, 0, 0.16);
+  border: 1px solid rgba(255, 127, 17, 0.36);
+  border-radius: 999px;
+  color: #ffcf8a;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0;
+  margin: 0 0 10px;
+  padding: 7px 12px;
+}
+
+.gh-offer__card--home-deal .gh-offer__title {
+  color: #ffffff;
+  font-size: clamp(34px, 4vw, 46px);
+  font-weight: 950;
+  line-height: 0.98;
+  margin: 0 auto;
+  max-width: 390px;
+}
+
+.gh-offer__card--home-deal .gh-offer__subtitle {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 15px;
+  font-weight: 720;
+  line-height: 1.35;
+  margin: 12px auto 4px;
+  max-width: 360px;
+}
+
+.gh-offer__product {
+  display: block;
+  filter: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.32));
+  height: auto;
+  margin: -6px auto -10px;
+  max-height: 288px;
+  object-fit: contain;
+  width: min(330px, 88%);
+}
+
+.gh-offer__timer {
+  align-items: center;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 8px auto 18px;
+  width: min(330px, 100%);
+}
+
+.gh-offer__timer span {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  display: grid;
+  min-height: 64px;
+  place-items: center;
+  padding: 9px 6px 8px;
+}
+
+.gh-offer__timer b {
+  color: #ffffff;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.gh-offer__timer small {
+  color: #ffcf8a;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.gh-offer__card--home-deal .gh-offer__primary {
+  background: #ff6a00;
+  border-radius: 14px;
+  box-shadow: 0 16px 34px rgba(255, 102, 0, 0.28);
+  color: #ffffff;
+  font-size: 18px;
+  margin-top: 0;
+  min-height: 58px;
+  text-transform: uppercase;
+}
+
+.gh-offer__card--home-deal .gh-offer__primary:hover,
+.gh-offer__card--home-deal .gh-offer__primary:focus-visible {
+  background: #ff7f11;
+  outline: 3px solid rgba(255, 207, 138, 0.34);
+  transform: translateY(-1px);
+}
+
+.gh-offer__card--home-deal .gh-offer__secondary {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.gh-home-offer-enter-active,
+.gh-home-offer-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.gh-home-offer-enter-active .gh-offer__card--home-deal,
+.gh-home-offer-leave-active .gh-offer__card--home-deal {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gh-home-offer-enter-from,
+.gh-home-offer-leave-to {
+  opacity: 0;
+}
+
+.gh-home-offer-enter-from .gh-offer__card--home-deal,
+.gh-home-offer-leave-to .gh-offer__card--home-deal {
+  transform: translateY(18px) scale(0.98);
+}
+
 .gummy-home .gh-scroll-reveal {
   opacity: 0;
   transform: translate3d(0, 24px, 0);
@@ -820,11 +1065,64 @@ onUnmounted(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .gh-home-offer-enter-active,
+  .gh-home-offer-leave-active,
+  .gh-home-offer-enter-active .gh-offer__card--home-deal,
+  .gh-home-offer-leave-active .gh-offer__card--home-deal {
+    transition: opacity 120ms ease;
+  }
+
   .gummy-home .gh-scroll-reveal {
     filter: none;
     opacity: 1;
     transform: none;
     transition: opacity 180ms ease;
+  }
+}
+
+@media (max-width: 749px) {
+  .gh-offer--home-deal {
+    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+  }
+
+  .gh-offer__card--home-deal {
+    border-radius: 18px;
+    max-height: calc(100dvh - 28px);
+    padding: 30px 20px 24px;
+    width: calc(100vw - 28px);
+  }
+
+  .gh-offer__card--home-deal .gh-offer__title {
+    font-size: clamp(31px, 9vw, 39px);
+  }
+
+  .gh-offer__card--home-deal .gh-offer__subtitle {
+    font-size: 13px;
+    margin-top: 9px;
+  }
+
+  .gh-offer__product {
+    margin-block: -4px -8px;
+    max-height: 260px;
+    width: min(300px, 92%);
+  }
+
+  .gh-offer__timer {
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .gh-offer__timer span {
+    min-height: 58px;
+  }
+
+  .gh-offer__timer b {
+    font-size: 24px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__primary {
+    font-size: 16px;
+    min-height: 54px;
   }
 }
 </style>
