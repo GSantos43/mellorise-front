@@ -32,7 +32,12 @@ export const messages = {
       menu: 'Abrir menu',
       closeMenu: 'Cerrar menu',
       accountOrders: 'Mis compras',
-      tracking: 'Seguir pedido'
+      tracking: 'Seguir pedido',
+      offerTimer: {
+        aria: 'Oferta expira en {time}',
+        title: 'Oferta activa por poco tiempo',
+        text: 'Envio gratis desde 2 frascos'
+      }
     },
     auth: {
       loading: 'Cargando cuenta',
@@ -204,6 +209,7 @@ export const messages = {
       },
       addToCart: 'Agregar al carrito',
       buyNow: 'Buy Now',
+      stockPulse: 'Ultimas unidades disponibles',
       purchaseNote: 'Compra segura. Revisa siempre ingredientes, dosis y uso conforme a la etiqueta real del producto.',
       regionLock: 'Por ahora, MelloRise solo acepta compras desde Estados Unidos. Brasil esta habilitado temporalmente durante el desarrollo.',
       regionShortLock: 'No disponible en tu region',
@@ -855,7 +861,12 @@ export const messages = {
       menu: 'Open menu',
       closeMenu: 'Close menu',
       accountOrders: 'My purchases',
-      tracking: 'Track order'
+      tracking: 'Track order',
+      offerTimer: {
+        aria: 'Offer expires in {time}',
+        title: 'Limited-time offer',
+        text: 'Free shipping from 2 bottles'
+      }
     },
     auth: {
       loading: 'Loading account',
@@ -1027,6 +1038,7 @@ export const messages = {
       },
       addToCart: 'Add to cart',
       buyNow: 'Buy Now',
+      stockPulse: 'Low stock available',
       purchaseNote: 'Secure purchase. Always review ingredients, dosage, and use according to the real product label.',
       regionLock: 'MelloRise checkout is currently available only in the United States. Brazil is enabled temporarily during development.',
       regionShortLock: 'Not available in your region',

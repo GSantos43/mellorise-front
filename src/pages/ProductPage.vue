@@ -838,6 +838,10 @@ watch([isGalleryLightboxOpen, isReviewFormOpen, selectedPhotoReview], ([isLightb
             </p>
 
             <button class="gg-button gg-button--wide" type="button" :disabled="!canPurchaseSelectedPack" @click="submitCart">{{ t('product.addToCart') }}</button>
+            <p class="gg-stock-pulse" role="status">
+              <span aria-hidden="true"></span>
+              {{ t('product.stockPulse') }}
+            </p>
           </form>
 
           <div class="gg-post-cart-trust" :aria-label="t('product.trust.label')">

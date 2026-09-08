@@ -19,12 +19,16 @@ const props = defineProps({
 const { t, locale } = useI18n({ useScope: 'global' })
 const navRef = ref(null)
 const isMobileMenuOpen = ref(false)
+const offerRemainingSeconds = ref(30 * 60)
 const navIndicator = ref({
   width: '0px',
   transform: 'translate3d(5px, 0, 0)',
   opacity: 0
 })
 let navIndicatorTimer = 0
+let offerTimer = 0
+const OFFER_TIMER_DURATION_MS = 30 * 60 * 1000
+const OFFER_TIMER_STORAGE_KEY = 'mellorise-offer-expires-at'
 
 const links = [
   { key: 'nav.home', href: '/', matcher: (route) => route === '/' },
@@ -39,6 +43,27 @@ const localeOptions = computed(() => supportedLocales.map((value) => ({
   flag: value === 'en' ? '/assets/flag-us.svg' : '/assets/flag-es.svg',
   label: t(`language.${value}`)
 })))
+const offerTimerText = computed(() => {
+  const minutes = Math.floor(offerRemainingSeconds.value / 60)
+  const seconds = offerRemainingSeconds.value % 60
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+})
+
+function getOfferExpiry() {
+  if (typeof window === 'undefined') return Date.now() + OFFER_TIMER_DURATION_MS
+
+  const savedExpiry = Number(window.sessionStorage.getItem(OFFER_TIMER_STORAGE_KEY) || 0)
+  if (savedExpiry > Date.now()) return savedExpiry
+
+  const nextExpiry = Date.now() + OFFER_TIMER_DURATION_MS
+  window.sessionStorage.setItem(OFFER_TIMER_STORAGE_KEY, String(nextExpiry))
+  return nextExpiry
+}
+
+function updateOfferCountdown(expiry) {
+  const remainingMs = Math.max(0, expiry - Date.now())
+  offerRemainingSeconds.value = Math.ceil(remainingMs / 1000)
+}
 
 function changeLocale(value) {
   setLocale(value)
@@ -85,6 +110,9 @@ function previewNavSelection(event) {
 
 onMounted(() => {
   updateNavIndicator()
+  const offerExpiry = getOfferExpiry()
+  updateOfferCountdown(offerExpiry)
+  offerTimer = window.setInterval(() => updateOfferCountdown(offerExpiry), 1000)
   window.addEventListener('resize', updateNavIndicator, { passive: true })
   window.addEventListener('keydown', handleEscape)
 })
@@ -96,6 +124,10 @@ onUnmounted(() => {
 
   if (navIndicatorTimer) {
     window.clearTimeout(navIndicatorTimer)
+  }
+
+  if (offerTimer) {
+    window.clearInterval(offerTimer)
   }
 })
 
@@ -177,6 +209,17 @@ watch(isMobileMenuOpen, (isOpen) => {
         </button>
       </div>
     </div>
+
+    <a
+      class="mello-offer-timer"
+      href="/products/mellorise-heightener-gummies-2026#comprar"
+      :aria-label="t('nav.offerTimer.aria', { time: offerTimerText })"
+    >
+      <span class="mello-offer-timer__signal" aria-hidden="true"></span>
+      <strong>{{ t('nav.offerTimer.title') }}</strong>
+      <span>{{ t('nav.offerTimer.text', { time: offerTimerText }) }}</span>
+      <b>{{ offerTimerText }}</b>
+    </a>
   </header>
 
   <div class="mello-mobile-menu" :class="{ 'is-open': isMobileMenuOpen }" :aria-hidden="!isMobileMenuOpen">
@@ -524,6 +567,69 @@ watch(isMobileMenuOpen, (isOpen) => {
   width: 18px;
 }
 
+.mello-offer-timer {
+  align-items: center;
+  background: linear-gradient(90deg, #071415 0%, #123f42 48%, #0f6b8f 100%);
+  color: #ffffff;
+  display: flex;
+  font-size: 13px;
+  font-weight: 720;
+  gap: 10px;
+  justify-content: center;
+  line-height: 1.2;
+  min-height: 36px;
+  padding: 7px 18px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.mello-offer-timer__signal {
+  background: #77cdfa;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(119, 205, 250, 0.55);
+  flex: 0 0 auto;
+  height: 9px;
+  width: 9px;
+  animation: mello-offer-timer-pulse 1.25s ease-out infinite;
+}
+
+.mello-offer-timer strong,
+.mello-offer-timer b {
+  color: #ffffff;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.mello-offer-timer > span:not(.mello-offer-timer__signal) {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.mello-offer-timer b {
+  background: #ffcf5c;
+  border-radius: 999px;
+  color: #102829;
+  font-variant-numeric: tabular-nums;
+  min-width: 66px;
+  padding: 5px 10px;
+}
+
+@keyframes mello-offer-timer-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(119, 205, 250, 0.55);
+    transform: scale(1);
+  }
+
+  72% {
+    box-shadow: 0 0 0 10px rgba(119, 205, 250, 0);
+    transform: scale(1.08);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(119, 205, 250, 0);
+    transform: scale(1);
+  }
+}
+
 .mello-mobile-menu {
   display: none;
 }
@@ -617,6 +723,32 @@ watch(isMobileMenuOpen, (isOpen) => {
 
   .mello-page-header__menu-button {
     display: inline-flex;
+  }
+
+  .mello-offer-timer {
+    align-items: center;
+    display: grid;
+    gap: 2px 8px;
+    grid-template-columns: auto 1fr auto;
+    justify-items: start;
+    min-height: 44px;
+    padding: 7px 14px;
+    text-align: left;
+  }
+
+  .mello-offer-timer > span:not(.mello-offer-timer__signal) {
+    font-size: 11px;
+    grid-column: 2 / 3;
+  }
+
+  .mello-offer-timer strong {
+    font-size: 13px;
+  }
+
+  .mello-offer-timer b {
+    grid-column: 3 / 4;
+    grid-row: 1 / span 2;
+    justify-self: end;
   }
 
   .mello-mobile-menu {
