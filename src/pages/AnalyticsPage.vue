@@ -21,6 +21,7 @@ const specificDate = ref(toDateInputValue(new Date()))
 const rangeFromDate = ref(toDateInputValue(getDateDaysAgo(6)))
 const rangeToDate = ref(toDateInputValue(new Date()))
 const eventTypeFilter = ref('all')
+const countryFilter = ref('US')
 const eventsPage = ref(1)
 const eventsPerPage = ref(15)
 
@@ -31,6 +32,12 @@ const datePresetOptions = [
   { value: 'last7', label: 'Last 7 days' },
   { value: 'day', label: 'Specific day' },
   { value: 'range', label: 'Range' }
+]
+
+const countryFilterOptions = [
+  { value: 'US', label: 'United States only' },
+  { value: 'exclude_BR', label: 'Hide Brazil' },
+  { value: 'all', label: 'All countries' }
 ]
 
 const totalCards = computed(() => summary.value?.totals || [])
@@ -60,6 +67,9 @@ const activeDateLabel = computed(() => {
   if (datePreset.value === 'day') return formatShortDate(specificDate.value)
   if (datePreset.value === 'range') return `${formatShortDate(rangeFromDate.value)} - ${formatShortDate(rangeToDate.value)}`
   return 'Filtered'
+})
+const activeCountryLabel = computed(() => {
+  return countryFilterOptions.find((option) => option.value === countryFilter.value)?.label || 'United States only'
 })
 const eventRangeLabel = computed(() => {
   const pagination = eventsPagination.value
@@ -222,6 +232,7 @@ function getAnalyticsFilterPayload() {
     from: range.from ? range.from.toISOString() : '',
     to: range.to ? range.to.toISOString() : '',
     eventType: eventTypeFilter.value,
+    country: countryFilter.value,
     page: eventsPage.value,
     perPage: eventsPerPage.value
   }
@@ -247,6 +258,15 @@ function applyEventTypeFilter(nextType) {
   resetEventsPagination()
   hasNewEvents.value = false
   newEventsCount.value = 0
+  return loadSummary()
+}
+
+function applyCountryFilter(nextCountry) {
+  countryFilter.value = nextCountry || 'US'
+  resetEventsPagination()
+  hasNewEvents.value = false
+  newEventsCount.value = 0
+  latestSeenEventKey.value = ''
   return loadSummary()
 }
 
@@ -402,7 +422,7 @@ function getEventLocation(event) {
           <div>
             <p>Generated {{ formatDate(summary?.generatedAt) }}</p>
             <h2>Store pulse</h2>
-            <span>{{ activeDateLabel }} · {{ summary?.storage?.eventCount || 0 }} events shown of {{ summary?.storage?.totalEventCount || summary?.storage?.eventCount || 0 }} saved</span>
+            <span>{{ activeDateLabel }} · {{ activeCountryLabel }} · {{ summary?.storage?.eventCount || 0 }} events shown of {{ summary?.storage?.totalEventCount || summary?.storage?.eventCount || 0 }} saved</span>
             <span>{{ storageLabel }}</span>
           </div>
           <button class="mello-analytics__primary" type="button" :disabled="isLoading" @click="refreshSummary">
@@ -421,6 +441,22 @@ function getEventLocation(event) {
             >
               {{ option.label }}
             </button>
+          </div>
+
+          <div class="mello-analytics-filters__group" aria-label="Country filters">
+            <span>Country</span>
+            <div class="mello-analytics-filters__presets">
+              <button
+                v-for="option in countryFilterOptions"
+                :key="option.value"
+                type="button"
+                :class="{ 'is-active': countryFilter === option.value }"
+                :disabled="isLoading"
+                @click="applyCountryFilter(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            </div>
           </div>
 
           <div v-if="datePreset === 'day'" class="mello-analytics-filters__custom">
@@ -784,6 +820,18 @@ function getEventLocation(event) {
   gap: 8px;
 }
 
+.mello-analytics-filters__group {
+  display: grid;
+  gap: 8px;
+}
+
+.mello-analytics-filters__group > span {
+  color: #102829;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
 .mello-analytics-filters__presets button {
   appearance: none;
   background: #f6fbfb;
@@ -806,6 +854,11 @@ function getEventLocation(event) {
   background: #133130;
   border-color: #133130;
   color: #ffffff;
+}
+
+.mello-analytics-filters__presets button:disabled {
+  cursor: wait;
+  opacity: 0.68;
 }
 
 .mello-analytics-filters__custom {
