@@ -7,6 +7,10 @@ const SESSION_STARTED_AT_KEY = 'mellorise-analytics-session-started-at-v1'
 const SESSION_TTL_MS = 30 * 60 * 1000
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || ''
 const GTM_ID = import.meta.env.VITE_GTM_ID || ''
+const WETRACKED_ENABLED = import.meta.env.VITE_WETRACKED_ENABLED !== 'false'
+const WETRACKED_SITE_DOMAIN = import.meta.env.VITE_WETRACKED_SITE_DOMAIN || 'mellorise.shop'
+const WETRACKED_PLUGIN_VERSION = 'headless'
+const WETRACKED_PIXEL_BASE_URL = `https://pixel.wetracked.io/woo/${WETRACKED_SITE_DOMAIN.replace(/^https?:\/\//, '').replace(/\/+$/, '')}`
 
 let scriptsLoaded = false
 
@@ -40,6 +44,8 @@ export function initAnalytics() {
       session_id: sessionId
     })
   }
+
+  initWetrackedPixel()
 
   scriptsLoaded = true
 }
@@ -160,6 +166,7 @@ export function trackEvent(name, params = {}, options = {}) {
 
   const eventParams = {
     ...params,
+    wtp: getCookieValue('_wtp'),
     client_id: getClientId(),
     session_id: getSessionId()
   }
@@ -260,4 +267,40 @@ function getOrCreateStorageValue(key, prefix) {
 
 function createId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+function initWetrackedPixel() {
+  if (!WETRACKED_ENABLED || !WETRACKED_SITE_DOMAIN) return
+
+  try {
+    if (document.getElementById('mellorise-wetracked-events')) return
+
+    window['wt:plugin:version'] = WETRACKED_PLUGIN_VERSION
+    window['wt:init'] = function initWetracked(params = {}) {
+      const cleanParams = Object.fromEntries(
+        Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== '')
+      )
+
+      return fetch(`${WETRACKED_PIXEL_BASE_URL}/init?${new URLSearchParams(cleanParams)}`).catch(() => {})
+    }
+
+    const script = document.createElement('script')
+    script.id = 'mellorise-wetracked-events'
+    script.async = true
+    script.src = `${WETRACKED_PIXEL_BASE_URL}/events.js`
+    script.onerror = () => {}
+    document.body.appendChild(script)
+  } catch {
+    // WeTracked must never block storefront analytics or checkout.
+  }
+}
+
+function getCookieValue(name) {
+  if (typeof document === 'undefined' || !name) return ''
+
+  const cookie = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(`${name}=`))
+
+  return cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : ''
 }
