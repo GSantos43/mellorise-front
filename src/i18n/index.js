@@ -2,7 +2,8 @@ import { createI18n } from 'vue-i18n'
 import { messages } from './messages'
 
 export const supportedLocales = ['es', 'en']
-const defaultLocale = 'en'
+const defaultLocale = 'es'
+const localeStorageKey = 'mellorise-locale-choice'
 
 function normalizeLocale(locale) {
   const baseLocale = String(locale || '').split('-')[0].toLowerCase()
@@ -12,7 +13,7 @@ function normalizeLocale(locale) {
 function getInitialLocale() {
   if (typeof window === 'undefined') return defaultLocale
 
-  const savedLocale = window.localStorage.getItem('mellorise-locale')
+  const savedLocale = window.localStorage.getItem(localeStorageKey)
   if (savedLocale) return normalizeLocale(savedLocale)
 
   return defaultLocale
@@ -31,7 +32,7 @@ export function setLocale(locale) {
   i18n.global.locale.value = normalizedLocale
 
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem('mellorise-locale', normalizedLocale)
+    window.localStorage.setItem(localeStorageKey, normalizedLocale)
   }
 
   if (typeof document !== 'undefined') {
