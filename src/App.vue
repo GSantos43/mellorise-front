@@ -82,7 +82,7 @@ const discountNotice = ref(null)
 const purchaseEligibility = ref({
   allowed: true,
   countryCode: null,
-  allowedCountries: ['US', 'BR'],
+  allowedCountries: ['US'],
   reason: 'loading'
 })
 const { t, locale } = useI18n({ useScope: 'global' })
@@ -746,7 +746,7 @@ onMounted(async () => {
     purchaseEligibility.value = {
       allowed: false,
       countryCode: null,
-      allowedCountries: ['US', 'BR'],
+      allowedCountries: ['US'],
       reason: 'country_unavailable'
     }
   }

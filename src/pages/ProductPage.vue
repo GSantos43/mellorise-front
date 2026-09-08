@@ -19,7 +19,7 @@ const props = defineProps({
     default: () => ({
       allowed: true,
       countryCode: null,
-      allowedCountries: ['US', 'BR']
+      allowedCountries: ['US']
     })
   }
 })
