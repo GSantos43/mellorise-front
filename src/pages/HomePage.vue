@@ -882,6 +882,8 @@ onUnmounted(() => {
 
 <style>
 .gh-offer--home-deal {
+  inset: 0;
+  overflow: hidden;
   position: fixed;
 }
 
@@ -903,8 +905,8 @@ onUnmounted(() => {
   color: #ffffff;
   isolation: isolate;
   overflow: hidden;
-  padding: 34px 34px 30px;
-  width: min(460px, 100%);
+  padding: clamp(24px, 4vh, 34px) clamp(24px, 4vw, 34px) clamp(22px, 3.5vh, 30px);
+  width: min(460px, calc(100vw - 36px));
 }
 
 .gh-offer__card--home-deal .gh-offer__close {
@@ -957,7 +959,7 @@ onUnmounted(() => {
   filter: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.32));
   height: auto;
   margin: -6px auto -10px;
-  max-height: 288px;
+  max-height: min(288px, 34vh);
   object-fit: contain;
   width: min(330px, 88%);
 }
@@ -1087,42 +1089,215 @@ onUnmounted(() => {
 
   .gh-offer__card--home-deal {
     border-radius: 18px;
-    max-height: calc(100dvh - 28px);
-    padding: 30px 20px 24px;
+    justify-content: center;
+    max-height: calc(100svh - 28px);
+    padding: 24px 18px 20px;
     width: calc(100vw - 28px);
   }
 
   .gh-offer__card--home-deal .gh-offer__title {
-    font-size: clamp(31px, 9vw, 39px);
+    font-size: clamp(28px, 8vw, 34px);
+    max-width: 320px;
   }
 
   .gh-offer__card--home-deal .gh-offer__subtitle {
-    font-size: 13px;
-    margin-top: 9px;
+    font-size: 12px;
+    line-height: 1.28;
+    margin-top: 8px;
+    max-width: 300px;
   }
 
   .gh-offer__product {
-    margin-block: -4px -8px;
-    max-height: 260px;
-    width: min(300px, 92%);
+    margin-block: -8px -10px;
+    max-height: min(230px, 29svh);
+    width: min(270px, 88%);
   }
 
   .gh-offer__timer {
     gap: 7px;
-    margin-bottom: 14px;
+    margin: 4px auto 12px;
+    width: min(300px, 100%);
   }
 
   .gh-offer__timer span {
-    min-height: 58px;
+    border-radius: 12px;
+    min-height: 54px;
+    padding: 7px 4px 6px;
   }
 
   .gh-offer__timer b {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .gh-offer__timer small {
+    font-size: 9px;
   }
 
   .gh-offer__card--home-deal .gh-offer__primary {
     font-size: 16px;
-    min-height: 54px;
+    min-height: 50px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__secondary {
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 389px), (max-height: 760px) {
+  .gh-offer__card--home-deal {
+    padding: 18px 16px 16px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__close {
+    height: 36px;
+    width: 36px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__kicker {
+    font-size: 10px;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__title {
+    font-size: clamp(24px, 7.4vw, 30px);
+    line-height: 1;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__subtitle {
+    font-size: 11px;
+    margin-top: 7px;
+  }
+
+  .gh-offer__product {
+    max-height: min(200px, 27svh);
+    width: min(238px, 84%);
+  }
+
+  .gh-offer__timer {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .gh-offer__timer span {
+    min-height: 48px;
+  }
+
+  .gh-offer__timer b {
+    font-size: 20px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__primary {
+    font-size: 14px;
+    min-height: 46px;
+  }
+
+  .gh-offer__card--home-deal .gh-offer__secondary {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+}
+
+.gh-offer.gh-offer--home-deal {
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.gh-offer.gh-offer--home-deal .gh-offer__card.gh-offer__card--home-deal {
+  justify-content: center;
+  max-height: min(660px, calc(100svh - 36px));
+  overflow: hidden;
+  padding: clamp(22px, 3.2vh, 30px) clamp(22px, 3vw, 30px) clamp(20px, 3vh, 26px);
+  width: min(440px, calc(100vw - 36px));
+}
+
+.gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__title {
+  font-size: clamp(30px, 3vw, 40px);
+}
+
+.gh-offer.gh-offer--home-deal .gh-offer__product {
+  max-height: min(235px, 30svh);
+  width: min(300px, 84%);
+}
+
+.gh-offer.gh-offer--home-deal .gh-offer__timer span {
+  min-height: 58px;
+}
+
+.gh-offer.gh-offer--home-deal .gh-offer__timer b {
+  font-size: 24px;
+}
+
+.gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__primary {
+  box-sizing: border-box;
+  min-height: 54px;
+  width: min(100%, 330px);
+}
+
+@media (max-width: 749px) {
+  .gh-offer.gh-offer--home-deal .gh-offer__card.gh-offer__card--home-deal {
+    max-height: calc(100svh - 32px);
+    padding: 18px 16px 16px;
+    width: min(336px, calc(100vw - 32px));
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__close {
+    height: 36px;
+    width: 36px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__kicker {
+    font-size: 10px;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__title {
+    font-size: clamp(24px, 7vw, 29px);
+    line-height: 1;
+    max-width: 278px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__subtitle {
+    font-size: 11px;
+    line-height: 1.24;
+    margin-top: 7px;
+    max-width: 278px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__product {
+    margin-block: -10px -12px;
+    max-height: min(176px, 24svh);
+    width: min(218px, 78%);
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__timer {
+    gap: 6px;
+    margin: 2px auto 10px;
+    width: min(286px, 100%);
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__timer span {
+    min-height: 46px;
+    padding: 6px 4px 5px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__timer b {
+    font-size: 20px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__timer small {
+    font-size: 8px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__primary {
+    font-size: 14px;
+    min-height: 44px;
+  }
+
+  .gh-offer.gh-offer--home-deal .gh-offer__card--home-deal .gh-offer__secondary {
+    font-size: 13px;
+    margin-top: 9px;
   }
 }
 </style>
