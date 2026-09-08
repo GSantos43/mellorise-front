@@ -821,46 +821,66 @@ watch(isMobileMenuOpen, (isOpen) => {
     align-items: center;
     display: grid;
     gap: 5px 8px;
-    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "signal message cta"
+      ". countdown countdown";
+    grid-template-columns: 9px minmax(0, 1fr) auto;
     justify-items: start;
-    min-height: 66px;
+    min-height: 74px;
     padding: 8px 12px;
     text-align: left;
+  }
+
+  .mello-offer-timer__signal {
+    grid-area: signal;
   }
 
   .mello-offer-timer__message {
     align-items: flex-start;
     display: grid;
     gap: 2px;
-    grid-column: 2 / 3;
+    grid-area: message;
     min-width: 0;
   }
 
   .mello-offer-timer__message strong {
-    font-size: 14px;
-    white-space: normal;
+    font-size: 13px;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .mello-offer-timer__message span {
     font-size: 11px;
-    white-space: normal;
+    font-weight: 900;
+    line-height: 1.05;
+    white-space: nowrap;
   }
 
   .mello-offer-timer__countdown {
-    grid-column: 2 / 4;
+    gap: 10px;
+    grid-area: countdown;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .mello-offer-timer__countdown > span {
+    min-width: 30px;
   }
 
   .mello-offer-timer__countdown b {
     font-size: 18px;
   }
 
+  .mello-offer-timer__countdown small {
+    font-size: 8px;
+  }
+
   .mello-offer-timer__cta {
-    font-size: 11px;
-    grid-column: 3 / 4;
-    grid-row: 1 / 2;
+    font-size: 10px;
+    grid-area: cta;
     justify-self: end;
-    min-height: 28px;
-    min-width: 84px;
+    min-height: 30px;
+    min-width: 96px;
     padding: 0 10px;
   }
 
