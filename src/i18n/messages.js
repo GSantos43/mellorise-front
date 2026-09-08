@@ -36,7 +36,7 @@ export const messages = {
       offerTimer: {
         aria: 'Oferta expira en {time}',
         title: 'Oferta activa por poco tiempo',
-        text: 'Envio gratis desde 2 frascos'
+        text: 'Compra 3 y lleva 2 gratis'
       }
     },
     auth: {
@@ -865,7 +865,7 @@ export const messages = {
       offerTimer: {
         aria: 'Offer expires in {time}',
         title: 'Limited-time offer',
-        text: 'Free shipping from 2 bottles'
+        text: 'Buy 3 Get 2 Free'
       }
     },
     auth: {
