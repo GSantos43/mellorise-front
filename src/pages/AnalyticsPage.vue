@@ -43,6 +43,7 @@ const countryFilterOptions = [
 const totalCards = computed(() => summary.value?.totals || [])
 const funnel = computed(() => summary.value?.funnel || [])
 const recentEvents = computed(() => summary.value?.events?.items || summary.value?.recentEvents || [])
+const visibleRecentEvents = computed(() => recentEvents.value.filter((event) => eventMatchesCountryFilter(event)))
 const eventsPagination = computed(() => summary.value?.events || {
   page: eventsPage.value,
   perPage: eventsPerPage.value,
@@ -268,6 +269,35 @@ function applyCountryFilter(nextCountry) {
   newEventsCount.value = 0
   latestSeenEventKey.value = ''
   return loadSummary()
+}
+
+function eventMatchesCountryFilter(event) {
+  const normalizedFilter = String(countryFilter.value || 'US').trim().toUpperCase()
+  if (!normalizedFilter || normalizedFilter === 'ALL') return true
+
+  if (normalizedFilter === 'EXCLUDE_BR') {
+    return !eventMatchesCountry(event, 'BR')
+  }
+
+  return eventMatchesCountry(event, normalizedFilter)
+}
+
+function eventMatchesCountry(event, countryCode) {
+  const normalizedCountryCode = String(countryCode || '').trim().toUpperCase()
+  const geo = event?.geo || {}
+  const countryCodeValue = String(geo.countryCode || geo.country_code || '').trim().toUpperCase()
+  if (countryCodeValue === normalizedCountryCode) return true
+
+  const countryName = String(geo.country || '').trim().toUpperCase()
+  const locationText = getEventLocation(event).toUpperCase()
+  const aliases = {
+    US: ['UNITED STATES', 'UNITED STATES OF AMERICA', 'USA', 'US'],
+    BR: ['BRAZIL', 'BRASIL', 'BR']
+  }
+
+  return (aliases[normalizedCountryCode] || [normalizedCountryCode]).some((alias) => (
+    countryName === alias || locationText.includes(alias)
+  ))
 }
 
 function getDateRange() {
@@ -605,7 +635,7 @@ function getEventLocation(event) {
               <span role="columnheader">IP</span>
               <span role="columnheader">Session</span>
             </div>
-            <div v-for="event in recentEvents" :key="`${event.timestamp}-${event.name}-${event.sessionId}`" class="mello-analytics-table__row" role="row">
+            <div v-for="event in visibleRecentEvents" :key="`${event.timestamp}-${event.name}-${event.sessionId}`" class="mello-analytics-table__row" role="row">
               <span role="cell" data-label="Time">{{ formatDate(event.timestamp) }}</span>
               <strong role="cell" data-label="Event">{{ formatEventName(event.name) }}</strong>
               <span role="cell" data-label="Detail">{{ getEventDetail(event) }}</span>
@@ -613,7 +643,7 @@ function getEventLocation(event) {
               <span role="cell" data-label="IP">{{ event.ip || '-' }}</span>
               <span role="cell" data-label="Session">{{ event.sessionId || '-' }}</span>
             </div>
-            <p v-if="!recentEvents.length" class="mello-analytics-empty">No events saved for this page.</p>
+            <p v-if="!visibleRecentEvents.length" class="mello-analytics-empty">No events saved for this country filter.</p>
           </div>
         </section>
       </main>
