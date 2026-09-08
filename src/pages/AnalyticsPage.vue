@@ -386,6 +386,12 @@ function getEventDetail(event) {
     return event.params?.message || event.params?.code || 'Checkout failed'
   }
 
+  if (event.name === 'site_exit') {
+    const reason = formatEventName(event.params?.reason || 'left site')
+    const duration = formatDuration(event.params?.duration_seconds)
+    return duration ? `${reason} · ${duration} on site` : reason
+  }
+
   if (event.params?.items?.[0]?.item_name) {
     return event.params.items[0].item_name
   }
@@ -397,6 +403,16 @@ function formatEventName(value) {
   return String(value || '')
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
+function formatDuration(seconds) {
+  const totalSeconds = Number(seconds || 0)
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return ''
+  if (totalSeconds < 60) return `${Math.round(totalSeconds)}s`
+
+  const minutes = Math.floor(totalSeconds / 60)
+  const remainingSeconds = Math.round(totalSeconds % 60)
+  return remainingSeconds ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`
 }
 
 function getEventLocation(event) {
@@ -926,7 +942,7 @@ function getEventLocation(event) {
 .mello-analytics-grid {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .mello-analytics-stat {

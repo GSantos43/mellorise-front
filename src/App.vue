@@ -35,6 +35,7 @@ import {
   trackCheckoutRedirect,
   trackPageView,
   trackProductView,
+  trackSiteExit,
   trackViewCart
 } from './services/analytics'
 
@@ -520,11 +521,29 @@ function redirectTrackingToAccountOrders() {
 }
 
 function handleBeforeUnload(event) {
+  trackCurrentSiteExit('beforeunload')
+
   if (!shouldConfirmCheckoutExit.value) return
 
   trackCheckoutAbandoned(cartItem.value, 'checkout_tab_closed')
   event.preventDefault()
   event.returnValue = ''
+}
+
+function handlePageHide() {
+  trackCurrentSiteExit('pagehide')
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState !== 'hidden') return
+
+  trackCurrentSiteExit('visibility_hidden')
+}
+
+function trackCurrentSiteExit(reason) {
+  if (!shouldTrackCurrentPage()) return
+
+  trackSiteExit(isCheckoutLoading.value ? 'stripe_redirect' : reason)
 }
 
 function updateCartQuantity(quantity) {
@@ -763,6 +782,8 @@ onMounted(async () => {
 
   window.addEventListener('popstate', handlePopState)
   window.addEventListener('beforeunload', handleBeforeUnload)
+  window.addEventListener('pagehide', handlePageHide)
+  document.addEventListener('visibilitychange', handleVisibilityChange)
 
   staticTranslationObserver = new MutationObserver(() => {
     scheduleStaticTranslation()
@@ -778,6 +799,8 @@ onUnmounted(() => {
   document.documentElement.classList.remove('mello-checkout-loading-lock')
   window.removeEventListener('popstate', handlePopState)
   window.removeEventListener('beforeunload', handleBeforeUnload)
+  window.removeEventListener('pagehide', handlePageHide)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 
   if (pageLoaderTimer) {
     window.clearTimeout(pageLoaderTimer)

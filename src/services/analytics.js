@@ -11,8 +11,10 @@ const WETRACKED_ENABLED = import.meta.env.VITE_WETRACKED_ENABLED !== 'false'
 const WETRACKED_SITE_DOMAIN = import.meta.env.VITE_WETRACKED_SITE_DOMAIN || 'mellorise.shop'
 const WETRACKED_PLUGIN_VERSION = 'headless'
 const WETRACKED_PIXEL_BASE_URL = `https://pixel.wetracked.io/woo/${WETRACKED_SITE_DOMAIN.replace(/^https?:\/\//, '').replace(/\/+$/, '')}`
+const PAGE_LOADED_AT_MS = Date.now()
 
 let scriptsLoaded = false
+let siteExitTracked = false
 
 export function initAnalytics() {
   if (typeof window === 'undefined' || scriptsLoaded) return
@@ -137,6 +139,21 @@ export function trackCheckoutAbandoned(item, reason = 'left_checkout') {
   }, { sendToBackend: true, beacon: true })
 }
 
+export function trackSiteExit(reason = 'pagehide') {
+  if (typeof window === 'undefined' || siteExitTracked) return
+
+  siteExitTracked = true
+  trackEvent('site_exit', {
+    reason,
+    page_path: window.location.pathname,
+    page_title: document.title,
+    page_location: window.location.href,
+    duration_seconds: Math.max(0, Math.round((Date.now() - PAGE_LOADED_AT_MS) / 1000)),
+    viewport: `${window.innerWidth || 0}x${window.innerHeight || 0}`,
+    visibility_state: document.visibilityState || ''
+  }, { sendToBackend: true, beacon: true })
+}
+
 export function trackPurchase(params = {}) {
   trackEvent('purchase', {
     transaction_id: params.sessionId || params.orderId || '',
@@ -199,6 +216,11 @@ function sendBackendEvent(name, params, beacon = false) {
     params
   })
 
+  if (beacon && name === 'site_exit') {
+    sendBackendPixelEvent(payload)
+    return
+  }
+
   if (beacon && navigator.sendBeacon && isSameOrigin(BFF_URL)) {
     navigator.sendBeacon(`${BFF_URL}/analytics/events`, new Blob([payload], { type: 'application/json' }))
     return
@@ -210,6 +232,18 @@ function sendBackendEvent(name, params, beacon = false) {
     body: payload,
     keepalive: beacon
   }).catch(() => {})
+}
+
+function sendBackendPixelEvent(payload) {
+  try {
+    fetch(`${BFF_URL}/analytics/events/pixel?payload=${encodeURIComponent(payload)}`, {
+      method: 'GET',
+      keepalive: true,
+      mode: 'no-cors'
+    }).catch(() => {})
+  } catch {
+    // Exit tracking should never block navigation.
+  }
 }
 
 function isSameOrigin(url) {
