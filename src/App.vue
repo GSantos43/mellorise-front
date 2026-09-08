@@ -638,6 +638,7 @@ async function goToStripeCheckout(options = {}) {
 
     const checkout = await createCheckoutSession(cartItem.value, {
       ...options,
+      checkoutLocale: locale.value,
       checkoutSource,
       checkoutPagePath: CHECKOUT_PATH,
       checkoutPageLocation: `${window.location.origin}${CHECKOUT_PATH}`

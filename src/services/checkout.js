@@ -105,6 +105,7 @@ function buildCheckoutPayload({
     cancelUrl: `${origin}/products/${getCheckoutCancelHandle(item)}`,
     customerEmail: options.customerEmail,
     couponCode: options.couponCode,
+    checkoutLocale: options.checkoutLocale,
     shippingProtection: options.shippingProtection,
     offerCode: options.offerCode,
     promotion,
