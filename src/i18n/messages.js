@@ -35,8 +35,13 @@ export const messages = {
       tracking: 'Seguir pedido',
       offerTimer: {
         aria: 'Oferta expira en {time}',
-        title: 'Oferta activa por poco tiempo',
-        text: 'Compra 3 y lleva 2 gratis'
+        title: 'Oferta limitada',
+        text: 'Compra 3 y lleva 2 gratis',
+        days: 'Dias',
+        hours: 'Hrs',
+        minutes: 'Mins',
+        seconds: 'Segs',
+        cta: 'Comprar ahora'
       }
     },
     auth: {
@@ -864,8 +869,13 @@ export const messages = {
       tracking: 'Track order',
       offerTimer: {
         aria: 'Offer expires in {time}',
-        title: 'Limited-time offer',
-        text: 'Buy 3 Get 2 Free'
+        title: 'Limited offer',
+        text: 'Buy 3 Get 2 Free',
+        days: 'Days',
+        hours: 'Hrs',
+        minutes: 'Mins',
+        seconds: 'Secs',
+        cta: 'Shop now'
       }
     },
     auth: {

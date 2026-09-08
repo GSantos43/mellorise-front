@@ -48,6 +48,23 @@ const offerTimerText = computed(() => {
   const seconds = offerRemainingSeconds.value % 60
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 })
+const offerTimerParts = computed(() => {
+  const totalSeconds = Math.max(0, offerRemainingSeconds.value)
+  const days = Math.floor(totalSeconds / 86400)
+  const hours = Math.floor((totalSeconds % 86400) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  return [
+    { key: 'days', value: days, label: t('nav.offerTimer.days') },
+    { key: 'hours', value: hours, label: t('nav.offerTimer.hours') },
+    { key: 'minutes', value: minutes, label: t('nav.offerTimer.minutes') },
+    { key: 'seconds', value: seconds, label: t('nav.offerTimer.seconds') }
+  ].map((part) => ({
+    ...part,
+    value: String(part.value).padStart(2, '0')
+  }))
+})
 
 function getOfferExpiry() {
   if (typeof window === 'undefined') return Date.now() + OFFER_TIMER_DURATION_MS
@@ -216,9 +233,17 @@ watch(isMobileMenuOpen, (isOpen) => {
       :aria-label="t('nav.offerTimer.aria', { time: offerTimerText })"
     >
       <span class="mello-offer-timer__signal" aria-hidden="true"></span>
-      <strong>{{ t('nav.offerTimer.title') }}</strong>
-      <span>{{ t('nav.offerTimer.text', { time: offerTimerText }) }}</span>
-      <b>{{ offerTimerText }}</b>
+      <span class="mello-offer-timer__message">
+        <strong>{{ t('nav.offerTimer.title') }}</strong>
+        <span>{{ t('nav.offerTimer.text') }}</span>
+      </span>
+      <span class="mello-offer-timer__countdown" aria-hidden="true">
+        <span v-for="part in offerTimerParts" :key="part.key">
+          <b>{{ part.value }}</b>
+          <small>{{ part.label }}</small>
+        </span>
+      </span>
+      <span class="mello-offer-timer__cta">{{ t('nav.offerTimer.cta') }}</span>
     </a>
   </header>
 
@@ -569,63 +594,130 @@ watch(isMobileMenuOpen, (isOpen) => {
 
 .mello-offer-timer {
   align-items: center;
-  background: linear-gradient(90deg, #071415 0%, #123f42 48%, #0f6b8f 100%);
+  background:
+    radial-gradient(circle at 6% 50%, rgba(255, 255, 255, 0.22) 0 18px, transparent 19px),
+    linear-gradient(90deg, #ff4d00 0%, #ff6a00 46%, #ff7f11 100%);
+  box-shadow: inset 0 -1px 0 rgba(126, 42, 0, 0.18);
   color: #ffffff;
-  display: flex;
+  display: grid;
   font-size: 13px;
   font-weight: 720;
-  gap: 10px;
+  gap: 14px;
+  grid-template-columns: auto minmax(220px, auto) auto auto;
   justify-content: center;
   line-height: 1.2;
-  min-height: 36px;
-  padding: 7px 18px;
+  min-height: 54px;
+  overflow: hidden;
+  padding: 8px 18px;
+  position: relative;
   text-align: center;
   text-decoration: none;
 }
 
 .mello-offer-timer__signal {
-  background: #77cdfa;
+  background: #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(119, 205, 250, 0.55);
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
   flex: 0 0 auto;
   height: 9px;
   width: 9px;
   animation: mello-offer-timer-pulse 1.25s ease-out infinite;
 }
 
-.mello-offer-timer strong,
-.mello-offer-timer b {
+.mello-offer-timer__message {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mello-offer-timer__message strong {
   color: #ffffff;
-  font-weight: 900;
+  font-size: clamp(16px, 1.5vw, 22px);
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.mello-offer-timer > span:not(.mello-offer-timer__signal) {
-  color: rgba(255, 255, 255, 0.86);
+.mello-offer-timer__message span {
+  color: #ffffff;
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 850;
+  white-space: nowrap;
 }
 
-.mello-offer-timer b {
-  background: #ffcf5c;
-  border-radius: 999px;
-  color: #102829;
+.mello-offer-timer__countdown {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.mello-offer-timer__countdown > span {
+  align-items: center;
+  display: grid;
+  gap: 1px;
+  justify-items: center;
+  min-width: 34px;
+  position: relative;
+}
+
+.mello-offer-timer__countdown > span + span::before {
+  color: rgba(255, 255, 255, 0.7);
+  content: ":";
+  font-size: 18px;
+  font-weight: 950;
+  left: -7px;
+  position: absolute;
+  top: 2px;
+}
+
+.mello-offer-timer__countdown b {
+  color: #ffffff;
+  font-size: 21px;
   font-variant-numeric: tabular-nums;
-  min-width: 66px;
-  padding: 5px 10px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.mello-offer-timer__countdown small {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.mello-offer-timer__cta {
+  align-items: center;
+  background: #ffffff;
+  border-radius: 7px;
+  color: #173132;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 950;
+  justify-content: center;
+  min-height: 34px;
+  min-width: 112px;
+  padding: 0 18px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 @keyframes mello-offer-timer-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(119, 205, 250, 0.55);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
     transform: scale(1);
   }
 
   72% {
-    box-shadow: 0 0 0 10px rgba(119, 205, 250, 0);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
     transform: scale(1.08);
   }
 
   100% {
-    box-shadow: 0 0 0 0 rgba(119, 205, 250, 0);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
     transform: scale(1);
   }
 }
@@ -728,27 +820,48 @@ watch(isMobileMenuOpen, (isOpen) => {
   .mello-offer-timer {
     align-items: center;
     display: grid;
-    gap: 2px 8px;
+    gap: 5px 8px;
     grid-template-columns: auto 1fr auto;
     justify-items: start;
-    min-height: 44px;
-    padding: 7px 14px;
+    min-height: 66px;
+    padding: 8px 12px;
     text-align: left;
   }
 
-  .mello-offer-timer > span:not(.mello-offer-timer__signal) {
-    font-size: 11px;
+  .mello-offer-timer__message {
+    align-items: flex-start;
+    display: grid;
+    gap: 2px;
     grid-column: 2 / 3;
+    min-width: 0;
   }
 
-  .mello-offer-timer strong {
-    font-size: 13px;
+  .mello-offer-timer__message strong {
+    font-size: 14px;
+    white-space: normal;
   }
 
-  .mello-offer-timer b {
+  .mello-offer-timer__message span {
+    font-size: 11px;
+    white-space: normal;
+  }
+
+  .mello-offer-timer__countdown {
+    grid-column: 2 / 4;
+  }
+
+  .mello-offer-timer__countdown b {
+    font-size: 18px;
+  }
+
+  .mello-offer-timer__cta {
+    font-size: 11px;
     grid-column: 3 / 4;
-    grid-row: 1 / span 2;
+    grid-row: 1 / 2;
     justify-self: end;
+    min-height: 28px;
+    min-width: 84px;
+    padding: 0 10px;
   }
 
   .mello-mobile-menu {
