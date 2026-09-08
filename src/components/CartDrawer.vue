@@ -38,7 +38,7 @@ const quantity = computed(() => props.item?.quantity || 0)
 const subtotal = computed(() => Number(props.item?.lineTotal ?? props.item?.bundleTotal ?? (Number(props.item?.price || 0) * quantity.value)))
 const discountPercent = computed(() => Math.max(0, Number(props.discount?.amount || 0)))
 const discountTotal = computed(() => props.item && props.discount?.code ? subtotal.value * (discountPercent.value / 100) : 0)
-const isShippingProtectionEnabled = ref(false)
+const isShippingProtectionEnabled = ref(true)
 const standardShippingPrice = 3.99
 const shippingProtectionPrice = 0
 const hasBundleFreeShipping = computed(() => quantity.value > 1)
